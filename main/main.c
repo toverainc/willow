@@ -24,7 +24,7 @@
 #include "http_stream.h"
 #include "i2s_stream.h"
 #include "wav_encoder.h"
-#include "flac_decoder.h"
+#include "wav_decoder.h"
 #include "esp_peripherals.h"
 #include "periph_button.h"
 #include "periph_wifi.h"
@@ -52,11 +52,12 @@ audio_pipeline_handle_t pipeline;
 audio_element_handle_t i2s_stream_reader;
 audio_element_handle_t http_stream_writer;
 
-// FLAC
-static const char *selected_decoder_name = "flac";
+// Decoder
+static const char *selected_decoder_name = "wav";
+static const char *selected_file_to_play = "https://ainfer.tovera.io/audio/sallow.wav";
 
 audio_pipeline_handle_t playback_pipeline;
-audio_element_handle_t i2s_stream_writer, selected_decoder;
+audio_element_handle_t http_stream_reader, i2s_stream_writer, selected_decoder;
 
 esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
 {
@@ -197,19 +198,41 @@ void app_main(void)
     esp_periph_start(set, wifi_handle);
     periph_wifi_wait_for_connected(wifi_handle, portMAX_DELAY);
 
-    ESP_LOGI(TAG, "[ 2 ] Start codec chip");
+    ESP_LOGI(TAG, "[ 1 ] Start codec chip");
     audio_board_handle_t board_handle = audio_board_init();
     audio_hal_ctrl_codec(board_handle->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
 
-    ESP_LOGI(TAG, "[2.5] Create audio pipeline for playback");
+    ESP_LOGI(TAG, "[2.0] Create audio pipeline for playback");
     audio_pipeline_cfg_t playback_pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
     playback_pipeline = audio_pipeline_init(&playback_pipeline_cfg);
     mem_assert(playback_pipeline);
 
-    ESP_LOGI(TAG, "[2.6] Create %s decoder to decode %s file", selected_decoder_name, selected_decoder_name);
-    flac_decoder_cfg_t flac_cfg = DEFAULT_FLAC_DECODER_CONFIG();
-    flac_cfg.out_rb_size = 500 * 1024;
-    selected_decoder = flac_decoder_init(&flac_cfg);
+    ESP_LOGI(TAG, "[2.1] Create http stream to read data");
+    http_stream_cfg_t playback_http_cfg = HTTP_STREAM_CFG_DEFAULT();
+    playback_http_cfg.out_rb_size = 1024 * 1024;
+    http_stream_reader = http_stream_init(&playback_http_cfg);
+
+    ESP_LOGI(TAG, "[2.2] Create %s decoder to decode %s file", selected_decoder_name, selected_decoder_name);
+    wav_decoder_cfg_t wav_cfg = DEFAULT_WAV_DECODER_CONFIG();
+    selected_decoder = wav_decoder_init(&wav_cfg);
+
+    ESP_LOGI(TAG, "[2.3] Create i2s stream to write data to codec chip");
+    i2s_stream_cfg_t playback_i2s_cfg = I2S_STREAM_CFG_DEFAULT();
+    playback_i2s_cfg.type = AUDIO_STREAM_WRITER;
+    i2s_stream_writer = i2s_stream_init(&playback_i2s_cfg);
+
+    ESP_LOGI(TAG, "[2.4] Register all elements to audio pipeline");
+    audio_pipeline_register(playback_pipeline, http_stream_reader, "http");
+    audio_pipeline_register(playback_pipeline, selected_decoder,    selected_decoder_name);
+    audio_pipeline_register(playback_pipeline, i2s_stream_writer,  "i2s");
+
+    ESP_LOGI(TAG, "[2.5] Link it together http_stream-->%s_decoder-->i2s_stream-->[codec_chip]", selected_decoder_name);
+    const char *playback_link_tag[3] = {"http", selected_decoder_name, "i2s"};
+    audio_pipeline_link(playback_pipeline, &playback_link_tag[0], 3);
+
+    ESP_LOGI(TAG, "[2.6] Set up  uri (http as http_stream, %s as %s_decoder, and default output is i2s)",
+             selected_decoder_name, selected_decoder_name);
+    audio_element_set_uri(http_stream_reader, selected_file_to_play);
 
     ESP_LOGI(TAG, "[3.0] Create audio pipeline for recording");
     audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
@@ -217,7 +240,6 @@ void app_main(void)
     mem_assert(pipeline);
 
     ESP_LOGI(TAG, "[3.1] Create http stream to post data to server");
-
     http_stream_cfg_t http_cfg = HTTP_STREAM_CFG_DEFAULT();
     http_cfg.type = AUDIO_STREAM_WRITER;
     http_cfg.event_handle = _http_stream_event_handle;
