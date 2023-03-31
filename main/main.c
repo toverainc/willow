@@ -1,4 +1,4 @@
-/* Record WAV file to SD Card
+/* Tovera Sallow Client
 
    This example code is in the Public Domain (or CC0 licensed, at your option.)
 
@@ -24,6 +24,7 @@
 #include "http_stream.h"
 #include "i2s_stream.h"
 #include "wav_encoder.h"
+#include "flac_decoder.h"
 #include "esp_peripherals.h"
 #include "periph_button.h"
 #include "periph_wifi.h"
@@ -37,7 +38,7 @@
 #include "tcpip_adapter.h"
 #endif
 
-static const char *TAG = "REC_RAW_HTTP";
+static const char *TAG = "SALLOW";
 
 
 #define EXAMPLE_AUDIO_SAMPLE_RATE  (16000)
@@ -50,6 +51,12 @@ static EventGroupHandle_t EXIT_FLAG;
 audio_pipeline_handle_t pipeline;
 audio_element_handle_t i2s_stream_reader;
 audio_element_handle_t http_stream_writer;
+
+// FLAC
+static const char *selected_decoder_name = "flac";
+
+audio_pipeline_handle_t playback_pipeline;
+audio_element_handle_t i2s_stream_writer, selected_decoder;
 
 esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
 {
@@ -192,7 +199,17 @@ void app_main(void)
 
     ESP_LOGI(TAG, "[ 2 ] Start codec chip");
     audio_board_handle_t board_handle = audio_board_init();
-    audio_hal_ctrl_codec(board_handle->audio_hal, AUDIO_HAL_CODEC_MODE_ENCODE, AUDIO_HAL_CTRL_START);
+    audio_hal_ctrl_codec(board_handle->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
+
+    ESP_LOGI(TAG, "[2.5] Create audio pipeline for playback");
+    audio_pipeline_cfg_t playback_pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
+    playback_pipeline = audio_pipeline_init(&playback_pipeline_cfg);
+    mem_assert(playback_pipeline);
+
+    ESP_LOGI(TAG, "[2.6] Create %s decoder to decode %s file", selected_decoder_name, selected_decoder_name);
+    flac_decoder_cfg_t flac_cfg = DEFAULT_FLAC_DECODER_CONFIG();
+    flac_cfg.out_rb_size = 500 * 1024;
+    selected_decoder = flac_decoder_init(&flac_cfg);
 
     ESP_LOGI(TAG, "[3.0] Create audio pipeline for recording");
     audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();

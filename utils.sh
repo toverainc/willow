@@ -9,8 +9,16 @@ config)
     idf.py menuconfig
 ;;
 
+build)
+    idf.py build
+;;
+
 flash)
     idf.py -p "$PORT" flash monitor
+;;
+
+monitor)
+    idf.py -p "$PORT" monitor
 ;;
 
 esac

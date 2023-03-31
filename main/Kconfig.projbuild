@@ -1,4 +1,4 @@
-menu "Example Configuration"
+menu "Sallow Configuration"
 
 config WIFI_SSID
     string "WiFi SSID"
