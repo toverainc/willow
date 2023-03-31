@@ -132,22 +132,22 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
-# Example Configuration
+# Sallow Configuration
 #
 CONFIG_WIFI_SSID="***REMOVED***"
 CONFIG_WIFI_PASSWORD="***REMOVED***"
 CONFIG_SERVER_URI="https://ainfer.tovera.io/api/sallow"
-# end of Example Configuration
+# end of Sallow Configuration
 
 #
 # Audio HAL
 #
 # CONFIG_AUDIO_BOARD_CUSTOM is not set
-CONFIG_ESP_LYRAT_V4_3_BOARD=y
+# CONFIG_ESP_LYRAT_V4_3_BOARD is not set
 # CONFIG_ESP_LYRAT_V4_2_BOARD is not set
 # CONFIG_ESP_LYRATD_MSC_V2_1_BOARD is not set
 # CONFIG_ESP_LYRATD_MSC_V2_2_BOARD is not set
-# CONFIG_ESP_LYRAT_MINI_V1_1_BOARD is not set
+CONFIG_ESP_LYRAT_MINI_V1_1_BOARD=y
 # CONFIG_ESP32_KORVO_DU1906_BOARD is not set
 # CONFIG_ESP32_S2_KALUGA_1_V1_2_BOARD is not set
 # CONFIG_ESP32_S3_KORVO2_V3_BOARD is not set
