@@ -54,7 +54,7 @@ audio_element_handle_t http_stream_writer;
 
 // Decoder
 static const char *selected_decoder_name = "wav";
-static const char *selected_file_to_play = "https://ainfer.tovera.io/audio/sallow.wav";
+static const char *selected_file_to_play = "https://ainfer.tovera.io/audio/sallow-tts.wav";
 
 audio_pipeline_handle_t playback_pipeline;
 audio_element_handle_t http_stream_reader, i2s_stream_writer, selected_decoder;
@@ -120,7 +120,13 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
         ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
 
         ESP_LOGI(TAG, "[ 5 ] Start audio_pipeline");
+        audio_pipeline_stop(playback_pipeline);
+        audio_pipeline_wait_for_stop(playback_pipeline);
+        audio_pipeline_reset_ringbuffer(playback_pipeline);
+        audio_pipeline_reset_elements(playback_pipeline);
+        audio_pipeline_terminate(playback_pipeline);
         audio_pipeline_run(playback_pipeline);
+
         free(buf);
         return ESP_OK;
     }
