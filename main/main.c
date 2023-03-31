@@ -118,6 +118,9 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
         }
         buf[read_len] = 0;
         ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
+
+        ESP_LOGI(TAG, "[ 5 ] Start audio_pipeline");
+        audio_pipeline_run(playback_pipeline);
         free(buf);
         return ESP_OK;
     }
@@ -260,6 +263,18 @@ void app_main(void)
     const char *link_tag[2] = {"i2s", "http"};
     audio_pipeline_link(pipeline, &link_tag[0], 2);
 
+/*
+    ESP_LOGI(TAG, "[ 4 ] Set up  event listener");
+    audio_event_iface_cfg_t evt_cfg = AUDIO_EVENT_IFACE_DEFAULT_CFG();
+    audio_event_iface_handle_t evt = audio_event_iface_init(&evt_cfg);
+
+    ESP_LOGI(TAG, "[4.1] Listening event from all elements of pipeline");
+    audio_pipeline_set_listener(playback_pipeline, evt);
+
+    ESP_LOGI(TAG, "[4.2] Listening event from peripherals");
+    audio_event_iface_set_listener(esp_periph_set_get_event_iface(set), evt);
+*/
+
     // Initialize Button peripheral
     audio_board_key_init(set);
     input_key_service_info_t input_key_info[] = INPUT_KEY_DEFAULT_INFO();
@@ -271,10 +286,13 @@ void app_main(void)
 
     i2s_stream_set_clk(i2s_stream_reader, EXAMPLE_AUDIO_SAMPLE_RATE, EXAMPLE_AUDIO_BITS, EXAMPLE_AUDIO_CHANNELS);
 
-    ESP_LOGI(TAG, "[ 4 ] Press [Rec] button to record, Press [Mode] to exit");
+    i2s_stream_set_clk(i2s_stream_writer, EXAMPLE_AUDIO_SAMPLE_RATE, EXAMPLE_AUDIO_BITS, EXAMPLE_AUDIO_CHANNELS);
+
+
+    ESP_LOGI(TAG, "[ 5 ] Press [Rec] button to record, Press [Mode] to exit");
     xEventGroupWaitBits(EXIT_FLAG, DEMO_EXIT_BIT, true, false, portMAX_DELAY);
 
-    ESP_LOGI(TAG, "[ 5 ] Stop audio_pipeline");
+    ESP_LOGI(TAG, "[ 6 ] Stop audio_pipeline");
     audio_pipeline_stop(pipeline);
     audio_pipeline_wait_for_stop(pipeline);
     audio_pipeline_terminate(pipeline);
