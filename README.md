@@ -123,4 +123,4 @@ I (6086) SALLOW: [ 5 ] Press [Rec] button to record, Press [Mode] to exit
 W (10586) wifi:<ba-add>idx:1 (ifx:0, b4:fb:e4:80:c9:62), tid:0, ssn:0, winSize:64
 ```
 
-At this point you can press and hold the record button (furthest to the right). If you say anything and have a speaker connected you will hear the T5 voice repeat whatever you said.
+At this point you can press and hold the record button (furthest to the right). When you release, and if you said anything and have a speaker connected you will hear the T5 voice repeat whatever you said.
