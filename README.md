@@ -10,7 +10,7 @@ The only supported hardware currently is the SP32-S3-Korvo-2. Anything else will
 
 For the time being you will need to run ```./utils.sh config``` and navigate to Sallow Configuration to fill in your WiFi SSID and password.
 
-Once you've provided those press 'Q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO).
+Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO).
 
 ## Flash
 
@@ -123,4 +123,4 @@ I (6086) SALLOW: [ 5 ] Press [Rec] button to record, Press [Mode] to exit
 W (10586) wifi:<ba-add>idx:1 (ifx:0, b4:fb:e4:80:c9:62), tid:0, ssn:0, winSize:64
 ```
 
-At this point you can press and hold the record button (furthest to the right). When you release, and if you said anything and have a speaker connected you will hear the T5 voice repeat whatever you said.
+At this point you can press and hold the record button (furthest to the right). When you release, and if you said anything and have a speaker connected, you will hear the T5 voice repeat whatever you said.
