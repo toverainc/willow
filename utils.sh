@@ -83,11 +83,11 @@ setup)
 
     # Configure WiFi
 
-    echo "Please enter the SSID you would like to connect to"
-    read SSID
+    #echo "Please enter the SSID you would like to connect to"
+    #read SSID
 
-    echo "Please enter the passphrase for SSID $SSID"
-    read KEY
+    #echo "Please enter the passphrase for SSID $SSID"
+    #read KEY
 
     #sed -i 's/old-text/new-text/g' input.txt
     #sed -i 's/old-text/new-text/g' input.txt
