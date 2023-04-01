@@ -43,7 +43,7 @@ monitor)
 
 destroy)
     echo "YOU ARE ABOUT TO REMOVE THIS ENTIRE ENVIRONMENT AND RESET THE REPO. HIT ENTER TO CONFIRM"
-    read -n
+    read
     git reset --hard
     git clean -fdx
     rm -rf ~/.espressif deps
