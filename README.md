@@ -6,7 +6,7 @@ Run ```./utils.sh setup``` and cross your fingers and toes.
 
 ## Config
 
-The only supported hardware currently is the SP32-S3-Korvo-2. Anything else will be PAINFUL.
+The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else will be PAINFUL - (we'll deal with this later).
 
 For the time being you will need to run ```./utils.sh config``` and navigate to Sallow Configuration to fill in your WiFi SSID and password.
 
@@ -14,7 +14,7 @@ Once you've provided those press 'q'. When prompted to save, do that. Ignore my 
 
 ## Flash
 
-A current TO-DO is to figure out how to handle serial ports dynamically. For the time being you will need to edit the PORT variable in the ```utils.sh``` script to point to wherever the ESP shows up on your system.
+A current TO-DO is to figure out how to handle serial ports dynamically. For the time being you will need to edit the PORT variable in the ```utils.sh``` script to point to wherever the ESP USB to TTY shows up on your system.
 
 Once you have done that, run ```./utils.sh flash```. It (should) build, flash, and connect you to the serial monitor.
 
