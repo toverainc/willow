@@ -53,12 +53,16 @@ monitor)
 ;;
 
 destroy)
-    echo "YOU ARE ABOUT TO REMOVE THIS ENTIRE ENVIRONMENT AND RESET THE REPO. HIT ENTER TO CONFIRM"
+    echo "YOU ARE ABOUT TO REMOVE THIS ENTIRE ENVIRONMENT AND RESET THE REPO. HIT ENTER TO CONFIRM."
+    read
+    echo "SERIOUSLY - YOU WILL LOSE WORK AND I WILL NOT STOP YOU IF YOU HIT ENTER AGAIN!"
+    read
+    echo "LAST CHANCE!"
     read
     git reset --hard
     git clean -fdx
     rm -rf ~/.espressif deps
-    echo "Not a trace left. You will have to run setup again"
+    echo "Not a trace left. You will have to run setup again."
 ;;
 
 setup)
