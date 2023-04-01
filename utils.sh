@@ -2,7 +2,7 @@
 set -e # bail on error
 
 ADF_VER="v2.4.1"
-PLATFORM="all" # Why not?
+PLATFORM="esp32s3" # Why not?
 
 export ADF_PATH="$PWD/deps/esp-adf"
 export IDF_PATH="$ADF_PATH/esp-idf"
