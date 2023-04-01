@@ -8,13 +8,21 @@ Run ```./utils.sh setup``` and cross your fingers and toes.
 
 The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else will take some work - (we'll deal with this later).
 
-For the time being you will need to run ```./utils.sh config``` and navigate to "Sallow Configuration" to fill in your WiFi SSID and password.
+For the time being you will need to run ```./utils.sh config``` and navigate to "Sallow Configuration" to fill in your WiFi SSID, WIFI password, and your Willow server URI (best-effort Tovera hosted example provided).
 
 Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO) - but if you get this far and come to ***REMOVED*** let's hang out before you wardrive me!
 
 ### Flash
 
-A current TO-DO is to figure out how to handle serial ports dynamically. For the time being you will need to edit the PORT variable in the ```utils.sh``` script to point to wherever the ESP USB to TTY shows up on your system.
+To do anything involving the serial port you will need to set the PORT environment variable for all further invocations of utils.sh. Example:
+
+Linux:
+
+```export PORT=/dev/ttyUSB0```
+
+Mac:
+
+```export PORT=/dev/cu.usbserial-31320```
 
 Once you have done that, run ```./utils.sh flash```. It should build, flash, and connect you to the serial monitor.
 
