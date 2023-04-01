@@ -6,17 +6,17 @@ Run ```./utils.sh setup``` and cross your fingers and toes.
 
 ### Config
 
-The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else will be PAINFUL - (we'll deal with this later).
+The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else will take some work - (we'll deal with this later).
 
-For the time being you will need to run ```./utils.sh config``` and navigate to Sallow Configuration to fill in your WiFi SSID and password.
+For the time being you will need to run ```./utils.sh config``` and navigate to "Sallow Configuration" to fill in your WiFi SSID and password.
 
-Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO).
+Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO) - but if you get this far and come to ***REMOVED*** let's hang out before you wardrive me!
 
 ### Flash
 
 A current TO-DO is to figure out how to handle serial ports dynamically. For the time being you will need to edit the PORT variable in the ```utils.sh``` script to point to wherever the ESP USB to TTY shows up on your system.
 
-Once you have done that, run ```./utils.sh flash```. It (should) build, flash, and connect you to the serial monitor.
+Once you have done that, run ```./utils.sh flash```. It should build, flash, and connect you to the serial monitor.
 
 ### Run
 
@@ -123,13 +123,17 @@ I (6086) SALLOW: [ 5 ] Press [Rec] button to record, Press [Mode] to exit
 W (10586) wifi:<ba-add>idx:1 (ifx:0, b4:fb:e4:80:c9:62), tid:0, ssn:0, winSize:64
 ```
 
+Ignore most of the warnings/errors, especially PSRAM - that's one of my (least) favorite aspects of ESP-IDF work...
+
 At this point you can press and hold the record button (furthest to the right). When you release, and if you said anything and have a speaker connected, you will hear the T5 voice repeat whatever you said.
 
 
 ## TO-DO
 
-- We currently don't use the AFE (audio front-end) interface. There's no gain control, acoustic echo cancelation, etc so Whisper isn't doing as well as it should. There are also probably acoustic issues with the out of the box mics on the dev kit.
+- We currently don't use the [AFE](https://www.espressif.com/en/solutions/audio-solutions/esp-afe) interface. There's no automatic gain control, acoustic echo cancelation, etc so Whisper isn't doing as well as it should. There are also probably acoustic issues with the out of the box mics on the dev kit.
 - There are some strange buffering/timing issues. You will notice audio clipping depending on timing with button presses. I've tweaked quite a few fundamental things in the SDK to improve this (and the S3 is a big help) but we will need to look at this further.
-- ESP-ADF audio pipelines are difficult to manage. We're currently POSTing raw WAV frames to the air-infer-api with some hints on sample rate, etc. We then come back to the air-infer-api with a separate HTTP playback pipeline to fetch a static file. Ideally we could return a formatted version of the TTS response in the body and play that directly. The current approach adds unnecessary latency and is completely unsuitable for production use.
-- Wake word engine, VAD, mDNS, HA integration, etc.
+- ESP-ADF audio [pipelines](https://espressif-docs.readthedocs-hosted.com/projects/esp-adf/en/latest/api-reference/framework/audio_pipeline.html) are somewhat difficult to manage. We're currently POSTing (stream at least) raw WAV frames to the air-infer-api endpoint with some hints on sample rate, etc. We then come back from the ESP to the air-infer-api with a separate HTTP GET playback pipeline to fetch a static file. Ideally we could return a formatted version of the TTS response in the body and play that directly. The current approach adds unnecessary latency and is completely unsuitable for production use. The use of [raw streams](https://espressif-docs.readthedocs-hosted.com/projects/esp-adf/en/latest/api-reference/streams/index.html#raw-stream) is potentially appropriate here. Initial approach is probably to use PSRAM ```malloc()``` to buffer audio response OR, given the flexibility of pipelines we may be able to directly stream the response from the POST to i2s output to avoid memory allocation and potential buffer overruns with longer segments.
+- Speaking of pipelines, we currently throw hammers at managing them with forced ```audio_pipeline_wait_for_stop()```, etc which probably adds to our latency and timing issues. At least it doesn't crash :). This could and should be MUCH better.
+- Wake word engine, VAD, mDNS, HA integration, LCD (with ESP BOX), etc.
+- We definitely will need to be able to parse JSON.
 - Much more.
