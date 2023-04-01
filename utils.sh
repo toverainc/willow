@@ -2,18 +2,20 @@
 set -e # bail on error
 
 ADF_VER="v2.4.1"
-PLATFORM="esp32s3" # Why not?
+PLATFORM="esp32s3" # Current general family
 
 export ADF_PATH="$PWD/deps/esp-adf"
 export IDF_PATH="$ADF_PATH/esp-idf"
 
+check_port() {
 # TODO: Figure out how to do this cross-platform or read a config or something
-export PORT="/dev/cu.usbserial-31320"
+export PORT="/dev/ttyUSB0"
 
 if [ ! -c $PORT ]; then
     echo "Cannot find configured port $PORT - exiting"
     exit 1
 fi
+}
 
 # Pull in environment
 if [ -r $IDF_PATH/export.sh ]; then
@@ -43,11 +45,13 @@ build)
 ;;
 
 flash)
+    check_port
     print_monitor_help
     idf.py -p "$PORT" flash monitor
 ;;
 
 monitor)
+    check_port
     print_monitor_help
     idf.py -p "$PORT" monitor
 ;;
