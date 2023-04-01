@@ -9,7 +9,7 @@ export IDF_PATH="$ADF_PATH/esp-idf"
 
 check_port() {
 # TODO: Figure out how to do this cross-platform or read a config or something
-export PORT="/dev/ttyUSB0"
+export PORT="/dev/cu.usbserial-31320"
 
 if [ ! -c $PORT ]; then
     echo "Cannot find configured port $PORT - exiting"
@@ -80,6 +80,8 @@ setup)
     # This is ridiculous
     cd $IDF_PATH
     git apply $ADF_PATH/idf_patches/idf_v4.4_freertos.patch
+
+    cp sdkconfig.sallow sdkconfig
 
     # Configure WiFi
 

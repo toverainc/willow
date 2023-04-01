@@ -1,2 +1,4 @@
 build
 deps
+sdkconfig
+sdkconfig.old
