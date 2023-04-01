@@ -8,16 +8,25 @@ export ADF_PATH="$PWD/deps/esp-adf"
 export IDF_PATH="$ADF_PATH/esp-idf"
 
 # TODO: Figure out how to do this cross-platform or read a config or something
-export PORT="/dev/ttyUSB0"
+export PORT="/dev/cu.usbserial-31320"
+
+if [ ! -c $PORT ]; then
+    echo "Cannot find configured port $PORT - exiting"
+    exit 1
+fi
 
 # Pull in environment
 if [ -r $IDF_PATH/export.sh ]; then
     . $IDF_PATH/export.sh > /dev/null
+else
+    echo "Environment not found - normal for setup" 
 fi
 
+print_monitor_help() {
 echo "
-If you are running a command that has a serial monitor you can exit with CTRL + ]
+You can exit the serial monitor with CTRL + ]
 "
+}
 
 case $1 in
 
@@ -34,10 +43,12 @@ build)
 ;;
 
 flash)
+    print_monitor_help
     idf.py -p "$PORT" flash monitor
 ;;
 
 monitor)
+    print_monitor_help
     idf.py -p "$PORT" monitor
 ;;
 
