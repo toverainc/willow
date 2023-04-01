@@ -4,7 +4,7 @@
 
 Run ```./utils.sh setup``` and cross your fingers and toes.
 
-## Config
+### Config
 
 The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else will be PAINFUL - (we'll deal with this later).
 
@@ -12,13 +12,13 @@ For the time being you will need to run ```./utils.sh config``` and navigate to 
 
 Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO).
 
-## Flash
+### Flash
 
 A current TO-DO is to figure out how to handle serial ports dynamically. For the time being you will need to edit the PORT variable in the ```utils.sh``` script to point to wherever the ESP USB to TTY shows up on your system.
 
 Once you have done that, run ```./utils.sh flash```. It (should) build, flash, and connect you to the serial monitor.
 
-## Run
+### Run
 
 If you have made it this far - congratulations! You will see output like this:
 
@@ -124,3 +124,12 @@ W (10586) wifi:<ba-add>idx:1 (ifx:0, b4:fb:e4:80:c9:62), tid:0, ssn:0, winSize:6
 ```
 
 At this point you can press and hold the record button (furthest to the right). When you release, and if you said anything and have a speaker connected, you will hear the T5 voice repeat whatever you said.
+
+
+## TO-DO
+
+- We currently don't use the AFE (audio front-end) interface. There's no gain control, acoustic echo cancelation, etc so Whisper isn't doing as well as it should. There are also probably acoustic issues with the out of the box mics on the dev kit.
+- There are some strange buffering/timing issues. You will notice audio clipping depending on timing with button presses. I've tweaked quite a few fundamental things in the SDK to improve this (and the S3 is a big help) but we will need to look at this further.
+- ESP-ADF audio pipelines are difficult to manage. We're currently POSTing raw WAV frames to the air-infer-api with some hints on sample rate, etc. We then come back to the air-infer-api with a separate HTTP playback pipeline to fetch a static file. Ideally we could return a formatted version of the TTS response in the body and play that directly. The current approach adds unnecessary latency and is completely unsuitable for production use.
+- Wake word engine, VAD, mDNS, HA integration, etc.
+- Much more.
