@@ -9,6 +9,10 @@ config)
     idf.py menuconfig
 ;;
 
+clean)
+    idf.py fullclean
+;;
+
 build)
     idf.py build
 ;;
