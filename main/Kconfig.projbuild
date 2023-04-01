@@ -4,21 +4,21 @@ config WIFI_SSID
     string "WiFi SSID"
 	default "myssid"
 	help
-		SSID (network name) for the example to connect to.
+		SSID (network name) for Sallow to connect to.
 
 config WIFI_PASSWORD
     string "WiFi Password"
 	default "myssid"
 	help
-		WiFi password (WPA or WPA2) for the example to use.
+		WiFi password (WPA, WPA2, WPA3) for Sallow to use.
 
-		Can be left blank if the network has no security set.
+		Can be left blank if the network is open.
 
 config SERVER_URI
-    string "Server URL to send data"
-    default "http://192.168.0.248:8000/upload"
+    string "Willow server URI"
+    default "https://ainfer.tovera.io/api/sallow"
     help
-        Server URL to send data
+        URI For your Willow instance. Supports HTTP and HTTPS.
 
 
 endmenu

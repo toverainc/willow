@@ -3,13 +3,17 @@ set -e # bail on error
 
 ADF_VER="v2.4.1"
 PLATFORM="esp32s3" # Current general family
+FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
 
-export ADF_PATH="$PWD/deps/esp-adf"
-export IDF_PATH="$ADF_PATH/esp-idf"
+SALLOW_PATH="$PWD"
+ADF_PATH="$SALLOW_PATH/deps/esp-adf"
+IDF_PATH="$ADF_PATH/esp-idf"
 
 check_port() {
-# TODO: Figure out how to do this cross-platform or read a config or something
-export PORT="/dev/cu.usbserial-31320"
+if [ ! $PORT ]; then
+    echo "You need to define the PORT environment variable to do serial stuff - exiting"
+    exit 1
+fi
 
 if [ ! -c $PORT ]; then
     echo "Cannot find configured port $PORT - exiting"
@@ -30,6 +34,8 @@ You can exit the serial monitor with CTRL + ]
 "
 }
 
+
+# Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
 
 config)
@@ -37,6 +43,10 @@ config)
 ;;
 
 clean)
+    idf.py clean
+;;
+
+fullclean)
     idf.py fullclean
 ;;
 
@@ -47,7 +57,7 @@ build)
 flash)
     check_port
     print_monitor_help
-    idf.py -p "$PORT" flash monitor
+    idf.py -p "$PORT" -b "$FLASH_BAUD" flash monitor
 ;;
 
 monitor)
@@ -63,13 +73,14 @@ destroy)
     read
     echo "LAST CHANCE!"
     read
-    git reset --hard
-    git clean -fdx
+    #git reset --hard
+    #git clean -fdx
+    idf.py fullclean
     rm -rf ~/.espressif deps
     echo "Not a trace left. You will have to run setup again."
 ;;
 
-setup)
+install|setup)
     mkdir -p deps
     cd deps
     # Setup ADF
@@ -81,22 +92,14 @@ setup)
     cd $IDF_PATH
     git apply $ADF_PATH/idf_patches/idf_v4.4_freertos.patch
 
+    cd $SALLOW_PATH
     cp sdkconfig.sallow sdkconfig
 
-    # Configure WiFi
-
-    #echo "Please enter the SSID you would like to connect to"
-    #read SSID
-
-    #echo "Please enter the passphrase for SSID $SSID"
-    #read KEY
-
-    #sed -i 's/old-text/new-text/g' input.txt
-    #sed -i 's/old-text/new-text/g' input.txt
+    echo "You can now run ./utils.sh config and navigate to Sallow Configuration for your environment"
 ;;
 
 *)
-    echo "Passing args to idf.py as-is"
+    echo "Passing args directly to idf.py"
     shift
     idf.py "$@"
 ;;
