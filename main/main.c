@@ -46,7 +46,7 @@ static const char *TAG = "SALLOW";
 #define DEMO_EXIT_BIT (BIT0)
 static EventGroupHandle_t EXIT_FLAG;
 
-audio_pipeline_handle_t pipeline;
+audio_pipeline_handle_t record_pipeline;
 audio_element_handle_t i2s_stream_reader;
 audio_element_handle_t http_stream_writer;
 
@@ -155,14 +155,14 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
                 } else {
                     ESP_LOGE(TAG, "[ * ] [Rec] LED object not found");
                 }
-                audio_pipeline_stop(pipeline);
-                audio_pipeline_wait_for_stop(pipeline);
-                audio_pipeline_reset_ringbuffer(pipeline);
-                audio_pipeline_reset_elements(pipeline);
-                audio_pipeline_terminate(pipeline);
+                audio_pipeline_stop(record_pipeline);
+                audio_pipeline_wait_for_stop(record_pipeline);
+                audio_pipeline_reset_ringbuffer(record_pipeline);
+                audio_pipeline_reset_elements(record_pipeline);
+                audio_pipeline_terminate(record_pipeline);
 
                 audio_element_set_uri(http_stream_writer, CONFIG_SERVER_URI);
-                audio_pipeline_run(pipeline);
+                audio_pipeline_run(record_pipeline);
                 break;
         }
     } else if (evt->type == INPUT_KEY_SERVICE_ACTION_CLICK_RELEASE || evt->type == INPUT_KEY_SERVICE_ACTION_PRESS_RELEASE) {
@@ -253,9 +253,9 @@ void app_main(void)
     audio_element_set_uri(http_stream_reader, selected_file_to_play);
 
     ESP_LOGI(TAG, "[3.0] Create audio pipeline for recording");
-    audio_pipeline_cfg_t pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
-    pipeline = audio_pipeline_init(&pipeline_cfg);
-    mem_assert(pipeline);
+    audio_pipeline_cfg_t record_pipeline_cfg = DEFAULT_AUDIO_PIPELINE_CONFIG();
+    record_pipeline = audio_pipeline_init(&record_pipeline_cfg);
+    mem_assert(record_pipeline);
 
     ESP_LOGI(TAG, "[3.1] Create http stream to post data to server");
     http_stream_cfg_t http_cfg = HTTP_STREAM_CFG_DEFAULT();
@@ -271,12 +271,12 @@ void app_main(void)
     i2s_stream_reader = i2s_stream_init(&i2s_cfg);
 
     ESP_LOGI(TAG, "[3.3] Register all elements to audio pipeline");
-    audio_pipeline_register(pipeline, i2s_stream_reader, "i2s");
-    audio_pipeline_register(pipeline, http_stream_writer, "http");
+    audio_pipeline_register(record_pipeline, i2s_stream_reader, "i2s");
+    audio_pipeline_register(record_pipeline, http_stream_writer, "http");
 
     ESP_LOGI(TAG, "[3.4] Link it together [codec_chip]-->i2s_stream->http_stream-->[http_server]");
     const char *link_tag[2] = {"i2s", "http"};
-    audio_pipeline_link(pipeline, &link_tag[0], 2);
+    audio_pipeline_link(record_pipeline, &link_tag[0], 2);
 
     // Initialize Button peripheral
     audio_board_key_init(set);
@@ -310,9 +310,9 @@ void app_main(void)
     ESP_LOGI(TAG, "[ 5 ] Stop audio_pipelines");
 
     // Audio in
-    audio_pipeline_stop(pipeline);
-    audio_pipeline_wait_for_stop(pipeline);
-    audio_pipeline_terminate(pipeline);
+    audio_pipeline_stop(record_pipeline);
+    audio_pipeline_wait_for_stop(record_pipeline);
+    audio_pipeline_terminate(record_pipeline);
 
     // Audio out
     audio_pipeline_stop(playback_pipeline);
@@ -320,22 +320,22 @@ void app_main(void)
     audio_pipeline_terminate(playback_pipeline);
 
     // Audio in
-    audio_pipeline_unregister(pipeline, http_stream_writer);
+    audio_pipeline_unregister(record_pipeline, http_stream_writer);
     audio_pipeline_unregister(playback_pipeline, http_stream_reader);
 
     // Audio out
-    audio_pipeline_unregister(pipeline, i2s_stream_reader);
+    audio_pipeline_unregister(record_pipeline, i2s_stream_reader);
     audio_pipeline_unregister(playback_pipeline, i2s_stream_writer);
 
     /* Terminal the pipeline before removing the listener */
-    audio_pipeline_remove_listener(pipeline);
+    audio_pipeline_remove_listener(record_pipeline);
     audio_pipeline_remove_listener(playback_pipeline);
 
     /* Stop all periph before removing the listener */
     esp_periph_set_stop_all(set);
 
     /* Release all resources */
-    audio_pipeline_deinit(pipeline);
+    audio_pipeline_deinit(record_pipeline);
     audio_pipeline_deinit(playback_pipeline);
     audio_element_deinit(http_stream_writer);
     audio_element_deinit(http_stream_reader);
