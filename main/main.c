@@ -1,4 +1,4 @@
-/* Tovera Sallow Client
+/* Sallow Client
 
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
@@ -38,7 +38,6 @@
 #endif
 
 static const char *TAG = "SALLOW";
-
 
 #define AUDIO_SAMPLE_RATE  (16000)
 #define AUDIO_BITS         (16)
@@ -150,7 +149,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
                  * There is no effect when follow APIs output warning message on the first time record
                  */
                 if (led_handle) {
-                    periph_led_blink(led_handle, get_blue_led_gpio(), 500, 500, true, -1, 0);
+                    periph_led_blink(led_handle, get_green_led_gpio(), 500, 500, true, -1, 0);
                 } else {
                     ESP_LOGE(TAG, "[ * ] [Rec] LED object not found");
                 }
@@ -168,7 +167,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
         switch ((int)evt->data) {
             case INPUT_KEY_USER_ID_REC:
                 ESP_LOGE(TAG, "[ * ] [Rec] key released, stop pipeline ...");
-                periph_led_stop(led_handle, get_blue_led_gpio());
+                periph_led_stop(led_handle, get_green_led_gpio());
                 /*
                  * Set the i2s_stream_reader ringbuffer is done to flush the buffering voice data.
                  */
