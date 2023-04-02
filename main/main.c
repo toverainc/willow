@@ -141,7 +141,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
     audio_element_handle_t http_stream_writer = (audio_element_handle_t)ctx;
     if (evt->type == INPUT_KEY_SERVICE_ACTION_CLICK) {
         switch ((int)evt->data) {
-            case INPUT_KEY_USER_ID_MODE:
+            case INPUT_KEY_USER_ID_SET:
                 ESP_LOGW(TAG, "[ * ] [Set] input key event");
                 xEventGroupSetBits(EXIT_FLAG, SALLOW_EXIT_BIT);
                 break;
