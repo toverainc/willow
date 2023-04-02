@@ -72,7 +72,7 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
         esp_http_client_set_method(http, HTTP_METHOD_POST);
         char dat[10] = {0};
         snprintf(dat, sizeof(dat), "%d", AUDIO_SAMPLE_RATE);
-        esp_http_client_set_header(http, "x-audio-sample-rates", dat);
+        esp_http_client_set_header(http, "x-audio-sample-rate", dat);
         memset(dat, 0, sizeof(dat));
         snprintf(dat, sizeof(dat), "%d", AUDIO_BITS);
         esp_http_client_set_header(http, "x-audio-bits", dat);
