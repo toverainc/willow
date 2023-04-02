@@ -28,6 +28,7 @@
 #include "esp_peripherals.h"
 #include "periph_button.h"
 #include "periph_wifi.h"
+#include "periph_led.h"
 #include "filter_resample.h"
 #include "input_key_service.h"
 #include "audio_idf_version.h"
@@ -58,6 +59,9 @@ static const char *selected_file_to_play = "https://ainfer.tovera.io/audio/sallo
 
 audio_pipeline_handle_t playback_pipeline;
 audio_element_handle_t http_stream_reader, i2s_stream_writer, selected_decoder;
+
+// LED
+esp_periph_handle_t led_handle = NULL;
 
 esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
 {
@@ -147,6 +151,11 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
                 /*
                  * There is no effect when follow APIs output warning message on the first time record
                  */
+                if (led_handle) {
+                    periph_led_blink(led_handle, get_green_led_gpio(), 500, 500, true, -1, 0);
+                } else {
+                    ESP_LOGE(TAG, "[ * ] [Rec] LED object not found");
+                }
                 audio_pipeline_stop(pipeline);
                 audio_pipeline_wait_for_stop(pipeline);
                 audio_pipeline_reset_ringbuffer(pipeline);
@@ -161,6 +170,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
         switch ((int)evt->data) {
             case INPUT_KEY_USER_ID_REC:
                 ESP_LOGE(TAG, "[ * ] [Rec] key released, stop pipeline ...");
+                periph_led_stop(led_handle, get_green_led_gpio());
                 /*
                  * Set the i2s_stream_reader ringbuffer is done to flush the buffering voice data.
                  */
@@ -203,8 +213,18 @@ void app_main(void)
     };
     esp_periph_handle_t wifi_handle = periph_wifi_init(&wifi_cfg);
 
-    // Start wifi & button peripheral
+    // init LED
+    periph_led_cfg_t led_cfg = {
+        .led_speed_mode = LEDC_LOW_SPEED_MODE,
+        .led_duty_resolution = LEDC_TIMER_10_BIT,
+        .led_timer_num = LEDC_TIMER_0,
+        .led_freq_hz = 5000,
+    };
+    led_handle = periph_led_init(&led_cfg);
+
+    // Start wifi, button, and LED peripheral
     esp_periph_start(set, wifi_handle);
+    esp_periph_start(set, led_handle);
     periph_wifi_wait_for_connected(wifi_handle, portMAX_DELAY);
 
     ESP_LOGI(TAG, "[ 1 ] Start codec chip");
