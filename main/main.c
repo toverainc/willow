@@ -43,7 +43,7 @@ static const char *TAG = "SALLOW";
 #define AUDIO_BITS         (16)
 #define AUDIO_CHANNELS     (1)
 
-#define DEMO_EXIT_BIT (BIT0)
+#define SALLOW_EXIT_BIT (BIT0)
 static EventGroupHandle_t EXIT_FLAG;
 
 audio_pipeline_handle_t record_pipeline;
@@ -143,7 +143,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
         switch ((int)evt->data) {
             case INPUT_KEY_USER_ID_MODE:
                 ESP_LOGW(TAG, "[ * ] [Set] input key event");
-                xEventGroupSetBits(EXIT_FLAG, DEMO_EXIT_BIT);
+                xEventGroupSetBits(EXIT_FLAG, SALLOW_EXIT_BIT);
                 break;
             case INPUT_KEY_USER_ID_REC:
                 ESP_LOGE(TAG, "[ * ] [Rec] input key event, resuming pipeline ...");
@@ -305,7 +305,7 @@ void app_main(void)
     esp_periph_start(set, led_handle);
 
     ESP_LOGI(TAG, "[ 4 ] Press [Rec] button to record.");
-    xEventGroupWaitBits(EXIT_FLAG, DEMO_EXIT_BIT, true, false, portMAX_DELAY);
+    xEventGroupWaitBits(EXIT_FLAG, SALLOW_EXIT_BIT, true, false, portMAX_DELAY);
 
     ESP_LOGI(TAG, "[ 5 ] Stop audio_pipelines");
 
