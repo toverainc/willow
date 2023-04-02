@@ -321,10 +321,8 @@ void app_main(void)
 
     // Audio in
     audio_pipeline_unregister(record_pipeline, http_stream_writer);
-    audio_pipeline_unregister(playback_pipeline, http_stream_reader);
 
     // Audio out
-    audio_pipeline_unregister(record_pipeline, i2s_stream_reader);
     audio_pipeline_unregister(playback_pipeline, i2s_stream_writer);
 
     /* Terminal the pipeline before removing the listener */
