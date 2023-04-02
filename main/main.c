@@ -121,7 +121,7 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
         buf[read_len] = 0;
         ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
 
-        ESP_LOGI(TAG, "[ 5 ] Start audio_pipeline");
+        ESP_LOGI(TAG, "[ 5.1 ] Start audio_pipeline");
         audio_pipeline_stop(playback_pipeline);
         audio_pipeline_wait_for_stop(playback_pipeline);
         audio_pipeline_reset_ringbuffer(playback_pipeline);
@@ -307,22 +307,38 @@ void app_main(void)
     xEventGroupWaitBits(EXIT_FLAG, DEMO_EXIT_BIT, true, false, portMAX_DELAY);
 
     ESP_LOGI(TAG, "[ 5 ] Stop audio_pipelines");
+
+    // Audio in
     audio_pipeline_stop(pipeline);
     audio_pipeline_wait_for_stop(pipeline);
     audio_pipeline_terminate(pipeline);
 
+    // Audio out
+    audio_pipeline_stop(playback_pipeline);
+    audio_pipeline_wait_for_stop(playback_pipeline);
+    audio_pipeline_terminate(playback_pipeline);
+
+    // Audio in
     audio_pipeline_unregister(pipeline, http_stream_writer);
+    audio_pipeline_unregister(playback_pipeline, http_stream_reader);
+
+    // Audio out
     audio_pipeline_unregister(pipeline, i2s_stream_reader);
+    audio_pipeline_unregister(playback_pipeline, i2s_stream_writer);
 
     /* Terminal the pipeline before removing the listener */
     audio_pipeline_remove_listener(pipeline);
+    audio_pipeline_remove_listener(playback_pipeline);
 
     /* Stop all periph before removing the listener */
     esp_periph_set_stop_all(set);
 
     /* Release all resources */
     audio_pipeline_deinit(pipeline);
+    audio_pipeline_deinit(playback_pipeline);
     audio_element_deinit(http_stream_writer);
+    audio_element_deinit(http_stream_reader);
     audio_element_deinit(i2s_stream_reader);
+    audio_element_deinit(i2s_stream_writer);
     esp_periph_set_destroy(set);
 }
