@@ -1,7 +1,5 @@
 /* Tovera Sallow Client
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
@@ -42,9 +40,9 @@
 static const char *TAG = "SALLOW";
 
 
-#define EXAMPLE_AUDIO_SAMPLE_RATE  (16000)
-#define EXAMPLE_AUDIO_BITS         (16)
-#define EXAMPLE_AUDIO_CHANNELS     (1)
+#define AUDIO_SAMPLE_RATE  (16000)
+#define AUDIO_BITS         (16)
+#define AUDIO_CHANNELS     (1)
 
 #define DEMO_EXIT_BIT (BIT0)
 static EventGroupHandle_t EXIT_FLAG;
@@ -71,16 +69,16 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
 
     if (msg->event_id == HTTP_STREAM_PRE_REQUEST) {
         // set header
-        ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, lenght=%d", msg->buffer_len);
+        ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
         esp_http_client_set_method(http, HTTP_METHOD_POST);
         char dat[10] = {0};
-        snprintf(dat, sizeof(dat), "%d", EXAMPLE_AUDIO_SAMPLE_RATE);
+        snprintf(dat, sizeof(dat), "%d", AUDIO_SAMPLE_RATE);
         esp_http_client_set_header(http, "x-audio-sample-rates", dat);
         memset(dat, 0, sizeof(dat));
-        snprintf(dat, sizeof(dat), "%d", EXAMPLE_AUDIO_BITS);
+        snprintf(dat, sizeof(dat), "%d", AUDIO_BITS);
         esp_http_client_set_header(http, "x-audio-bits", dat);
         memset(dat, 0, sizeof(dat));
-        snprintf(dat, sizeof(dat), "%d", EXAMPLE_AUDIO_CHANNELS);
+        snprintf(dat, sizeof(dat), "%d", AUDIO_CHANNELS);
         esp_http_client_set_header(http, "x-audio-channel", dat);
         total_write = 0;
         return ESP_OK;
@@ -152,7 +150,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
                  * There is no effect when follow APIs output warning message on the first time record
                  */
                 if (led_handle) {
-                    periph_led_blink(led_handle, get_green_led_gpio(), 500, 500, true, -1, 0);
+                    periph_led_blink(led_handle, get_blue_led_gpio(), 500, 500, true, -1, 0);
                 } else {
                     ESP_LOGE(TAG, "[ * ] [Rec] LED object not found");
                 }
@@ -170,7 +168,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
         switch ((int)evt->data) {
             case INPUT_KEY_USER_ID_REC:
                 ESP_LOGE(TAG, "[ * ] [Rec] key released, stop pipeline ...");
-                periph_led_stop(led_handle, get_green_led_gpio());
+                periph_led_stop(led_handle, get_blue_led_gpio());
                 /*
                  * Set the i2s_stream_reader ringbuffer is done to flush the buffering voice data.
                  */
@@ -213,18 +211,8 @@ void app_main(void)
     };
     esp_periph_handle_t wifi_handle = periph_wifi_init(&wifi_cfg);
 
-    // init LED
-    periph_led_cfg_t led_cfg = {
-        .led_speed_mode = LEDC_LOW_SPEED_MODE,
-        .led_duty_resolution = LEDC_TIMER_10_BIT,
-        .led_timer_num = LEDC_TIMER_0,
-        .led_freq_hz = 5000,
-    };
-    led_handle = periph_led_init(&led_cfg);
-
-    // Start wifi, button, and LED peripheral
+    // Start wifi
     esp_periph_start(set, wifi_handle);
-    esp_periph_start(set, led_handle);
     periph_wifi_wait_for_connected(wifi_handle, portMAX_DELAY);
 
     ESP_LOGI(TAG, "[ 1 ] Start codec chip");
@@ -289,18 +277,6 @@ void app_main(void)
     const char *link_tag[2] = {"i2s", "http"};
     audio_pipeline_link(pipeline, &link_tag[0], 2);
 
-/*
-    ESP_LOGI(TAG, "[ 4 ] Set up  event listener");
-    audio_event_iface_cfg_t evt_cfg = AUDIO_EVENT_IFACE_DEFAULT_CFG();
-    audio_event_iface_handle_t evt = audio_event_iface_init(&evt_cfg);
-
-    ESP_LOGI(TAG, "[4.1] Listening event from all elements of pipeline");
-    audio_pipeline_set_listener(playback_pipeline, evt);
-
-    ESP_LOGI(TAG, "[4.2] Listening event from peripherals");
-    audio_event_iface_set_listener(esp_periph_set_get_event_iface(set), evt);
-*/
-
     // Initialize Button peripheral
     audio_board_key_init(set);
     input_key_service_info_t input_key_info[] = INPUT_KEY_DEFAULT_INFO();
@@ -310,15 +286,27 @@ void app_main(void)
     input_key_service_add_key(input_ser, input_key_info, INPUT_KEY_NUM);
     periph_service_set_callback(input_ser, input_key_service_cb, (void *)http_stream_writer);
 
-    i2s_stream_set_clk(i2s_stream_reader, EXAMPLE_AUDIO_SAMPLE_RATE, EXAMPLE_AUDIO_BITS, EXAMPLE_AUDIO_CHANNELS);
+    // Set audio for i2s reader
+    i2s_stream_set_clk(i2s_stream_reader, AUDIO_SAMPLE_RATE, AUDIO_BITS, AUDIO_CHANNELS);
 
-    i2s_stream_set_clk(i2s_stream_writer, EXAMPLE_AUDIO_SAMPLE_RATE, EXAMPLE_AUDIO_BITS, EXAMPLE_AUDIO_CHANNELS);
+    // Set audio for i2s writer
+    i2s_stream_set_clk(i2s_stream_writer, AUDIO_SAMPLE_RATE, AUDIO_BITS, AUDIO_CHANNELS);
 
+    // Init LED last so user knows we are ready
+    ESP_LOGI(TAG, "[ 3.5 ] Init LED so user knows we are ready");
+    periph_led_cfg_t led_cfg = {
+        .led_speed_mode = LEDC_LOW_SPEED_MODE,
+        .led_duty_resolution = LEDC_TIMER_10_BIT,
+        .led_timer_num = LEDC_TIMER_0,
+        .led_freq_hz = 5000,
+    };
+    led_handle = periph_led_init(&led_cfg);
+    esp_periph_start(set, led_handle);
 
-    ESP_LOGI(TAG, "[ 5 ] Press [Rec] button to record, Press [Mode] to exit");
+    ESP_LOGI(TAG, "[ 4 ] Press [Rec] button to record, Press [Mode] to exit");
     xEventGroupWaitBits(EXIT_FLAG, DEMO_EXIT_BIT, true, false, portMAX_DELAY);
 
-    ESP_LOGI(TAG, "[ 6 ] Stop audio_pipeline");
+    ESP_LOGI(TAG, "[ 5 ] Stop audio_pipelines");
     audio_pipeline_stop(pipeline);
     audio_pipeline_wait_for_stop(pipeline);
     audio_pipeline_terminate(pipeline);
