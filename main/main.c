@@ -47,11 +47,12 @@ static const char *TAG = "SALLOW";
 static EventGroupHandle_t EXIT_FLAG;
 
 audio_pipeline_handle_t record_pipeline;
-audio_element_handle_t i2s_stream_reader;
-audio_element_handle_t http_stream_writer;
+audio_element_handle_t i2s_stream_reader, http_stream_writer;
 
 // Decoder
 static const char *selected_decoder_name = "wav";
+
+// This is disgusting - it's a hardcoded URI to come back and fetch after the record session
 static const char *selected_file_to_play = "https://ainfer.tovera.io/audio/sallow-tts.wav";
 
 audio_pipeline_handle_t playback_pipeline;
@@ -146,7 +147,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
                 xEventGroupSetBits(EXIT_FLAG, SALLOW_EXIT_BIT);
                 break;
             case INPUT_KEY_USER_ID_REC:
-                ESP_LOGE(TAG, "[ * ] [Rec] input key event, resuming pipeline ...");
+                ESP_LOGI(TAG, "[ * ] [Rec] input key event, resuming pipeline ...");
                 /*
                  * There is no effect when follow APIs output warning message on the first time record
                  */
