@@ -121,7 +121,7 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
         buf[read_len] = 0;
         ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
 
-        ESP_LOGI(TAG, "[ 5.1 ] Start audio_pipeline");
+        ESP_LOGI(TAG, "[ 5.1 ] Start playback audio_pipeline");
         audio_pipeline_stop(playback_pipeline);
         audio_pipeline_wait_for_stop(playback_pipeline);
         audio_pipeline_reset_ringbuffer(playback_pipeline);
@@ -142,7 +142,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
     if (evt->type == INPUT_KEY_SERVICE_ACTION_CLICK) {
         switch ((int)evt->data) {
             case INPUT_KEY_USER_ID_MODE:
-                ESP_LOGW(TAG, "[ * ] [Set] input key event, exit the demo ...");
+                ESP_LOGW(TAG, "[ * ] [Set] input key event");
                 xEventGroupSetBits(EXIT_FLAG, DEMO_EXIT_BIT);
                 break;
             case INPUT_KEY_USER_ID_REC:
