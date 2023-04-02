@@ -303,7 +303,7 @@ void app_main(void)
     led_handle = periph_led_init(&led_cfg);
     esp_periph_start(set, led_handle);
 
-    ESP_LOGI(TAG, "[ 4 ] Press [Rec] button to record, Press [Mode] to exit");
+    ESP_LOGI(TAG, "[ 4 ] Press [Rec] button to record.");
     xEventGroupWaitBits(EXIT_FLAG, DEMO_EXIT_BIT, true, false, portMAX_DELAY);
 
     ESP_LOGI(TAG, "[ 5 ] Stop audio_pipelines");
