@@ -1,4 +1,4 @@
-/* Tovera Sallow Client
+/* Sallow ESP Client
 
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
@@ -38,7 +38,6 @@
 #endif
 
 static const char *TAG = "SALLOW";
-
 
 #define AUDIO_SAMPLE_RATE  (16000)
 #define AUDIO_BITS         (16)
@@ -111,6 +110,7 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
 
     if (msg->event_id == HTTP_STREAM_FINISH_REQUEST) {
         ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_FINISH_REQUEST");
+        // Allocate memory for response. Should be enough?
         char *buf = malloc(2048);
         assert(buf);
         int read_len = esp_http_client_read(http, buf, 2048);
@@ -129,6 +129,7 @@ esp_err_t _http_stream_event_handle(http_stream_event_msg_t *msg)
         audio_pipeline_terminate(playback_pipeline);
         audio_pipeline_run(playback_pipeline);
 
+        // C - free mem
         free(buf);
         return ESP_OK;
     }
