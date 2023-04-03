@@ -10,7 +10,7 @@ The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else wil
 
 For the time being you will need to run ```./utils.sh config``` and navigate to "Sallow Configuration" to fill in your WiFi SSID, WIFI password, and your Willow server URI (best-effort Tovera hosted example provided).
 
-Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO) - but if you get this far and come to ***REMOVED*** let's hang out before you wardrive me!
+Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO) - but if you get this far and come to Lake Geneva, WI let's hang out before you wardrive me!
 
 ### Flash
 
@@ -105,7 +105,7 @@ I (0) cpu_start: Starting scheduler on APP CPU.
 I (886) spiram: Reserving pool of 32K of internal memory for DMA/internal allocations
 I (906) SALLOW: [ 1 ] Initialize Button Peripheral & Connect to wifi network
 E (2286) wifi:Association refused temporarily, comeback time 1048 mSec
-W (4336) PERIPH_WIFI: Wi-Fi disconnected from SSID ***REMOVED***, auto-reconnect enabled, reconnect after 1000 ms
+W (4336) PERIPH_WIFI: Wi-Fi disconnected from SSID kc11g, auto-reconnect enabled, reconnect after 1000 ms
 W (5356) PERIPH_WIFI: WiFi Event cb, Unhandle event_base:WIFI_EVENT, event_id:4
 W (5386) wifi:<ba-add>idx:0 (ifx:0, b4:fb:e4:80:c9:62), tid:6, ssn:1, winSize:64
 I (5906) SALLOW: [ 1 ] Start codec chip

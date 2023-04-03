@@ -134,8 +134,8 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 # Example Configuration
 #
-CONFIG_WIFI_SSID="***REMOVED***"
-CONFIG_WIFI_PASSWORD="***REMOVED***"
+CONFIG_WIFI_SSID="kc11g"
+CONFIG_WIFI_PASSWORD="Sarasota1769"
 CONFIG_SERVER_URI="http://192.168.111.231:8000/upload"
 # end of Example Configuration
 

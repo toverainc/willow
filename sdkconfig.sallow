@@ -146,8 +146,8 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 # Sallow Configuration
 #
-CONFIG_WIFI_SSID="***REMOVED***"
-CONFIG_WIFI_PASSWORD="***REMOVED***"
+CONFIG_WIFI_SSID="Willow"
+CONFIG_WIFI_PASSWORD="hiwillow"
 CONFIG_SERVER_URI="https://ainfer.tovera.io/api/sallow"
 # end of Sallow Configuration
 
