@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e # bail on error
 
-ADF_VER="v2.4.1"
-PLATFORM="esp32s3" # Current general family
-FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
+export ADF_VER="v2.4.1"
+export PLATFORM="esp32s3" # Current general family
+export FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
 
-SALLOW_PATH="$PWD"
-ADF_PATH="$SALLOW_PATH/deps/esp-adf"
-IDF_PATH="$ADF_PATH/esp-idf"
+export SALLOW_PATH="$PWD"
+export IDF_TOOLS_PATH="$SALLOW_PATH/deps/idf-tools"
+export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
+export IDF_PATH="$ADF_PATH/esp-idf"
 
 check_port() {
 if [ ! $PORT ]; then
@@ -75,8 +76,8 @@ destroy)
     read
     #git reset --hard
     #git clean -fdx
-    idf.py fullclean
-    rm -rf ~/.espressif deps
+    rm -rf build/*
+    rm -rf deps
     echo "Not a trace left. You will have to run setup again."
 ;;
 
