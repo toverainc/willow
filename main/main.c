@@ -186,7 +186,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
 esp_err_t esp_box_key_init(esp_periph_set_handle_t hdl_pset)
 {
     periph_button_cfg_t cfg_btn = {
-        .gpio_mask = GPIO_SEL_1, // MUTE
+        .gpio_mask = GPIO_SEL_0 | GPIO_SEL_1, // BOOT/CONFIG | MUTE
     };
     esp_periph_handle_t hdl_btn = periph_button_init(&cfg_btn);
     AUDIO_NULL_CHECK(TAG, hdl_btn, return ESP_ERR_ADF_MEMORY_LACK);
