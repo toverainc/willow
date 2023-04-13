@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e # bail on error
 
-export ADF_VER="v2.4.1"
+export ADF_VER="v2.5"
 export PLATFORM="esp32s3" # Current general family
 export FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
 
