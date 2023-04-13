@@ -53,7 +53,7 @@ audio_element_handle_t i2s_stream_reader, http_stream_writer;
 static const char *selected_decoder_name = "wav";
 
 // This is disgusting - it's a hardcoded URI to come back and fetch after the record session
-static const char *selected_file_to_play = "https://ainfer.tovera.io/audio/sallow-tts.wav";
+static const char *selected_file_to_play = "https://infer.tovera.io/audio/sallow-tts.wav";
 
 audio_pipeline_handle_t playback_pipeline;
 audio_element_handle_t http_stream_reader, i2s_stream_writer, selected_decoder;
