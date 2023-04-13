@@ -6,7 +6,6 @@
 */
 
 #include <string.h>
-#include "bsp/esp-box.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
@@ -186,8 +185,6 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
 
 void app_main(void)
 {
-    bsp_i2c_init();
-
     esp_log_level_set("*", ESP_LOG_WARN);
     esp_log_level_set(TAG, ESP_LOG_INFO);
 
