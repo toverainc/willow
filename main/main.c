@@ -183,6 +183,19 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
     return ESP_OK;
 }
 
+esp_err_t esp_box_key_init(esp_periph_set_handle_t hdl_pset)
+{
+    periph_button_cfg_t cfg_btn = {
+        .gpio_mask = GPIO_SEL_1, // MUTE
+    };
+    esp_periph_handle_t hdl_btn = periph_button_init(&cfg_btn);
+    AUDIO_NULL_CHECK(TAG, hdl_btn, return ESP_ERR_ADF_MEMORY_LACK);
+    esp_err_t ret = ESP_OK;
+    ret = esp_periph_start(hdl_pset, hdl_btn);
+
+    return ret;
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_WARN);
@@ -281,7 +294,7 @@ void app_main(void)
     audio_pipeline_link(record_pipeline, &link_tag[0], 2);
 
     // Initialize Button peripheral
-    audio_board_key_init(set);
+    esp_box_key_init(set);
     input_key_service_info_t input_key_info[] = {
         {
             // BSP_BUTTON_CONFIG
