@@ -306,7 +306,7 @@ void app_main(void)
             // BSP_BUTTON_MUTE
             .act_id = GPIO_NUM_1,
             .type = PERIPH_ID_BUTTON,
-            .user_id = INPUT_KEY_USER_ID_REC,
+            .user_id = INPUT_KEY_USER_ID_MUTE,
         },
     };
     input_key_service_cfg_t input_cfg = INPUT_KEY_SERVICE_DEFAULT_CONFIG();
