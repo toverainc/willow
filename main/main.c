@@ -282,7 +282,20 @@ void app_main(void)
 
     // Initialize Button peripheral
     audio_board_key_init(set);
-    input_key_service_info_t input_key_info[] = INPUT_KEY_DEFAULT_INFO();
+    input_key_service_info_t input_key_info[] = {
+        {
+            // BSP_BUTTON_CONFIG
+            .act_id = GPIO_NUM_0,
+            .type = PERIPH_ID_BUTTON,
+            .user_id = INPUT_KEY_USER_ID_REC,
+        },
+        {
+            // BSP_BUTTON_MUTE
+            .act_id = GPIO_NUM_1,
+            .type = PERIPH_ID_BUTTON,
+            .user_id = INPUT_KEY_USER_ID_REC,
+        },
+    };
     input_key_service_cfg_t input_cfg = INPUT_KEY_SERVICE_DEFAULT_CONFIG();
     input_cfg.handle = set;
     periph_service_handle_t input_ser = input_key_service_create(&input_cfg);
