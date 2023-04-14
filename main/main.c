@@ -32,6 +32,8 @@
 #include "audio_idf_version.h"
 #include "model_path.h"
 
+#include "tasks.h"
+
 #if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0))
 #include "esp_netif.h"
 #else
@@ -304,6 +306,12 @@ void app_main(void)
     periph_wifi_wait_for_connected(wifi_handle, portMAX_DELAY);
 
     ESP_ERROR_CHECK(init_sr_model());
+    init_afe_data();
+    init_i2s();
+
+    flag_listen = 1;
+    xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, NULL, 0);
+    xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, NULL, 1);
 
     ESP_LOGI(TAG, "[ 1 ] Start codec chip");
     audio_board_handle_t board_handle = audio_board_init();
@@ -394,9 +402,6 @@ void app_main(void)
 
     // Set audio for i2s writer
     i2s_stream_set_clk(i2s_stream_writer, AUDIO_SAMPLE_RATE, AUDIO_BITS, AUDIO_CHANNELS);
-
-    init_afe_data();
-    init_i2s();
 
     // Init LED last so user knows we are ready
     ESP_LOGI(TAG, "[ 3.5 ] Init LED so user knows we are ready");
