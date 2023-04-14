@@ -199,6 +199,17 @@ esp_err_t esp_box_key_init(esp_periph_set_handle_t hdl_pset)
     return ret;
 }
 
+static void init_afe_data(void)
+{
+    if_afe = (esp_afe_sr_iface_t *)&ESP_AFE_SR_HANDLE;
+    afe_config_t cfg_afe = AFE_CONFIG_DEFAULT();
+    cfg_afe.memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM;
+    cfg_afe.wakenet_model_name = WAKENET_NAME;
+    data_afe = if_afe->create_from_config(&cfg_afe);
+
+    ESP_LOGI(TAG, "if_afe: '%p'", if_afe);
+}
+
 static esp_err_t init_sr_model()
 {
     char *wakenet_name = WAKENET_NAME;
@@ -346,6 +357,8 @@ void app_main(void)
 
     // Set audio for i2s writer
     i2s_stream_set_clk(i2s_stream_writer, AUDIO_SAMPLE_RATE, AUDIO_BITS, AUDIO_CHANNELS);
+
+    init_afe_data();
 
     // Init LED last so user knows we are ready
     ESP_LOGI(TAG, "[ 3.5 ] Init LED so user knows we are ready");
