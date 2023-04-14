@@ -30,6 +30,7 @@
 #include "filter_resample.h"
 #include "input_key_service.h"
 #include "audio_idf_version.h"
+#include "model_path.h"
 
 #if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 1, 0))
 #include "esp_netif.h"
@@ -42,6 +43,8 @@ static const char *TAG = "SALLOW";
 #define AUDIO_SAMPLE_RATE  (16000)
 #define AUDIO_BITS         (16)
 #define AUDIO_CHANNELS     (1)
+
+#define WAKENET_NAME "wn9_hiesp"
 
 #define SALLOW_EXIT_BIT (BIT0)
 static EventGroupHandle_t EXIT_FLAG;
@@ -196,6 +199,27 @@ esp_err_t esp_box_key_init(esp_periph_set_handle_t hdl_pset)
     return ret;
 }
 
+static esp_err_t init_sr_model()
+{
+    char *wakenet_name = WAKENET_NAME;
+    esp_err_t ret = ESP_OK;
+    srmodel_list_t *sr_models = esp_srmodel_init("model");
+
+    ESP_LOGD(TAG, "found '%d' SR model on SPIFFS", sr_models->num);
+
+    if (sr_models != NULL) {
+        for (int i = 0; i < sr_models->num; i++) {
+            ESP_LOGD(TAG, "model: %s", sr_models->model_name[i]);
+        }
+    }
+
+    if (esp_srmodel_exists(sr_models, wakenet_name) < 0) {
+        ret = ESP_ERR_NOT_FOUND;
+    }
+
+    return ret;
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_WARN);
@@ -230,6 +254,8 @@ void app_main(void)
     // Start wifi
     esp_periph_start(set, wifi_handle);
     periph_wifi_wait_for_connected(wifi_handle, portMAX_DELAY);
+
+    ESP_ERROR_CHECK(init_sr_model());
 
     ESP_LOGI(TAG, "[ 1 ] Start codec chip");
     audio_board_handle_t board_handle = audio_board_init();
