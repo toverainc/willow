@@ -44,8 +44,12 @@ static esp_err_t get_i2s_data(int16_t *buf, int len)
 void start_wwd_tasks(void)
 {
     ESP_LOGI(TAG, "starting wake word detection tasks");
-    xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, NULL, 0);
-    xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, NULL, 1);
+    if (xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, NULL, 0) != pdPASS) {
+        ESP_LOGE(TAG, "failed to start task_listen");
+    }
+    if (xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, NULL, 1) != pdPASS) {
+        ESP_LOGE(TAG, "failed to start task_detect");
+    }
 }
 
 void task_detect(void *arg)
@@ -83,7 +87,7 @@ void task_detect(void *arg)
 
     free(buf_i2s);
 delete:
-    printf("task_listen delete\n");
+    printf("task_detect delete\n");
     vTaskDelete(NULL);
 }
 
