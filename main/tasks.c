@@ -1,15 +1,26 @@
+#include <dirent.h>
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "audio_pipeline.h"
 #include "driver/i2s.h"
 #include "esp_err.h"
+#include "esp_log.h"
+#include "i2s_stream.h"
+#include "spiffs_stream.h"
+#include "wav_decoder.h"
 
+#include "shared.h"
 #include "tasks.h"
 
 #define I2S_CHANNEL 4
 
+
 esp_afe_sr_data_t *data_afe = NULL;
 esp_afe_sr_iface_t *if_afe = NULL;
+
+static const char *TAG = "SALLOW_TASKS";
+
 
 static esp_err_t get_i2s_data(int16_t *buf, int len)
 {
@@ -28,6 +39,13 @@ static esp_err_t get_i2s_data(int16_t *buf, int len)
     }
 
     return ret;
+}
+
+void start_wwd_tasks(void)
+{
+    ESP_LOGI(TAG, "starting wake word detection tasks");
+    xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, NULL, 0);
+    xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, NULL, 1);
 }
 
 void task_detect(void *arg)
@@ -58,11 +76,14 @@ void task_detect(void *arg)
 
         if (res->wakeup_state == WAKENET_DETECTED) {
             printf("task_detect: detected wakeword\n");
+            flag_listen = 0;
+            xTaskCreatePinnedToCore(&task_play_spiffs, "play_spiffs", 4 * 1024, (void*)NULL, 5, NULL, 0);
         }
     }
 
     free(buf_i2s);
 delete:
+    printf("task_listen delete\n");
     vTaskDelete(NULL);
 }
 
@@ -93,5 +114,108 @@ void task_listen(void *arg)
 
     free(buf_i2s);
 delete:
+    printf("task_listen delete\n");
+    vTaskDelete(NULL);
+}
+
+
+void task_play_spiffs(void *arg)
+{
+    printf("task_play_spiffs()\n");
+
+    DIR *dir = opendir("/spiffs/audio");
+    if (dir == NULL) {
+        printf("failed to open /spiffs/audio");
+    } else {
+        while (true) {
+            struct dirent *de = readdir(dir);
+
+            if (!de) {
+                break;
+            }
+
+            printf("found file: %s\n", de->d_name);
+        }
+    }
+
+    audio_element_handle_t hdl_ae_is, hdl_ae_ss, hdl_ae_wd;
+    audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
+    audio_pipeline_handle_t hdl_ap;
+    
+    hdl_ap = audio_pipeline_init(&cfg_ap);
+    if (hdl_ap == NULL) {
+        goto end;
+    }
+
+    spiffs_stream_cfg_t cfg_ss = SPIFFS_STREAM_CFG_DEFAULT();
+    cfg_ss.type = AUDIO_STREAM_READER;
+    hdl_ae_ss = spiffs_stream_init(&cfg_ss);
+
+    i2s_stream_cfg_t cfg_i2ss = I2S_STREAM_CFG_DEFAULT();
+    cfg_i2ss.type = AUDIO_STREAM_WRITER;
+    hdl_ae_is = i2s_stream_init(&cfg_i2ss);
+
+    wav_decoder_cfg_t cfg_wd = DEFAULT_WAV_DECODER_CONFIG();
+    hdl_ae_wd = wav_decoder_init(&cfg_wd);
+
+    audio_pipeline_register(hdl_ap, hdl_ae_ss, "spiffs");
+    audio_pipeline_register(hdl_ap, hdl_ae_wd, "wav");
+    audio_pipeline_register(hdl_ap, hdl_ae_is, "i2s");
+
+    const char *link_tag[3] =  {"spiffs", "wav", "i2s"};
+    audio_pipeline_link(hdl_ap, &link_tag[0], 3);
+
+    audio_element_set_uri(hdl_ae_ss, "/spiffs/audio/wake.wav");
+
+    audio_event_iface_cfg_t cfg_if_ae = AUDIO_EVENT_IFACE_DEFAULT_CFG();
+    audio_event_iface_handle_t hdl_if_ae = audio_event_iface_init(&cfg_if_ae);
+
+    audio_pipeline_set_listener(hdl_ap, hdl_if_ae);
+    audio_event_iface_set_listener(esp_periph_set_get_event_iface(hdl_pset), hdl_if_ae);
+
+    audio_pipeline_run(hdl_ap);
+
+    while(true) {
+        audio_event_iface_msg_t msg_if_ae;
+        esp_err_t ret = audio_event_iface_listen(hdl_if_ae, &msg_if_ae, portMAX_DELAY);
+
+        if (ret != ESP_OK) {
+            printf("%s: audio event interface error: %s\n", TAG, esp_err_to_name(ret));
+            continue;
+        }
+
+        if (msg_if_ae.source_type == AUDIO_ELEMENT_TYPE_ELEMENT &&
+            msg_if_ae.source == (void *) hdl_ae_wd &&
+            msg_if_ae.cmd == AEL_MSG_CMD_REPORT_MUSIC_INFO) {
+            
+                audio_element_info_t inf_ae = {0};
+                audio_element_getinfo(hdl_ae_wd, &inf_ae);
+                printf("received event from wav decoder: bits='%d', channels='%d', sample_rates='%d'\n",
+                    inf_ae.bits, inf_ae.channels, inf_ae.sample_rates);
+                i2s_stream_set_clk(hdl_ae_is, inf_ae.sample_rates, inf_ae.bits, inf_ae.channels);
+                continue;
+        }
+
+        if (msg_if_ae.source_type == AUDIO_ELEMENT_TYPE_ELEMENT &&
+            msg_if_ae.source == (void *) hdl_ae_wd &&
+            msg_if_ae.cmd == AEL_MSG_CMD_REPORT_STATUS &&
+            (
+                ((int)msg_if_ae.data == AEL_STATUS_STATE_STOPPED) ||
+                ((int)msg_if_ae.data == AEL_STATUS_STATE_FINISHED)
+            )
+        ) {
+            break;
+        }    
+    }
+
+    // this deinits I2S
+    // audio_pipeline_deinit(hdl_ap);
+    audio_pipeline_terminate(hdl_ap);
+
+end:
+    printf("task_play_spiffs end\n");
+    flag_listen = 1;
+    start_wwd_tasks();
+    printf("task_play_spiffs delete\n");
     vTaskDelete(NULL);
 }
