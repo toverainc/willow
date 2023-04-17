@@ -4,6 +4,7 @@
 
 #include "audio_hal.h"
 #include "audio_pipeline.h"
+#include "board.h"
 #include "driver/i2s.h"
 #include "esp_err.h"
 #include "esp_spiffs.h"
@@ -184,6 +185,7 @@ void task_play_spiffs(void *arg)
     audio_pipeline_set_listener(hdl_ap, hdl_if_ae);
     audio_event_iface_set_listener(esp_periph_set_get_event_iface(hdl_pset), hdl_if_ae);
 
+    gpio_set_level(get_pa_enable_gpio(), 1);
     audio_pipeline_run(hdl_ap);
 
     while(true) {
@@ -218,6 +220,8 @@ void task_play_spiffs(void *arg)
             break;
         }    
     }
+
+    gpio_set_level(get_pa_enable_gpio(), 0);
 
     audio_pipeline_wait_for_stop(hdl_ap);
     audio_pipeline_terminate(hdl_ap);

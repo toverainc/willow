@@ -75,6 +75,7 @@ void app_main(void)
     }
 
     audio_board_handle_t hdl_audio_board = audio_board_init();
+    gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
