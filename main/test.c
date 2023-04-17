@@ -83,11 +83,21 @@ void app_main(void)
     init_afe_data();
 
     flag_listen = 1;
-    start_wwd_tasks();
 
+    xTaskCreatePinnedToCore(&task_play_spiffs, "play_spiffs", 4 * 1024, (void*)NULL, 5, &tasks.play, 1);
+    xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, &tasks.listen, 1);
+    xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, &tasks.detect, 1);
 
     // this works
     // task_play_spiffs("foo");
     // this works too
     // xTaskCreate(&task_play_spiffs, "play_spiffs", 4 * 1024, (void*)NULL, 5, NULL);
+
+    // while (true) {
+    //     char buf[128];
+    //     vTaskList(&buf);
+
+    //     printf("%s\n", buf);
+    //     vTaskDelay(1000 / portTICK_PERIOD_MS);
+    // }
 }
