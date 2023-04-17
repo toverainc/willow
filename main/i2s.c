@@ -35,11 +35,13 @@ esp_err_t init_i2s(void)
         .mck_io_num = GPIO_NUM_2,
     };
 
+    printf("%s: initializing I2S\n", TAG);
+
     ret = i2s_driver_install(I2S_PORT, &cfg_i2s, 0, NULL);
-    ESP_LOGI(TAG, "i2s_driver_install: %s", esp_err_to_name(ret));
+    printf("%s: i2s_driver_install: %s\n", TAG, esp_err_to_name(ret));
 
     ret = i2s_set_pin(I2S_PORT, &pcfg_i2s);
-    ESP_LOGI(TAG, "i2s_set_pin: %s", esp_err_to_name(ret));
+    printf("%s: i2s_set_pin: %s\n", TAG, esp_err_to_name(ret));
 
     return ret;
 }

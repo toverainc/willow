@@ -2,25 +2,28 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "audio_hal.h"
 #include "audio_pipeline.h"
 #include "driver/i2s.h"
 #include "esp_err.h"
-#include "esp_log.h"
+#include "esp_spiffs.h"
 #include "i2s_stream.h"
+#include "model_path.h"
 #include "spiffs_stream.h"
 #include "wav_decoder.h"
 
+#include "i2s.h"
 #include "shared.h"
 #include "tasks.h"
 
 #define I2S_CHANNEL 4
-
+#define WAKENET_NAME "wn9_hiesp"
+#define WAKENET_PARTLABEL "model"
 
 esp_afe_sr_data_t *data_afe = NULL;
 esp_afe_sr_iface_t *if_afe = NULL;
 
 static const char *TAG = "SALLOW_TASKS";
-
 
 static esp_err_t get_i2s_data(int16_t *buf, int len)
 {
@@ -41,14 +44,62 @@ static esp_err_t get_i2s_data(int16_t *buf, int len)
     return ret;
 }
 
+static void init_afe_data(void)
+{
+    if_afe = (esp_afe_sr_iface_t *)&ESP_AFE_SR_HANDLE;
+    afe_config_t cfg_afe = AFE_CONFIG_DEFAULT();
+    cfg_afe.memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM;
+    cfg_afe.wakenet_model_name = WAKENET_NAME;
+    data_afe = if_afe->create_from_config(&cfg_afe);
+
+    printf("%s: if_afe: '%p'\n", TAG, if_afe);
+}
+
+static esp_err_t init_sr_model()
+{
+    char *wakenet_name = WAKENET_NAME;
+    esp_err_t ret = ESP_OK;
+
+    if (esp_spiffs_mounted(WAKENET_PARTLABEL)) {
+        printf("unmounting partition with label'%s'\n", WAKENET_PARTLABEL);
+        ret = esp_vfs_spiffs_unregister(WAKENET_PARTLABEL);
+        if (ret != ESP_OK) {
+            printf("%s: failed to unmount partition with label '%s': '%s'\n", TAG, WAKENET_PARTLABEL, esp_err_to_name(ret));
+        }
+        
+    }
+
+    srmodel_list_t *sr_models = esp_srmodel_init(WAKENET_PARTLABEL);
+
+    printf("found '%d' SR model on SPIFFS\n", sr_models->num);
+
+    if (sr_models != NULL) {
+        for (int i = 0; i < sr_models->num; i++) {
+            printf("%s: model: %s", TAG, sr_models->model_name[i]);
+        }
+    }
+
+    if (esp_srmodel_exists(sr_models, wakenet_name) < 0) {
+        ret = ESP_ERR_NOT_FOUND;
+    }
+
+    return ret;
+}
+
 void start_wwd_tasks(void)
 {
-    ESP_LOGI(TAG, "starting wake word detection tasks");
+    printf("starting wake word detection tasks\n");
+    init_i2s();
+    init_sr_model();
+    init_afe_data();
+
+    flag_listen = 1;
+
     if (xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, NULL, 0) != pdPASS) {
-        ESP_LOGE(TAG, "failed to start task_listen");
+        printf("%s: failed to start task_listen\n", TAG);
     }
     if (xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, NULL, 1) != pdPASS) {
-        ESP_LOGE(TAG, "failed to start task_detect");
+        printf("%s: failed to start task_detect\n", TAG);
     }
 }
 
@@ -59,12 +110,12 @@ void task_detect(void *arg)
     int16_t *buf_i2s = NULL;
 
     if (data_afe == NULL) {
-        printf("data_afe is NULL\n");
+        printf("%s: data_afe is NULL\n", TAG);
         goto delete;
     }
 
     if (if_afe == NULL) {
-        printf("if_afe is NULL\n");
+        printf("%s: if_afe is NULL\n", TAG);
         goto delete;
     }
 
@@ -75,7 +126,7 @@ void task_detect(void *arg)
         afe_fetch_result_t* res = if_afe->fetch(data_afe);
 
         if (!res || res->ret_value != ESP_OK) {
-            printf("task_detect: failed to fetch audio\n");
+            printf("%s: task_detect: failed to fetch audio\n", TAG);
         }
 
         if (res->wakeup_state == WAKENET_DETECTED) {
@@ -194,8 +245,8 @@ void task_play_spiffs(void *arg)
             
                 audio_element_info_t inf_ae = {0};
                 audio_element_getinfo(hdl_ae_wd, &inf_ae);
-                printf("received event from wav decoder: bits='%d', channels='%d', sample_rates='%d'\n",
-                    inf_ae.bits, inf_ae.channels, inf_ae.sample_rates);
+                printf("%s: received event from wav decoder: bits='%d', channels='%d', sample_rates='%d'\n",
+                        TAG, inf_ae.bits, inf_ae.channels, inf_ae.sample_rates);
                 i2s_stream_set_clk(hdl_ae_is, inf_ae.sample_rates, inf_ae.bits, inf_ae.channels);
                 continue;
         }
@@ -212,14 +263,24 @@ void task_play_spiffs(void *arg)
         }    
     }
 
-    // this deinits I2S
-    // audio_pipeline_deinit(hdl_ap);
+    audio_pipeline_wait_for_stop(hdl_ap);
     audio_pipeline_terminate(hdl_ap);
+    audio_pipeline_unregister(hdl_ap, hdl_ae_ss);
+    audio_pipeline_unregister(hdl_ap, hdl_ae_wd);
+    audio_pipeline_unregister(hdl_ap, hdl_ae_is);
+    audio_pipeline_remove_listener(hdl_ap);
+    audio_event_iface_remove_listener(esp_periph_set_get_event_iface(hdl_pset), hdl_if_ae);
+    audio_event_iface_destroy(hdl_if_ae);
+    audio_element_deinit(hdl_ae_ss);
+    audio_element_deinit(hdl_ae_is);
+    audio_element_deinit(hdl_ae_wd);
+    // this deinits I2S
+    audio_pipeline_deinit(hdl_ap);
 
 end:
-    printf("task_play_spiffs end\n");
+    printf("%s: task_play_spiffs end\n", TAG);
     flag_listen = 1;
     start_wwd_tasks();
-    printf("task_play_spiffs delete\n");
+    printf("%s: task_play_spiffs delete\n", TAG);
     vTaskDelete(NULL);
 }
