@@ -57,6 +57,11 @@ static void init_afe_data(void)
 void start_wwd_tasks(void)
 {
     printf("starting wake word detection tasks\n");
+
+    if (if_afe != NULL) {
+        if_afe->destroy(data_afe);
+    }
+
     init_i2s();
     init_afe_data();
 
