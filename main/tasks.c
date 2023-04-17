@@ -75,8 +75,8 @@ void task_detect(void *arg)
         goto delete;
     }
 
-    buf_i2s = malloc(csize * sizeof(int16_t));
     csize = if_afe->get_fetch_chunksize(data_afe);
+    buf_i2s = malloc(csize * sizeof(int16_t));
 
     while (flag_listen) {
         afe_fetch_result_t* res = if_afe->fetch(data_afe);
