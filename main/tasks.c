@@ -10,7 +10,6 @@
 #include "spiffs_stream.h"
 #include "wav_decoder.h"
 
-#include "i2s.h"
 #include "shared.h"
 #include "tasks.h"
 
@@ -21,7 +20,7 @@ esp_afe_sr_data_t *data_afe = NULL;
 esp_afe_sr_iface_t *if_afe = NULL;
 
 static const char *TAG = "SALLOW_TASKS";
-struct tasks_t tasks = {};
+
 
 static esp_err_t get_i2s_data(int16_t *buf, int len)
 {
@@ -44,12 +43,11 @@ static esp_err_t get_i2s_data(int16_t *buf, int len)
 
 void start_wwd_tasks(void)
 {
-    init_i2s();
-    ESP_LOGI(TAG, "start wake word detection tasks");
-    if (xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, &tasks.listen, 0) != pdPASS) {
+    ESP_LOGI(TAG, "starting wake word detection tasks");
+    if (xTaskCreatePinnedToCore(&task_listen, "listen", 8 * 1024, (void*)data_afe, 5, NULL, 0) != pdPASS) {
         ESP_LOGE(TAG, "failed to start task_listen");
     }
-    if (xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, &tasks.detect, 1) != pdPASS) {
+    if (xTaskCreatePinnedToCore(&task_detect, "detect", 4 * 1024, (void*)data_afe, 5, NULL, 1) != pdPASS) {
         ESP_LOGE(TAG, "failed to start task_detect");
     }
 }
@@ -82,8 +80,8 @@ void task_detect(void *arg)
 
         if (res->wakeup_state == WAKENET_DETECTED) {
             printf("task_detect: detected wakeword\n");
-            xTaskNotifyGive(tasks.play);
-            ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+            flag_listen = 0;
+            xTaskCreatePinnedToCore(&task_play_spiffs, "play_spiffs", 4 * 1024, (void*)NULL, 5, NULL, 0);
         }
     }
 
@@ -128,7 +126,6 @@ delete:
 void task_play_spiffs(void *arg)
 {
     printf("task_play_spiffs()\n");
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
     DIR *dir = opendir("/spiffs/audio");
     if (dir == NULL) {
@@ -222,8 +219,7 @@ void task_play_spiffs(void *arg)
 end:
     printf("task_play_spiffs end\n");
     flag_listen = 1;
-    //start_wwd_tasks();
-    xTaskNotifyGive(tasks.detect);
+    start_wwd_tasks();
     printf("task_play_spiffs delete\n");
     vTaskDelete(NULL);
 }
