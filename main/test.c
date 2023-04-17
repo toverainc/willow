@@ -12,9 +12,30 @@
 #include "tasks.h"
 
 #define PARTLABEL_AUDIO "audio"
-
+#define WAKENET_PARTLABEL "model"
 
 static const char *TAG = "SALLOW_TEST";
+
+static esp_err_t init_sr_model()
+{
+    char *wakenet_name = WAKENET_NAME;
+    esp_err_t ret = ESP_OK;
+    srmodel_list_t *sr_models = esp_srmodel_init(WAKENET_PARTLABEL);
+
+    printf("found '%d' SR model on SPIFFS\n", sr_models->num);
+
+    if (sr_models != NULL) {
+        for (int i = 0; i < sr_models->num; i++) {
+            printf("%s: model: %s", TAG, sr_models->model_name[i]);
+        }
+    }
+
+    if (esp_srmodel_exists(sr_models, wakenet_name) < 0) {
+        ret = ESP_ERR_NOT_FOUND;
+    }
+
+    return ret;
+}
 
 void app_main(void)
 {
@@ -46,7 +67,7 @@ void app_main(void)
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-
+    init_sr_model();
 
     start_wwd_tasks();
 
