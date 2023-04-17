@@ -16,6 +16,17 @@
 
 static const char *TAG = "SALLOW_TEST";
 
+static void init_afe_data(void)
+{
+    if_afe = (esp_afe_sr_iface_t *)&ESP_AFE_SR_HANDLE;
+    afe_config_t cfg_afe = AFE_CONFIG_DEFAULT();
+    cfg_afe.memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM;
+    cfg_afe.wakenet_model_name = WAKENET_NAME;
+    data_afe = if_afe->create_from_config(&cfg_afe);
+
+    printf("%s: if_afe: '%p'\n", TAG, if_afe);
+}
+
 static esp_err_t init_sr_model()
 {
     char *wakenet_name = WAKENET_NAME;
@@ -68,6 +79,7 @@ void app_main(void)
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
     init_sr_model();
+    init_afe_data();
 
     start_wwd_tasks();
 
