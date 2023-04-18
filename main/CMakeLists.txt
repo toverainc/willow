@@ -1,4 +1,4 @@
-set(COMPONENT_SRCS "i2s.c" "tasks.c" "test.c")
+set(COMPONENT_SRCS "i2s.c" "tasks.c" "test2.c")
 set(COMPONENT_ADD_INCLUDEDIRS .)
 
 register_component()
