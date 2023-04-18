@@ -55,8 +55,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_VAD_START:
             printf("AUDIO_REC_VAD_START\n");
-            msg = MSG_START;
-            xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
             printf("AUDIO_REC_COMMAND_DECT\n");
@@ -66,6 +64,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             printf("AUDIO_REC_WAKEUP_START\n");
+            msg = MSG_START;
+            xQueueSend(q_rec, &msg, 0);
             break;
         default:
             printf("unhandled event: '%d'\n", are);
