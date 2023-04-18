@@ -19,7 +19,7 @@ esp_err_t init_i2s(void)
         .dma_buf_count          = 6,
         .dma_buf_len            = 160,
         .fixed_mclk             = 0,
-        .intr_alloc_flags       = ESP_INTR_FLAG_LEVEL1,
+        .intr_alloc_flags       = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM,
         .mclk_multiple          = I2S_MCLK_MULTIPLE_DEFAULT,
         .mode                   = I2S_MODE_MASTER | I2S_MODE_RX | I2S_MODE_TX,
         .sample_rate            = 16000,
