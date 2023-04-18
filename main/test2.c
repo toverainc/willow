@@ -5,21 +5,39 @@
 #include "audio_thread.h"
 #include "board.h"
 #include "esp_err.h"
+#include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_peripherals.h"
+#include "esp_wifi.h"
 #include "filter_resample.h"
+#include "http_stream.h"
 #include "i2s_stream.h"
 #include "model_path.h"
+#include "nvs_flash.h"
+#include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_sr.h"
+#include "sdkconfig.h"
+
 
 #include "shared.h"
 
+#define CFG_AUDIO_ADC_BITS          I2S_BITS_PER_SAMPLE_32BIT
+#define CFG_AUDIO_ADC_CHANNELS      2
+#define CFG_AUDIO_ADC_SAMPLE_RATE   16000
+
 #define I2S_PORT I2S_NUM_0
 
-static const char *TAG = "SALLOW_TEST";
 
-static audio_element_handle_t hdl_ae_rs = NULL;
+static bool stream_to_api = false;
+static const char *TAG = "SALLOW_TEST";
+static enum q_msg {
+    MSG_STOP,
+    MSG_START,
+};
+
+static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
+static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
 static QueueHandle_t q_rec = NULL;
 
@@ -27,12 +45,18 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     printf("cb_ar_event: ");
 
+    int msg = -1;
+
     switch(are) {
         case AUDIO_REC_VAD_END:
             printf("AUDIO_REC_VAD_END\n");
+            msg = MSG_STOP;
+            xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_VAD_START:
             printf("AUDIO_REC_VAD_START\n");
+            msg = MSG_START;
+            xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
             printf("AUDIO_REC_COMMAND_DECT\n");
@@ -53,11 +77,111 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 
 static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
 {
-    if (buf == NULL || hdl_ae_rs == NULL) {
+    int ret = 0;
+    if (buf == NULL || hdl_ae_rs_from_i2s == NULL) {
         return -1;
     }
 
-    return raw_stream_read(hdl_ae_rs, (char *)buf, len);
+    return raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
+}
+
+esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
+{
+    if (msg == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    esp_http_client_handle_t http = (esp_http_client_handle_t)msg->http_client;
+    char len_buf[16];
+    int total_write = 0, wlen = 0;
+
+    switch(msg->event_id) {
+        case HTTP_STREAM_PRE_REQUEST:
+            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
+            esp_http_client_set_method(http, HTTP_METHOD_POST);
+            char dat[10] = {0};
+            snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_SAMPLE_RATE);
+            esp_http_client_set_header(http, "x-audio-sample-rate", dat);
+            memset(dat, 0, sizeof(dat));
+            snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_BITS);
+            esp_http_client_set_header(http, "x-audio-bits", dat);
+            memset(dat, 0, sizeof(dat));
+            snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_CHANNELS);
+            esp_http_client_set_header(http, "x-audio-channel", dat);
+            total_write = 0;
+            return ESP_OK;
+
+        case HTTP_STREAM_ON_REQUEST:
+            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_ON_REQUEST, length=%d", msg->buffer_len);
+            wlen = sprintf(len_buf, "%x\r\n", msg->buffer_len);
+            if (esp_http_client_write(http, len_buf, wlen) <= 0) {
+                return ESP_FAIL;
+            }
+            if (esp_http_client_write(http, msg->buffer, msg->buffer_len) <= 0) {
+                return ESP_FAIL;
+            }
+            if (esp_http_client_write(http, "\r\n", 2) <= 0) {
+                return ESP_FAIL;
+            }
+            total_write += msg->buffer_len;
+            printf("\033[A\33[2K\rTotal bytes written: %d\n", total_write);
+            return msg->buffer_len;
+
+        case HTTP_STREAM_POST_REQUEST:
+            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_POST_REQUEST, write end chunked marker");
+            if (esp_http_client_write(http, "0\r\n\r\n", 5) <= 0) {
+                return ESP_FAIL;
+            }
+            return ESP_OK;
+
+        case HTTP_STREAM_FINISH_REQUEST:
+            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_FINISH_REQUEST");
+            // Allocate memory for response. Should be enough?
+            char *buf = malloc(2048);
+            assert(buf);
+            int read_len = esp_http_client_read(http, buf, 2048);
+            if (read_len <= 0) {
+                free(buf);
+                return ESP_FAIL;
+            }
+            buf[read_len] = 0;
+            ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
+
+            audio_pipeline_pause(hdl_ap_to_api);
+
+            free(buf);
+            return ESP_OK;
+
+        default:
+            return ESP_ERR_INVALID_ARG;
+    }
+    return ESP_OK;
+}
+
+static esp_err_t init_ap_to_api()
+{
+    printf("init_ap_to_api()");
+    //audio_element_handle_t hdl_ae_hs;
+    audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
+    hdl_ap_to_api = audio_pipeline_init(&cfg_ap);
+
+    http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
+    cfg_hs.event_handle = hdl_ev_hs;
+    cfg_hs.type = AUDIO_STREAM_WRITER;
+    hdl_ae_hs = http_stream_init(&cfg_hs);
+
+    raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
+    cfg_rs.type = AUDIO_STREAM_WRITER;
+    hdl_ae_rs_to_api = raw_stream_init(&cfg_rs);
+
+    audio_pipeline_register(hdl_ap_to_api, hdl_ae_hs, "http_stream_writer");
+    audio_pipeline_register(hdl_ap_to_api, hdl_ae_rs_to_api, "raw_stream_writer_to_api");
+
+    const char *tag_link[2] = {"raw_stream_writer_to_api", "http_stream_writer"};
+    audio_pipeline_link(hdl_ap_to_api, &tag_link[0], 2);
+    audio_element_set_uri(hdl_ae_hs, CONFIG_SERVER_URI);
+
+    return ESP_OK;
 }
 
 static void start_rec()
@@ -72,17 +196,17 @@ static void start_rec()
     }
 
     i2s_stream_cfg_t cfg_is = I2S_STREAM_CFG_DEFAULT();
-    cfg_is.i2s_config.bits_per_sample = CODEC_ADC_BITS_PER_SAMPLE;
+    cfg_is.i2s_config.bits_per_sample = CFG_AUDIO_ADC_BITS;
     cfg_is.i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM;
-    cfg_is.i2s_config.sample_rate = 16000;
+    cfg_is.i2s_config.sample_rate = CFG_AUDIO_ADC_SAMPLE_RATE;
     cfg_is.i2s_config.use_apll = 0;     // not supported on ESP32-S3-BOX
     cfg_is.i2s_port = CODEC_ADC_I2S_PORT;
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_is = i2s_stream_init(&cfg_is);
 
-#if RESAMPLE
+#if CFG_AUDIO_ADC_SAMPLE_RATE != 16000
     rsp_filter_cfg_t cfg_rf = DEFAULT_RESAMPLE_FILTER_CONFIG();
-    cfg_rf.src_rate = CODEC_ADC_SAMPLE_RATE;
+    cfg_rf.src_rate = CFG_AUDIO_ADC_SAMPLE_RATE;
     cfg_rf.dest_rate = 16000;
     hdl_ae_rf = rsp_filter_init(&cfg_rf);
 
@@ -91,11 +215,11 @@ static void start_rec()
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
     cfg_rs.type = AUDIO_STREAM_READER;
-    hdl_ae_rs = raw_stream_init(&cfg_rs);
+    hdl_ae_rs_from_i2s = raw_stream_init(&cfg_rs);
 
     audio_pipeline_register(hdl_ap, hdl_ae_is, "i2s_stream_reader");
 
-    audio_pipeline_register(hdl_ap, hdl_ae_rs, "raw_stream_reader");
+    audio_pipeline_register(hdl_ap, hdl_ae_rs_from_i2s, "raw_stream_reader");
 
 #if 0
     const char *tag_link[3] = {"i2s_stream_reader", "rsp_filter", "raw_stream_reader"};
@@ -121,15 +245,57 @@ static void start_rec()
 static void at_read(void *data)
 {
     const int len = 2 * 1024;
-    uint8_t *vd = audio_calloc(1, len);
-    int msg = 0;
+    char *buf = audio_calloc(1, len);
+    int msg = -1, ret = 0;
     TickType_t delay = portMAX_DELAY;
 
     while (true) {
         if (xQueueReceive(q_rec, &msg, delay) == pdTRUE) {
-            printf("at_read() - msg: %d\n", msg);
+            switch(msg) {
+                case MSG_START:
+                    delay = 0;
+                    audio_pipeline_stop(hdl_ap_to_api);
+                    audio_pipeline_wait_for_stop(hdl_ap_to_api);
+                    audio_pipeline_reset_ringbuffer(hdl_ap_to_api);
+                    audio_pipeline_reset_elements(hdl_ap_to_api);
+                    audio_pipeline_terminate(hdl_ap_to_api);
+                    audio_pipeline_run(hdl_ap_to_api);
+                    stream_to_api = true;
+                    // this confirms that the URI is still set correctly
+                    printf("audio_pipeline_run(hdl_ap_to_api) - uri: '%s'\n", audio_element_get_uri(hdl_ae_hs));
+                    break;
+                case MSG_STOP:
+                    delay = portMAX_DELAY;
+                    audio_element_set_ringbuf_done(hdl_ae_rs_to_api);
+                    stream_to_api = false;
+                    break;
+                default:
+                    printf("at_read(): invalid msg\n");
+                    break;
+            }
+        }
+
+        if (stream_to_api) {
+            printf("at_read() audio_recorder_data_read()\n");
+            // ret = audio_recorder_data_read(hdl_ar, buf, len, portMAX_DELAY);
+            // if (ret <= 0) {
+            //     printf("at_read() ret <= 0\n");
+            //     delay = portMAX_DELAY;
+            //     return;
+            // }
+            ret = raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
+            if (ret <= 0) {
+                printf("at_read() ret <= 0\n");
+                delay = portMAX_DELAY;
+                return;
+            }
+            printf("at_read() raw_stream_write()\n");
+            raw_stream_write(hdl_ae_rs_to_api, buf, ret);
         }
     }
+
+    free(buf);
+    vTaskDelete(NULL);
 }
 
 void app_main(void)
@@ -143,12 +309,32 @@ void app_main(void)
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     hdl_pset = esp_periph_set_init(&pcfg);
 
+    ESP_ERROR_CHECK(esp_netif_init());
+
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
+        // NVS partition was truncated and needs to be erased
+        // Retry nvs_flash_init
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ESP_ERROR_CHECK(nvs_flash_init());
+    }
+
+    periph_wifi_cfg_t cfg_pwifi = {
+        .ssid = CONFIG_WIFI_SSID,
+        .password = CONFIG_WIFI_PASSWORD,
+    };
+    esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
+
+    // Start wifi
+    esp_periph_start(hdl_pset, hdl_pwifi);
+    periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
+
     audio_board_handle_t hdl_audio_board = audio_board_init();
     //gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-
+    init_ap_to_api();
     start_rec();
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
