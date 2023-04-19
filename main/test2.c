@@ -35,6 +35,7 @@ static enum q_msg {
     MSG_STOP,
     MSG_START,
 };
+static int total_write = 0;
 
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap_to_api;
@@ -93,7 +94,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 
     esp_http_client_handle_t http = (esp_http_client_handle_t)msg->http_client;
     char len_buf[16];
-    int total_write = 0, wlen = 0;
+    int wlen = 0;
 
     switch(msg->event_id) {
         case HTTP_STREAM_PRE_REQUEST:
