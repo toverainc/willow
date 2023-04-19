@@ -22,9 +22,9 @@
 
 #include "shared.h"
 
-#define CFG_AUDIO_ADC_BITS          I2S_BITS_PER_SAMPLE_32BIT
+#define CFG_AUDIO_ADC_BITS          CODEC_ADC_BITS_PER_SAMPLE
 #define CFG_AUDIO_ADC_CHANNELS      2
-#define CFG_AUDIO_ADC_SAMPLE_RATE   16000
+#define CFG_AUDIO_ADC_SAMPLE_RATE   CODEC_ADC_SAMPLE_RATE
 
 #define I2S_PORT I2S_NUM_0
 
@@ -101,10 +101,10 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
             esp_http_client_set_method(http, HTTP_METHOD_POST);
             char dat[10] = {0};
-            snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_SAMPLE_RATE);
+            snprintf(dat, sizeof(dat), "%d", 16000);
             esp_http_client_set_header(http, "x-audio-sample-rate", dat);
             memset(dat, 0, sizeof(dat));
-            snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_BITS);
+            snprintf(dat, sizeof(dat), "%d", 16);
             esp_http_client_set_header(http, "x-audio-bits", dat);
             memset(dat, 0, sizeof(dat));
             snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_CHANNELS);
@@ -210,8 +210,6 @@ static void start_rec()
     cfg_rf.src_rate = CFG_AUDIO_ADC_SAMPLE_RATE;
     cfg_rf.dest_rate = 16000;
     hdl_ae_rf = rsp_filter_init(&cfg_rf);
-
-    audio_pipeline_register(hdl_ap, hdl_ae_rf, "rsp_filter");
 #endif
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
@@ -222,8 +220,9 @@ static void start_rec()
 
     audio_pipeline_register(hdl_ap, hdl_ae_rs_from_i2s, "raw_stream_reader");
 
-#if 0
+#if CFG_AUDIO_ADC_SAMPLE_RATE != 16000
     const char *tag_link[3] = {"i2s_stream_reader", "rsp_filter", "raw_stream_reader"};
+    audio_pipeline_register(hdl_ap, hdl_ae_rf, "rsp_filter");
     audio_pipeline_link(hdl_ap, &tag_link[0], 3);
 #else
     const char *tag_link[2] = {"i2s_stream_reader", "raw_stream_reader"};
