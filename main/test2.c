@@ -232,6 +232,8 @@ static void start_rec()
     audio_pipeline_run(hdl_ap);
 
     recorder_sr_cfg_t cfg_srr = DEFAULT_RECORDER_SR_CFG();
+    // E (5727) AFE_SR: sample_rate only support 16000, please modify it!
+    // cfg_srr.afe_cfg.pcm_config.sample_rate = CFG_AUDIO_SR_SAMPLE_RATE;
     cfg_srr.multinet_init = false;
 
     audio_rec_cfg_t cfg_ar = AUDIO_RECORDER_DEFAULT_CFG();
