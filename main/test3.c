@@ -136,7 +136,7 @@ void app_main(void)
 
     i2s_stream_cfg_t cfg_is = I2S_STREAM_CFG_DEFAULT();
     cfg_is.i2s_config.bits_per_sample = 32;
-    cfg_is.i2s_config.sample_rate = 16000;
+    cfg_is.i2s_config.sample_rate = 48000;
     cfg_is.i2s_config.use_apll = 0;     // not supported on ESP32-S3-BOX
     cfg_is.i2s_port = 0;
     cfg_is.type = AUDIO_STREAM_READER;
