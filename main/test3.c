@@ -140,7 +140,11 @@ void app_main(void)
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_reader_i2s = i2s_stream_init(&cfg_is);
 
-    i2s_stream_set_clk(hdl_ae_reader_i2s, 48000, 32, 1);
+    audio_element_info_t aei = AUDIO_ELEMENT_INFO_DEFAULT();
+    aei.bits = 16;
+    aei.channels = 1;
+    aei.sample_rates = 16000;
+    audio_element_setinfo(hdl_ae_reader_i2s, &aei);
 
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
     cfg_hs.event_handle = hdl_ev_hs;
