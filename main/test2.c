@@ -101,13 +101,13 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
             esp_http_client_set_method(http, HTTP_METHOD_POST);
             char dat[10] = {0};
-            snprintf(dat, sizeof(dat), "%d", 16000);
+            snprintf(dat, sizeof(dat), "%d", 48000);
             esp_http_client_set_header(http, "x-audio-sample-rate", dat);
             memset(dat, 0, sizeof(dat));
             snprintf(dat, sizeof(dat), "%d", 16);
             esp_http_client_set_header(http, "x-audio-bits", dat);
             memset(dat, 0, sizeof(dat));
-            snprintf(dat, sizeof(dat), "%d", CFG_AUDIO_ADC_CHANNELS);
+            snprintf(dat, sizeof(dat), "%d", 1);
             esp_http_client_set_header(http, "x-audio-channel", dat);
             total_write = 0;
             return ESP_OK;
@@ -276,7 +276,7 @@ static void at_read(void *data)
         }
 
         if (stream_to_api) {
-            printf("at_read() audio_recorder_data_read()\n");
+            //printf("at_read() audio_recorder_data_read()\n");
             // ret = audio_recorder_data_read(hdl_ar, buf, len, portMAX_DELAY);
             // if (ret <= 0) {
             //     printf("at_read() ret <= 0\n");
@@ -289,7 +289,7 @@ static void at_read(void *data)
                 delay = portMAX_DELAY;
                 return;
             }
-            printf("at_read() raw_stream_write()\n");
+            //printf("at_read() raw_stream_write()\n");
             raw_stream_write(hdl_ae_rs_to_api, buf, ret);
         }
     }
