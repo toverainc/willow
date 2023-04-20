@@ -135,13 +135,12 @@ void app_main(void)
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
     i2s_stream_cfg_t cfg_is = I2S_STREAM_CFG_DEFAULT();
-    cfg_is.i2s_config.bits_per_sample = 32;
-    cfg_is.i2s_config.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
-    cfg_is.i2s_config.sample_rate = 48000;
     cfg_is.i2s_config.use_apll = 0;     // not supported on ESP32-S3-BOX
     cfg_is.i2s_port = 0;
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_reader_i2s = i2s_stream_init(&cfg_is);
+
+    i2s_stream_set_clk(hdl_ae_reader_i2s, 48000, 32, 1);
 
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
     cfg_hs.event_handle = hdl_ev_hs;
