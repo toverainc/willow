@@ -22,12 +22,7 @@
 
 #include "shared.h"
 
-#define CFG_AUDIO_ADC_BITS          CODEC_ADC_BITS_PER_SAMPLE
-#define CFG_AUDIO_ADC_CHANNELS      2
-#define CFG_AUDIO_ADC_SAMPLE_RATE   CODEC_ADC_SAMPLE_RATE
-
 #define I2S_PORT I2S_NUM_0
-
 
 static bool stream_to_api = false;
 static const char *TAG = "SALLOW_TEST";
@@ -101,13 +96,13 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
             esp_http_client_set_method(http, HTTP_METHOD_POST);
             char dat[10] = {0};
-            snprintf(dat, sizeof(dat), "%d", 48000);
+            snprintf(dat, sizeof(dat), "%d", 16000);
             esp_http_client_set_header(http, "x-audio-sample-rate", dat);
             memset(dat, 0, sizeof(dat));
             snprintf(dat, sizeof(dat), "%d", 16);
             esp_http_client_set_header(http, "x-audio-bits", dat);
             memset(dat, 0, sizeof(dat));
-            snprintf(dat, sizeof(dat), "%d", 1);
+            snprintf(dat, sizeof(dat), "%d", 2);
             esp_http_client_set_header(http, "x-audio-channel", dat);
             total_write = 0;
             return ESP_OK;
@@ -197,20 +192,13 @@ static void start_rec()
     }
 
     i2s_stream_cfg_t cfg_is = I2S_STREAM_CFG_DEFAULT();
-    cfg_is.i2s_config.bits_per_sample = CFG_AUDIO_ADC_BITS;
     cfg_is.i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM;
-    cfg_is.i2s_config.sample_rate = CFG_AUDIO_ADC_SAMPLE_RATE;
     cfg_is.i2s_config.use_apll = 0;     // not supported on ESP32-S3-BOX
     cfg_is.i2s_port = CODEC_ADC_I2S_PORT;
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_is = i2s_stream_init(&cfg_is);
 
-#if CFG_AUDIO_ADC_SAMPLE_RATE != 16000
-    rsp_filter_cfg_t cfg_rf = DEFAULT_RESAMPLE_FILTER_CONFIG();
-    cfg_rf.src_rate = CFG_AUDIO_ADC_SAMPLE_RATE;
-    cfg_rf.dest_rate = 16000;
-    hdl_ae_rf = rsp_filter_init(&cfg_rf);
-#endif
+    i2s_stream_set_clk(hdl_ae_is, 16000, 16, 1);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
     cfg_rs.type = AUDIO_STREAM_READER;
@@ -220,14 +208,8 @@ static void start_rec()
 
     audio_pipeline_register(hdl_ap, hdl_ae_rs_from_i2s, "raw_stream_reader");
 
-#if CFG_AUDIO_ADC_SAMPLE_RATE != 16000
-    const char *tag_link[3] = {"i2s_stream_reader", "rsp_filter", "raw_stream_reader"};
-    audio_pipeline_register(hdl_ap, hdl_ae_rf, "rsp_filter");
-    audio_pipeline_link(hdl_ap, &tag_link[0], 3);
-#else
     const char *tag_link[2] = {"i2s_stream_reader", "raw_stream_reader"};
     audio_pipeline_link(hdl_ap, &tag_link[0], 2);
-#endif
 
     audio_pipeline_run(hdl_ap);
 
