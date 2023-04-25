@@ -51,6 +51,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_VAD_START:
             printf("AUDIO_REC_VAD_START\n");
+            msg = MSG_START;
+            xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
             printf("AUDIO_REC_COMMAND_DECT\n");
@@ -60,8 +62,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             printf("AUDIO_REC_WAKEUP_START\n");
-            msg = MSG_START;
-            xQueueSend(q_rec, &msg, 0);
             break;
         default:
             printf("unhandled event: '%d'\n", are);
@@ -287,18 +287,20 @@ static void at_read(void *data)
 
         if (stream_to_api) {
             //printf("at_read() audio_recorder_data_read()\n");
-            // ret = audio_recorder_data_read(hdl_ar, buf, len, portMAX_DELAY);
+            ret = audio_recorder_data_read(hdl_ar, buf, len, portMAX_DELAY);
+            if (ret <= 0) {
+                printf("at_read() ret leq 0\n");
+                delay = portMAX_DELAY;
+                stream_to_api = false;
+            }
+            // calling raw_stream_read twice on the same audio element "cuts" the audio in half
+            // we end up sending 1 fragment to AFE and another to the API
+            // ret = raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
             // if (ret <= 0) {
             //     printf("at_read() ret <= 0\n");
             //     delay = portMAX_DELAY;
             //     return;
             // }
-            ret = raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
-            if (ret <= 0) {
-                printf("at_read() ret <= 0\n");
-                delay = portMAX_DELAY;
-                return;
-            }
             //printf("at_read() raw_stream_write()\n");
             raw_stream_write(hdl_ae_rs_to_api, buf, ret);
         }
