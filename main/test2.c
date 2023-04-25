@@ -223,6 +223,7 @@ static void start_rec()
     // E (5727) AFE_SR: sample_rate only support 16000, please modify it!
     // cfg_srr.afe_cfg.pcm_config.sample_rate = CFG_AUDIO_SR_SAMPLE_RATE;
     cfg_srr.multinet_init = false;
+    cfg_srr.rb_size = 32 * 1024;
 
     audio_rec_cfg_t cfg_ar = AUDIO_RECORDER_DEFAULT_CFG();
     cfg_ar.read = (recorder_data_read_t)&feed_afe;
