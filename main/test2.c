@@ -99,7 +99,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             snprintf(dat, sizeof(dat), "%d", 16000);
             esp_http_client_set_header(http, "x-audio-sample-rate", dat);
             memset(dat, 0, sizeof(dat));
-            snprintf(dat, sizeof(dat), "%d", 16);
+            snprintf(dat, sizeof(dat), "%d", 32);
             esp_http_client_set_header(http, "x-audio-bits", dat);
             memset(dat, 0, sizeof(dat));
             snprintf(dat, sizeof(dat), "%d", 2);
@@ -198,7 +198,7 @@ static void start_rec()
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_is = i2s_stream_init(&cfg_is);
 
-    i2s_stream_set_clk(hdl_ae_is, 16000, 16, 1);
+    i2s_stream_set_clk(hdl_ae_is, 16000, 32, 2);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
     cfg_rs.type = AUDIO_STREAM_READER;
