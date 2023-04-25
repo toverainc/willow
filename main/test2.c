@@ -99,10 +99,10 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             snprintf(dat, sizeof(dat), "%d", 16000);
             esp_http_client_set_header(http, "x-audio-sample-rate", dat);
             memset(dat, 0, sizeof(dat));
-            snprintf(dat, sizeof(dat), "%d", 32);
+            snprintf(dat, sizeof(dat), "%d", 16);
             esp_http_client_set_header(http, "x-audio-bits", dat);
             memset(dat, 0, sizeof(dat));
-            snprintf(dat, sizeof(dat), "%d", 2);
+            snprintf(dat, sizeof(dat), "%d", 1);
             esp_http_client_set_header(http, "x-audio-channel", dat);
             total_write = 0;
             return ESP_OK;
