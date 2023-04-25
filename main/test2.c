@@ -228,6 +228,7 @@ static void start_rec()
     audio_rec_cfg_t cfg_ar = AUDIO_RECORDER_DEFAULT_CFG();
     cfg_ar.read = (recorder_data_read_t)&feed_afe;
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
+    cfg_ar.vad_off = 500;
     cfg_ar.event_cb = cb_ar_event;
 
     hdl_ar = audio_recorder_create(&cfg_ar);
