@@ -200,6 +200,7 @@ static void start_rec()
     cfg_is.i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM;
     cfg_is.i2s_config.use_apll = 0;     // not supported on ESP32-S3-BOX
     cfg_is.i2s_port = CODEC_ADC_I2S_PORT;
+    cfg_is.out_rb_size = 32 * 1024;      // default is 8 * 1024
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_is = i2s_stream_init(&cfg_is);
 
