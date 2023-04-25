@@ -158,6 +158,7 @@ static esp_err_t init_ap_to_api()
 {
     printf("init_ap_to_api()");
     //audio_element_handle_t hdl_ae_hs;
+    audio_element_info_t inf_ae;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
     hdl_ap_to_api = audio_pipeline_init(&cfg_ap);
 
@@ -175,12 +176,21 @@ static esp_err_t init_ap_to_api()
 
     const char *tag_link[2] = {"raw_stream_writer_to_api", "http_stream_writer"};
     audio_pipeline_link(hdl_ap_to_api, &tag_link[0], 2);
+    
+    audio_element_getinfo(hdl_ae_rs_from_i2s, &inf_ae);
+    audio_element_setinfo(hdl_ae_rs_to_api, &inf_ae);
+    audio_element_setinfo(hdl_ae_hs, &inf_ae);
+
+    // setinfo above resets this URI so we need to set it afterwards
     audio_element_set_uri(hdl_ae_hs, CONFIG_SERVER_URI);
 
-    audio_element_info_t info = AUDIO_ELEMENT_INFO_DEFAULT();
-    audio_element_getinfo(hdl_ae_hs, &info);
+    audio_element_getinfo(hdl_ae_rs_to_api, &inf_ae);
+    ESP_LOGI(TAG, "audio_element_getinfo(hdl_ae_rs_to_api): sample_rate='%d' channels='%d' bits='%d' bps = '%d'",
+             inf_ae.sample_rates, inf_ae.channels, inf_ae.bits, inf_ae.bps);
+
+    audio_element_getinfo(hdl_ae_hs, &inf_ae);
     ESP_LOGI(TAG, "audio_element_getinfo(hdl_ae_hs): sample_rate='%d' channels='%d' bits='%d' bps = '%d'",
-             info.sample_rates, info.channels, info.bits, info.bps);
+             inf_ae.sample_rates, inf_ae.channels, inf_ae.bits, inf_ae.bps);
 
     return ESP_OK;
 }
@@ -188,6 +198,7 @@ static esp_err_t init_ap_to_api()
 static void start_rec()
 {
     audio_element_handle_t hdl_ae_is, hdl_ae_rf;
+    audio_element_info_t inf_ae;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
     audio_pipeline_handle_t hdl_ap;
 
@@ -208,6 +219,16 @@ static void start_rec()
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
     cfg_rs.type = AUDIO_STREAM_READER;
     hdl_ae_rs_from_i2s = raw_stream_init(&cfg_rs);
+
+    audio_element_getinfo(hdl_ae_is, &inf_ae);
+    ESP_LOGI(TAG, "audio_element_getinfo(hdl_ae_is): sample_rate='%d' channels='%d' bits='%d' bps = '%d'",
+             inf_ae.sample_rates, inf_ae.channels, inf_ae.bits, inf_ae.bps);
+
+    audio_element_setinfo(hdl_ae_rs_from_i2s, &inf_ae);
+
+    audio_element_getinfo(hdl_ae_rs_from_i2s, &inf_ae);
+    ESP_LOGI(TAG, "audio_element_getinfo(hdl_ae_rs_from_i2s): sample_rate='%d' channels='%d' bits='%d' bps = '%d'",
+             inf_ae.sample_rates, inf_ae.channels, inf_ae.bits, inf_ae.bps);
 
     audio_pipeline_register(hdl_ap, hdl_ae_is, "i2s_stream_reader");
 
@@ -323,8 +344,10 @@ void app_main(void)
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-    init_ap_to_api();
+    // we set ap_to_api pipeline with values from I2S pipeline so need to change order
     start_rec();
+    init_ap_to_api();
+
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
