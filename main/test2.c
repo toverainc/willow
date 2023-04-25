@@ -177,6 +177,11 @@ static esp_err_t init_ap_to_api()
     audio_pipeline_link(hdl_ap_to_api, &tag_link[0], 2);
     audio_element_set_uri(hdl_ae_hs, CONFIG_SERVER_URI);
 
+    audio_element_info_t info = AUDIO_ELEMENT_INFO_DEFAULT();
+    audio_element_getinfo(hdl_ae_hs, &info);
+    ESP_LOGI(TAG, "audio_element_getinfo(hdl_ae_hs): sample_rate='%d' channels='%d' bits='%d' bps = '%d'",
+             info.sample_rates, info.channels, info.bits, info.bps);
+
     return ESP_OK;
 }
 
