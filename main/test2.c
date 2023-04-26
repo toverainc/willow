@@ -37,6 +37,32 @@ static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
 static QueueHandle_t q_rec = NULL;
 
+const int32_t tone[] = {
+    0x00007fff, 0x00007fff,
+    0x00000000, 0x00000000,
+    0x80008000, 0x80008000,
+    0x00000000, 0x00000000,
+};
+
+static void play_tone(void *data)
+{
+    gpio_set_level(get_pa_enable_gpio(), 1);
+
+    size_t bytes_written;
+    int64_t start_time = esp_timer_get_time();
+
+    while ((esp_timer_get_time() - start_time) < 500000) {
+        int ret = i2s_write(0, tone, sizeof(tone), &bytes_written, portMAX_DELAY);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "i2s write failed");
+        }
+    }
+
+    gpio_set_level(get_pa_enable_gpio(), 0);
+
+    vTaskDelete(NULL);
+}
+
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     printf("cb_ar_event: ");
@@ -62,6 +88,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             printf("AUDIO_REC_WAKEUP_START\n");
+            audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
         default:
             printf("unhandled event: '%d'\n", are);
@@ -327,6 +354,8 @@ void app_main(void)
     gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
+
+    audio_hal_set_volume(hdl_audio_board->audio_hal, 60);
 
     init_ap_to_api();
     start_rec();
