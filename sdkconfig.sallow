@@ -149,7 +149,7 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 CONFIG_WIFI_SSID="Willow"
 CONFIG_WIFI_PASSWORD="hiwillow"
-CONFIG_SERVER_URI="https://sinfer.tovera.io/api/sallow?model=medium&detect_language=False&beam_size=1"
+CONFIG_SERVER_URI="https://sinfer.tovera.io/api/sallow?model=medium&detect_language=False&beam_size=1&save_audio=True"
 # end of Sallow Configuration
 
 #
