@@ -25,7 +25,7 @@
 #define I2S_PORT I2S_NUM_0
 
 static bool stream_to_api = false;
-static const char *TAG = "SALLOW_TEST";
+static const char *TAG = "SALLOW";
 static enum q_msg {
     MSG_STOP,
     MSG_START,
@@ -364,4 +364,5 @@ void app_main(void)
 
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
+    ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
 }
