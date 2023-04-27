@@ -285,7 +285,7 @@ static void start_rec()
         .wakenet_model_name = NULL,
         .wakenet_mode = DET_MODE_2CH_90,
         .afe_mode = SR_MODE_LOW_COST,
-        .afe_perferred_core = 0,
+        .afe_perferred_core = 1,
         .afe_perferred_priority = 5,
         .afe_ringbuf_size = 50,
         .memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM,
