@@ -51,7 +51,7 @@ static void play_tone(void *data)
     size_t bytes_written;
     int64_t start_time = esp_timer_get_time();
 
-    while ((esp_timer_get_time() - start_time) < 500000) {
+    while ((esp_timer_get_time() - start_time) < 200000) {
         int ret = i2s_write(0, tone, sizeof(tone), &bytes_written, portMAX_DELAY);
         if (ret != ESP_OK) {
             ESP_LOGE(TAG, "i2s write failed");
