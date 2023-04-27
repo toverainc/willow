@@ -188,7 +188,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 
 static esp_err_t init_ap_to_api()
 {
-    printf("init_ap_to_api()");
+    ESP_LOGD(TAG, "init_ap_to_api()");
     //audio_element_handle_t hdl_ae_hs;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
     hdl_ap_to_api = audio_pipeline_init(&cfg_ap);
