@@ -4,8 +4,10 @@
 #include "audio_recorder.h"
 #include "audio_thread.h"
 #include "board.h"
+#include "driver/ledc.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
+#include "esp_lcd_panel_ops.h"
 #include "esp_log.h"
 #include "esp_peripherals.h"
 #include "esp_wifi.h"
@@ -35,6 +37,7 @@ static int total_write = 0;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
+static esp_lcd_panel_handle_t hdl_lcd = NULL;
 static QueueHandle_t q_rec = NULL;
 
 const int32_t tone[] = {
@@ -85,9 +88,13 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_END:
             printf("AUDIO_REC_WAKEUP_END\n");
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
             break;
         case AUDIO_REC_WAKEUP_START:
             printf("AUDIO_REC_WAKEUP_START\n");
+            ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
             audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
         default:
@@ -387,6 +394,52 @@ static void at_read(void *data)
     vTaskDelete(NULL);
 }
 
+static esp_err_t init_display(void)
+{
+    ESP_LOGD(TAG, "initializing display");
+
+    const ledc_channel_config_t cfg_bl_channel = {
+        .channel = LEDC_CHANNEL_1,
+        .duty = 0,
+        .gpio_num = GPIO_NUM_45,
+        .hpoint = 0,
+        .intr_type = LEDC_INTR_DISABLE,
+        .speed_mode = LEDC_LOW_SPEED_MODE,
+        .timer_sel = 1,
+    };
+
+    const ledc_timer_config_t cfg_bl_timer = {
+        .clk_cfg = LEDC_AUTO_CLK,
+        .duty_resolution = LEDC_TIMER_10_BIT,
+        .freq_hz = 5000,
+        .speed_mode = LEDC_LOW_SPEED_MODE,
+        .timer_num = 1,
+    };
+
+    int ret = ESP_OK;
+
+    ret = ledc_channel_config(&cfg_bl_channel);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to config LEDC channel for display backlight: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = ledc_timer_config(&cfg_bl_timer);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to config LEDC timer for display backlight: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    hdl_lcd = audio_board_lcd_init(hdl_pset, NULL);
+    ret = esp_lcd_panel_disp_off(hdl_lcd, false);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to turn of display: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    return ret;
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
@@ -427,6 +480,7 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, 60);
 
+    init_display();
     init_ap_to_api();
     start_rec();
 
@@ -435,4 +489,7 @@ void app_main(void)
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
+
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
 }
