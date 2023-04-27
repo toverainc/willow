@@ -55,6 +55,15 @@ build)
     idf.py build
 ;;
 
+build-docker)
+    docker build -t sallow:latest .
+;;
+
+docker)
+    check_port
+    docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT sallow:latest /bin/bash
+;;
+
 # Needs to be updated if we change the partitions
 just-flash)
     check_port
