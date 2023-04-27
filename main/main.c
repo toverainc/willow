@@ -246,18 +246,66 @@ static void start_rec()
 
     audio_pipeline_run(hdl_ap);
 
-    recorder_sr_cfg_t cfg_srr = DEFAULT_RECORDER_SR_CFG();
+    afe_config_t cfg_afe = {
+        .aec_init = true,
+        .se_init = true,
+        .vad_init = true,
+        .wakenet_init = true,
+        .voice_communication_init = false,
+        .voice_communication_agc_init = false,
+        .voice_communication_agc_gain = 15,
+        .vad_mode = VAD_MODE_3,
+        .wakenet_model_name = NULL,
+        .wakenet_mode = DET_MODE_2CH_90,
+        .afe_mode = SR_MODE_LOW_COST,
+        .afe_perferred_core = 0,
+        .afe_perferred_priority = 5,
+        .afe_ringbuf_size = 50,
+        .memory_alloc_mode = AFE_MEMORY_ALLOC_MORE_PSRAM,
+        .agc_mode = AFE_MN_PEAK_AGC_MODE_2,
+        .pcm_config.total_ch_num = 3,
+        .pcm_config.mic_num = 2,
+        .pcm_config.ref_num = 1,
+        .pcm_config.sample_rate = 16000,
+        .debug_init = false,
+        .debug_hook = {{AFE_DEBUG_HOOK_MASE_TASK_IN, NULL}, {AFE_DEBUG_HOOK_FETCH_TASK_IN, NULL}},
+    };
+
     // E (5727) AFE_SR: sample_rate only support 16000, please modify it!
     // cfg_srr.afe_cfg.pcm_config.sample_rate = CFG_AUDIO_SR_SAMPLE_RATE;
-    cfg_srr.multinet_init = false;
-    cfg_srr.rb_size = 32 * 1024;
 
-    audio_rec_cfg_t cfg_ar = AUDIO_RECORDER_DEFAULT_CFG();
-    cfg_ar.read = (recorder_data_read_t)&feed_afe;
+    recorder_sr_cfg_t cfg_srr = {
+        .afe_cfg          = cfg_afe,
+        .input_order      = INPUT_ORDER_DEFAULT(),
+        .multinet_init    = false,
+        .feed_task_core   = FEED_TASK_PINNED_CORE,
+        .feed_task_prio   = FEED_TASK_PRIO,
+        .feed_task_stack  = FEED_TASK_STACK_SZ,
+        .fetch_task_core  = FETCH_TASK_PINNED_CORE,
+        .fetch_task_prio  = FETCH_TASK_PRIO,
+        .fetch_task_stack = FETCH_TASK_STACK_SZ,
+        .rb_size          = 32 * 1024,
+        .partition_label  = "model",
+        .mn_language      = ESP_MN_CHINESE,
+    };
+
+    audio_rec_cfg_t cfg_ar = {
+        .pinned_core    = AUDIO_REC_DEF_TASK_CORE,
+        .task_prio      = AUDIO_REC_DEF_TASK_PRIO,
+        .task_size      = AUDIO_REC_DEF_TASK_SZ,
+        .event_cb       = cb_ar_event,
+        .user_data      = NULL,
+        .read           = (recorder_data_read_t)&feed_afe,
+        .sr_handle      = NULL,
+        .sr_iface       = NULL,
+        .wakeup_time    = AUDIO_REC_DEF_WAKEUP_TM,
+        .vad_start      = AUDIO_REC_VAD_START_SPEECH_MS,
+        .vad_off        = 500,
+        .wakeup_end     = AUDIO_REC_DEF_WAKEEND_TM,
+        .encoder_handle = NULL,
+        .encoder_iface  = NULL,
+    };
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
-    cfg_ar.vad_off = 500;
-    cfg_ar.event_cb = cb_ar_event;
-
     hdl_ar = audio_recorder_create(&cfg_ar);
 }
 
