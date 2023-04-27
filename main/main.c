@@ -18,7 +18,7 @@
 #include "raw_stream.h"
 #include "recorder_sr.h"
 #include "sdkconfig.h"
-
+#include "sntp.h"
 
 #include "shared.h"
 
@@ -96,6 +96,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
     }
 
     return ESP_OK;
+}
+
+void cb_sntp(struct timeval *tv)
+{
+    ESP_LOGI(TAG, "SNTP client synchronized time to %lu", tv->tv_sec);
 }
 
 static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
@@ -208,6 +213,21 @@ static esp_err_t init_ap_to_api()
     audio_element_getinfo(hdl_ae_hs, &info);
     ESP_LOGI(TAG, "audio_element_getinfo(hdl_ae_hs): sample_rate='%d' channels='%d' bits='%d' bps = '%d'",
              info.sample_rates, info.channels, info.bits, info.bps);
+
+    return ESP_OK;
+}
+
+static esp_err_t init_sntp()
+{
+    ESP_LOGI(TAG, "initializing SNTP client");
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+#ifdef LWIP_DHCP_GET_NTP_SRV
+    sntp_servermode_dhcp(1);
+#else
+    sntp_setservername(0, "pool.ntp.org");
+#endif
+    sntp_set_time_sync_notification_cb(cb_sntp);
+    sntp_init();
 
     return ESP_OK;
 }
@@ -387,6 +407,8 @@ void app_main(void)
         ESP_ERROR_CHECK(nvs_flash_erase());
         ESP_ERROR_CHECK(nvs_flash_init());
     }
+
+    init_sntp();
 
     periph_wifi_cfg_t cfg_pwifi = {
         .ssid = CONFIG_WIFI_SSID,
