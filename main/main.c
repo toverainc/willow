@@ -418,6 +418,13 @@ static esp_err_t init_display(void)
 
     int ret = ESP_OK;
 
+    hdl_lcd = audio_board_lcd_init(hdl_pset, NULL);
+    ret = esp_lcd_panel_disp_off(hdl_lcd, false);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to turn of display: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
     ret = ledc_channel_config(&cfg_bl_channel);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to config LEDC channel for display backlight: %s", esp_err_to_name(ret));
@@ -427,13 +434,6 @@ static esp_err_t init_display(void)
     ret = ledc_timer_config(&cfg_bl_timer);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to config LEDC timer for display backlight: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    hdl_lcd = audio_board_lcd_init(hdl_pset, NULL);
-    ret = esp_lcd_panel_disp_off(hdl_lcd, false);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to turn of display: %s", esp_err_to_name(ret));
         return ret;
     }
 
@@ -489,7 +489,4 @@ void app_main(void)
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
-
-    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
-    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
 }
