@@ -333,6 +333,7 @@ static void start_rec()
         .encoder_iface  = NULL,
     };
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
+    cfg_srr.afe_cfg.wakenet_model_name = WAKENET_NAME;
     hdl_ar = audio_recorder_create(&cfg_ar);
 }
 
