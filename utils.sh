@@ -55,6 +55,15 @@ build)
     idf.py build
 ;;
 
+# Needs to be updated if we change the partitions
+just-flash)
+    check_port
+    cd build
+    esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
+        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x10000 sallow.bin 0x8000 \
+        partition_table/partition-table.bin 0x390000 audio.bin 0x210000 model.bin
+;;
+
 flash)
     check_port
     print_monitor_help
