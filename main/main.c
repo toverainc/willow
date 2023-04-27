@@ -282,7 +282,7 @@ static void start_rec()
         .voice_communication_agc_init = false,
         .voice_communication_agc_gain = 15,
         .vad_mode = VAD_MODE_3,
-        .wakenet_model_name = NULL,
+        .wakenet_model_name = WAKENET_NAME,
         .wakenet_mode = DET_MODE_2CH_90,
         .afe_mode = SR_MODE_LOW_COST,
         .afe_perferred_core = 0,
