@@ -20,5 +20,15 @@ config SERVER_URI
     help
         URI For your Willow instance. Supports HTTP and HTTPS.
 
+config HOMEASSISTANT_URI
+    string "HomeAssistant URI"
+    default "http://192.168.0.2:8123"
+    help
+        URL for your Home Assistant instance.
+
+config HOMEASSISTANT_TOKEN
+    string "HomeAssistant Auth Token"
+    help
+        Long Lived Auth Token for Home Assistant.
 
 endmenu

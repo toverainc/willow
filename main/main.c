@@ -120,6 +120,38 @@ static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
     return raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
 }
 
+static void hass_post(char *data)
+{
+    char hdr_auth[192];
+    char json[256];
+    char url[256];
+    esp_err_t ret;
+
+    esp_http_client_config_t cfg_hc = {
+        // either host and path or url should be set
+        .url = "http://dummy",
+    };
+
+    esp_http_client_handle_t hdl_hc = esp_http_client_init(&cfg_hc);
+
+    snprintf(hdr_auth, 192, "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
+    snprintf(url, 256, "%s/api/conversation/process", CONFIG_HOMEASSISTANT_URI);
+    snprintf(json, sizeof(data) + 224, "{\"text\":%s,\"language\":\"en\"}", data);
+    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", json, url);
+    esp_http_client_set_url(hdl_hc, url);
+    esp_http_client_set_method(hdl_hc, HTTP_METHOD_POST);
+    esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
+    esp_http_client_set_header(hdl_hc, "Content-Type", "application/json");
+    esp_http_client_set_post_field(hdl_hc, json, strlen(json));
+    ret = esp_http_client_perform(hdl_hc);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "HTTP POST status='%d'", esp_http_client_get_status_code(hdl_hc));
+    } else {
+        ESP_LOGE(TAG, "HTTP POST failed: %s", esp_err_to_name(ret));
+    }
+    esp_http_client_cleanup(hdl_hc);
+}
+
 esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 {
     if (msg == NULL) {
@@ -181,6 +213,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             }
             buf[read_len] = 0;
             ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
+            hass_post(buf);
 
             audio_pipeline_pause(hdl_ap_to_api);
 
