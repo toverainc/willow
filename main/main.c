@@ -68,38 +68,36 @@ static void play_tone(void *data)
 
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
-    printf("cb_ar_event: ");
-
     int msg = -1;
 
     switch(are) {
         case AUDIO_REC_VAD_END:
-            printf("AUDIO_REC_VAD_END\n");
+            ESP_LOGI(TAG, "AUDIO_REC_VAD_END");
             msg = MSG_STOP;
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_VAD_START:
-            printf("AUDIO_REC_VAD_START\n");
+            ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
             msg = MSG_START;
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
-            printf("AUDIO_REC_COMMAND_DECT\n");
+            ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
             break;
         case AUDIO_REC_WAKEUP_END:
-            printf("AUDIO_REC_WAKEUP_END\n");
+            ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
             break;
         case AUDIO_REC_WAKEUP_START:
-            printf("AUDIO_REC_WAKEUP_START\n");
+            ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023);
             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
             // Disable tone until we work out timing
             //audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
         default:
-            printf("unhandled event: '%d'\n", are);
+            ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'\n", are);
             break;
     }
 
