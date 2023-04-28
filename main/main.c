@@ -73,8 +73,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
     switch(are) {
         case AUDIO_REC_VAD_END:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_END");
-            msg = MSG_STOP;
-            xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_VAD_START:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
@@ -86,6 +84,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_END:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
+            msg = MSG_STOP;
+            xQueueSend(q_rec, &msg, 0);
             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
             break;
