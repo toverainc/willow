@@ -121,7 +121,6 @@ static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
 static void hass_post(char *data)
 {
     char *hdr_auth = NULL;
-    char *json = NULL;
     char *url = NULL;
     esp_err_t ret;
 
@@ -133,19 +132,17 @@ static void hass_post(char *data)
     esp_http_client_handle_t hdl_hc = esp_http_client_init(&cfg_hc);
 
     hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
-    json = malloc(27 + strlen(data));
     url = malloc(27 + strlen(CONFIG_HOMEASSISTANT_URI));
 
     snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
-    snprintf(json, 27 + strlen(data), "{\"text\":%s,\"language\":\"en\"}", data);
     snprintf(url, 27 + strlen(CONFIG_HOMEASSISTANT_URI), "%s/api/conversation/process", CONFIG_HOMEASSISTANT_URI);
 
-    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", json, url);
+    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
     esp_http_client_set_url(hdl_hc, url);
     esp_http_client_set_method(hdl_hc, HTTP_METHOD_POST);
     esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     esp_http_client_set_header(hdl_hc, "Content-Type", "application/json");
-    esp_http_client_set_post_field(hdl_hc, json, strlen(json));
+    esp_http_client_set_post_field(hdl_hc, data, strlen(data));
     ret = esp_http_client_perform(hdl_hc);
     if (ret == ESP_OK) {
         ESP_LOGI(TAG, "HTTP POST status='%d'", esp_http_client_get_status_code(hdl_hc));
@@ -155,7 +152,6 @@ static void hass_post(char *data)
     esp_http_client_cleanup(hdl_hc);
 
     free(hdr_auth);
-    free(json);
     free(url);
 }
 
