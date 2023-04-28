@@ -93,7 +93,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
             ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023);
             ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
-            audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
+            // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
         default:
             ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'\n", are);
