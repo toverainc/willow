@@ -4,6 +4,7 @@
 #include "audio_recorder.h"
 #include "audio_thread.h"
 #include "board.h"
+#include "cJSON.h"
 #include "driver/ledc.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
@@ -120,9 +121,12 @@ static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
 
 static void hass_post(char *data)
 {
+    char *body = NULL;
     char *hdr_auth = NULL;
+    char *json = NULL;
     char *url = NULL;
     esp_err_t ret;
+    int n;
 
     esp_http_client_config_t cfg_hc = {
         // either host and path or url should be set
@@ -142,13 +146,37 @@ static void hass_post(char *data)
     esp_http_client_set_method(hdl_hc, HTTP_METHOD_POST);
     esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     esp_http_client_set_header(hdl_hc, "Content-Type", "application/json");
-    esp_http_client_set_post_field(hdl_hc, data, strlen(data));
-    ret = esp_http_client_perform(hdl_hc);
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "HTTP POST status='%d'", esp_http_client_get_status_code(hdl_hc));
-    } else {
-        ESP_LOGE(TAG, "HTTP POST failed: %s", esp_err_to_name(ret));
+    ret = esp_http_client_open(hdl_hc, strlen(data));
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to open HTTP connection: %s", esp_err_to_name(ret));
+        goto cleanup;
     }
+    n = esp_http_client_write(hdl_hc, data, strlen(data));
+    if (n < 0) {
+        ESP_LOGE(TAG, "failed to POST HTTP data");
+        goto cleanup;
+    }
+    n = esp_http_client_fetch_headers(hdl_hc);
+    if (n < 0) {
+        ESP_LOGE(TAG, "failed to get HTTP headers");
+        goto cleanup;
+    }
+    body = malloc(n + 1);
+    n = esp_http_client_read_response(hdl_hc, body, n);
+    if (n >= 0) {
+        ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'",
+                 esp_http_client_get_status_code(hdl_hc), esp_http_client_get_content_length(hdl_hc));
+        cJSON *cjson = cJSON_Parse(body);
+        json = cJSON_Print(cjson);
+        cJSON_Delete(cjson);
+        if (json != NULL) {
+            ESP_LOGI(TAG, "HTTP POST response body:\n%s", json);
+        }
+    } else {
+        ESP_LOGE(TAG, "failed to read HTTP POST response");
+    }
+    free(body);
+cleanup:
     esp_http_client_cleanup(hdl_hc);
 
     free(hdr_auth);
