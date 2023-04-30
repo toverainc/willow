@@ -123,7 +123,6 @@ void cb_sntp(struct timeval *tv)
 
 static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
 {
-    int ret = 0;
     if (buf == NULL || hdl_ae_rs_from_i2s == NULL) {
         return -1;
     }
@@ -334,7 +333,7 @@ static esp_err_t init_sntp()
 
 static void start_rec()
 {
-    audio_element_handle_t hdl_ae_is, hdl_ae_rf;
+    audio_element_handle_t hdl_ae_is;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
     audio_pipeline_handle_t hdl_ap;
 
