@@ -48,7 +48,7 @@ const int32_t tone[] = {
     0x00000000, 0x00000000,
 };
 
-static void play_tone(void *data)
+static void play_tone(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
 
@@ -63,7 +63,19 @@ static void play_tone(void *data)
     }
 
     gpio_set_level(get_pa_enable_gpio(), 0);
+}
 
+static void play_tone_ok(void *data)
+{
+    play_tone();
+    vTaskDelete(NULL);
+}
+
+static void play_tone_err(void *data)
+{
+    play_tone();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    play_tone();
     vTaskDelete(NULL);
 }
 
@@ -164,9 +176,25 @@ static void hass_post(char *data)
     body = malloc(n + 1);
     n = esp_http_client_read_response(hdl_hc, body, n);
     if (n >= 0) {
+        int http_status = esp_http_client_get_status_code(hdl_hc);
         ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'",
-                 esp_http_client_get_status_code(hdl_hc), esp_http_client_get_content_length(hdl_hc));
+                 http_status, esp_http_client_get_content_length(hdl_hc));
+        if (http_status != 200) {
+            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 5, true, 0);
+        }
         cJSON *cjson = cJSON_Parse(body);
+        cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
+        if (cJSON_IsObject(response)) {
+            cJSON *response_type = cJSON_GetObjectItemCaseSensitive(response, "response_type");
+            if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
+                ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
+                if (!strcmp(response_type->valuestring, "error")) {
+                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 5, true, 0);
+                } else {
+                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 5, true, 0);
+                }
+            }
+        }
         json = cJSON_Print(cjson);
         cJSON_Delete(cjson);
         if (json != NULL) {
