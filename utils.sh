@@ -119,7 +119,6 @@ install|setup)
 
 *)
     echo "Passing args directly to idf.py"
-    shift
     idf.py "$@"
 ;;
 
