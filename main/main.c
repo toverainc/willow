@@ -179,7 +179,7 @@ static void hass_post(char *data)
         ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'",
                  http_status, esp_http_client_get_content_length(hdl_hc));
         if (http_status != 200) {
-            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 5, true, 0);
+            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 1, true, 0);
         }
         cJSON *cjson = cJSON_Parse(body);
         cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
@@ -188,9 +188,9 @@ static void hass_post(char *data)
             if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
                 ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                 if (!strcmp(response_type->valuestring, "error")) {
-                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 5, true, 0);
+                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 1, true, 0);
                 } else {
-                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 5, true, 0);
+                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
                 }
             }
         }
