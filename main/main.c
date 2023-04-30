@@ -403,7 +403,7 @@ static void start_rec()
         .fetch_task_core  = FETCH_TASK_PINNED_CORE,
         .fetch_task_prio  = FETCH_TASK_PRIO,
         .fetch_task_stack = FETCH_TASK_STACK_SZ,
-        .rb_size          = 10 * 1024,   // default is 6 * 1024
+        .rb_size          = 12 * 1024,   // default is 6 * 1024
         .partition_label  = "model",
         .mn_language      = ESP_MN_CHINESE,
     };
