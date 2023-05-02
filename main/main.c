@@ -566,6 +566,11 @@ void app_main(void)
     esp_periph_start(hdl_pset, hdl_pwifi);
     periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
 
+    err = esp_wifi_set_ps(WIFI_PS_NONE);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set Wi-Fi power save mode");
+    }
+
     audio_board_handle_t hdl_audio_board = audio_board_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
