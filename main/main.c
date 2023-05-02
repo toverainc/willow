@@ -542,15 +542,15 @@ static esp_err_t init_display(void)
         return ret;
     }
 
-    ret = ledc_channel_config(&cfg_bl_channel);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to config LEDC channel for display backlight: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
     ret = ledc_timer_config(&cfg_bl_timer);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to config LEDC timer for display backlight: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = ledc_channel_config(&cfg_bl_channel);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to config LEDC channel for display backlight: %s", esp_err_to_name(ret));
         return ret;
     }
 
