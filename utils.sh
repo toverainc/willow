@@ -1,14 +1,11 @@
 #!/bin/bash
 set -e # bail on error
 
-export ADF_VER="v2.5"
 export PLATFORM="esp32s3" # Current general family
 export FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
 
 export SALLOW_PATH="$PWD"
-export IDF_TOOLS_PATH="$SALLOW_PATH/deps/idf-tools"
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
-export IDF_PATH="$ADF_PATH/esp-idf"
 
 check_port() {
 if [ ! $PORT ]; then
@@ -21,13 +18,6 @@ if [ ! -c $PORT ]; then
     exit 1
 fi
 }
-
-# Pull in environment
-if [ -r $IDF_PATH/export.sh ]; then
-    . $IDF_PATH/export.sh > /dev/null
-else
-    echo "Environment not found - normal for setup" 
-fi
 
 print_monitor_help() {
 echo "
@@ -103,13 +93,9 @@ install|setup)
     mkdir -p deps
     cd deps
     # Setup ADF
-    git clone --recursive -b "$ADF_VER" https://github.com/espressif/esp-adf.git
-    cd esp-adf/esp-idf
-    ./install.sh "$PLATFORM"
-
-    # This is ridiculous
-    cd $IDF_PATH
-    git apply $ADF_PATH/idf_patches/idf_v4.4_freertos.patch
+    git clone -b "$ADF_VER" https://github.com/espressif/esp-adf.git
+    cd $ADF_PATH
+    git submodule update --init components/esp-adf-libs
 
     cd $SALLOW_PATH
     cp sdkconfig.sallow sdkconfig
