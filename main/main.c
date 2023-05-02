@@ -10,13 +10,17 @@
 #include "esp_http_client.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_log.h"
+#include "esp_lvgl_port.h"
+#include "esp_netif.h"
 #include "esp_peripherals.h"
 #include "esp_wifi.h"
 #include "filter_resample.h"
 #include "http_stream.h"
 #include "i2s_stream.h"
+#include "lvgl.h"
 #include "model_path.h"
 #include "nvs_flash.h"
+#include "periph_lcd.h"
 #include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_sr.h"
@@ -26,6 +30,25 @@
 #include "shared.h"
 
 #define I2S_PORT I2S_NUM_0
+
+// this is absolutely horrendous but lvgl_port_esp32 requires esp_lcd_panel_io_handle_t and esp-adf does not expose this
+typedef struct periph_lcd {
+    void                                *io_bus;
+    get_lcd_io_bus                      new_panel_io;
+    esp_lcd_panel_io_spi_config_t       lcd_io_cfg;
+    get_lcd_panel                       new_lcd_panel;
+    esp_lcd_panel_dev_config_t          lcd_dev_cfg;
+
+    esp_lcd_panel_io_handle_t           lcd_io_handle;
+    esp_lcd_panel_handle_t              lcd_panel_handle;
+
+    perph_lcd_rest                      rest_cb;
+    void                                *rest_cb_ctx;
+    bool                                lcd_swap_xy;
+    bool                                lcd_mirror_x;
+    bool                                lcd_mirror_y;
+    bool                                lcd_color_invert;
+} periph_lcd_t;
 
 static bool stream_to_api = false;
 static const char *TAG = "SALLOW";
@@ -39,6 +62,7 @@ static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = 
 static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
 static esp_lcd_panel_handle_t hdl_lcd = NULL;
+static lv_disp_t *ld;
 static QueueHandle_t q_rec = NULL;
 
 const int32_t tone[] = {
@@ -493,7 +517,7 @@ static esp_err_t init_display(void)
 
     const ledc_channel_config_t cfg_bl_channel = {
         .channel = LEDC_CHANNEL_1,
-        .duty = 0,
+        .duty = 1023,
         .gpio_num = GPIO_NUM_45,
         .hpoint = 0,
         .intr_type = LEDC_INTR_DISABLE,
@@ -529,6 +553,56 @@ static esp_err_t init_display(void)
         ESP_LOGE(TAG, "failed to config LEDC timer for display backlight: %s", esp_err_to_name(ret));
         return ret;
     }
+
+    return ret;
+}
+
+static esp_err_t init_lvgl(void)
+{
+    esp_err_t ret = ESP_OK;
+    const lvgl_port_cfg_t cfg_lp = ESP_LVGL_PORT_INIT_CONFIG();
+    ret = lvgl_port_init(&cfg_lp);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to initialize LVGL port: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    // get peripheral handle for LCD
+    esp_periph_handle_t hdl_plcd = esp_periph_set_get_by_id(hdl_pset, PERIPH_ID_LCD);
+
+    // get data for LCD peripheral
+    periph_lcd_t *lcdp = esp_periph_get_data(hdl_plcd);
+
+    if (lcdp == NULL || lcdp->lcd_io_handle == NULL) {
+        ESP_LOGE(TAG, "failed to get LCD IO handle");
+        return ESP_FAIL;
+    }
+
+    ESP_LOGD(TAG, "init_lvgl: lcdp->lcd_io_handle: %p", lcdp->lcd_io_handle);
+
+    const lvgl_port_display_cfg_t cfg_ld = {
+        .buffer_size = LCD_H_RES * LCD_V_RES / 10,
+        .double_buffer = false,
+        // DMA and SPIRAM
+        // E (16:37:21.267) LVGL: lvgl_port_add_disp(190): Alloc DMA capable buffer in SPIRAM is not supported!
+        .flags = {
+            .buff_dma = false,
+            .buff_spiram = true,
+        },
+        .hres = LCD_H_RES,
+        // confirmed this is correct by printf %p periph_lcd->lcd_io_handle in esp_peripherals/periph_lcd.c
+        .io_handle = lcdp->lcd_io_handle,
+        .monochrome = false,
+        .panel_handle = hdl_lcd,
+        .rotation = {
+            .mirror_x = LCD_MIRROR_X,
+            .mirror_y = LCD_MIRROR_Y,
+            .swap_xy = LCD_SWAP_XY,
+        },
+        .vres = LCD_V_RES,
+    };
+
+    ld = lvgl_port_add_disp(&cfg_ld);
 
     return ret;
 }
@@ -579,6 +653,7 @@ void app_main(void)
     audio_hal_set_volume(hdl_audio_board->audio_hal, 60);
 
     init_display();
+    init_lvgl();
     init_ap_to_api();
     start_rec();
 
@@ -586,5 +661,44 @@ void app_main(void)
 
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
+
+    ESP_LOGI(TAG, "esp_netif_get_nr_of_ifs: %d", esp_netif_get_nr_of_ifs());
+    esp_netif_t *hdl_netif = esp_netif_next(NULL);
+
+    if (hdl_netif != NULL) {
+        char ip4[16];
+        esp_netif_ip_info_t inf_ip;
+        esp_netif_get_ip_info(hdl_netif, &inf_ip);
+
+        snprintf(ip4, 16, IPSTR, IP2STR(&inf_ip.ip));
+
+        if (ld == NULL) {
+            ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
+        } else {
+            // static lv_style_t lv_st_montserrat_20;
+            // lv_style_init(&lv_st_montserrat_20);
+            // lv_style_set_text_color(&lv_st_montserrat_20, lv_color_black());
+            // lv_style_set_text_font(&lv_st_montserrat_20, &lv_font_montserrat_14);
+            // lv_style_set_text_opa(&lv_st_montserrat_20, LV_OPA_30);
+
+            lvgl_port_lock(0);
+
+            lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
+            lv_obj_t *lbl_hdr = lv_label_create(scr_act);
+            lv_obj_t *lbl_ip = lv_label_create(scr_act);
+            // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
+            lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
+            lv_label_set_text(lbl_ip, ip4);
+            lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
+            lv_obj_align(lbl_ip, LV_ALIGN_CENTER, 0, 0);
+
+            lvgl_port_unlock();
+        }
+    }
+
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
+
+    vTaskDelay(10000 / portTICK_PERIOD_MS);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1);
 }
