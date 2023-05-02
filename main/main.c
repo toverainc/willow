@@ -123,7 +123,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
             msg = MSG_STOP;
             xQueueSend(q_rec, &msg, 0);
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
@@ -214,6 +213,7 @@ static void hass_post(char *data)
                 } else {
                     audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
                 }
+                ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
             }
         }
         json = cJSON_Print(cjson);
