@@ -77,6 +77,15 @@ mac-flash)
     screen "$PORT" 115200
 ;;
 
+mac-flash-app)
+    check_port
+    mac_esptool
+    cd build
+    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
+        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 sallow.bin
+    screen "$PORT" 115200
+;;
+
 flash)
     check_port
     print_monitor_help
