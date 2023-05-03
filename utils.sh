@@ -151,8 +151,8 @@ destroy)
     read
     #git reset --hard
     #git clean -fdx
-    rm -rf build/*
-    rm -rf deps target venv
+    sudo rm -rf build/*
+    sudo rm -rf deps target venv
     echo "Not a trace left. You will have to run setup again."
 ;;
 

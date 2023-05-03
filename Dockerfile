@@ -10,7 +10,8 @@ RUN apt-get -qq install \
 	python3-pip \
 	python-is-python3 \
 	python3-venv \
-	screen
+	screen \
+	sudo
 
 RUN useradd --create-home --uid 1000 build
 COPY --chown=1000 container.gitconfig /home/build/.gitconfig
