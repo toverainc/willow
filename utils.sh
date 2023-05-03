@@ -32,6 +32,7 @@ check_esptool() {
         python3 -m venv venv
         source venv/bin/activate
         echo "Installing esptool..."
+        pip install -U wheel setuptools pip
         pip install esptool
     else
         echo "Using venv for esptool"
