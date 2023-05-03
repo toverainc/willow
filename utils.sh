@@ -99,7 +99,7 @@ destroy)
     #git reset --hard
     #git clean -fdx
     rm -rf build/*
-    rm -rf deps
+    rm -rf deps target venv
     echo "Not a trace left. You will have to run setup again."
 ;;
 
