@@ -57,11 +57,17 @@ do_screen() {
     screen "$PORT" "$CONSOLE_BAUD"
 }
 
-check_docker(){
-    if [ ! -f /.dockerenv ]; then
-        echo "You need to run this command inside of the docker image";
-        exit 1
+check_container(){
+    if [ -f /.dockerenv ]; then
+        return
     fi
+
+    if [ "$container" = "podman" ]; then
+	return
+    fi
+
+    echo "You need to run this command inside of a container"
+    exit 1
 }
 
 check_deps() {
@@ -75,25 +81,25 @@ check_deps() {
 case $1 in
 
 config)
-    check_docker
+    check_container
     check_deps
     idf.py menuconfig
 ;;
 
 clean)
-    check_docker
+    check_container
     check_deps
     idf.py clean
 ;;
 
 fullclean)
-    check_docker
+    check_container
     check_deps
     idf.py fullclean
 ;;
 
 build)
-    check_docker
+    check_container
     check_deps
     idf.py build
 ;;
@@ -136,7 +142,7 @@ flash-app)
 idf-flash)
     check_port
     check_screen
-    check_docker
+    check_container
     check_deps
     fix_term
     print_monitor_help
@@ -167,7 +173,7 @@ destroy)
 ;;
 
 install|setup)
-    check_docker
+    check_container
     if [ -d deps ]; then
         echo "You already have a deps directory - exiting"
         exit 1
@@ -186,7 +192,7 @@ install|setup)
 ;;
 
 *)
-    check_docker
+    check_container
     echo "Passing args directly to idf.py"
     idf.py "$@"
 ;;
