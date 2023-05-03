@@ -51,22 +51,44 @@ do_screen() {
     screen "$PORT" "$CONSOLE_BAUD"
 }
 
+check_docker(){
+    if [ ! -f /.dockerenv ]; then
+        echo "You need to run this command inside of the docker image";
+        exit 1
+    fi
+}
+
+check_deps() {
+    if [ ! -d deps/esp-adf ]; then
+        echo "You need to run install first"
+        exit 1
+    fi
+}
+
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
 
 config)
+    check_docker
+    check_deps
     idf.py menuconfig
 ;;
 
 clean)
+    check_docker
+    check_deps
     idf.py clean
 ;;
 
 fullclean)
+    check_docker
+    check_deps
     idf.py fullclean
 ;;
 
 build)
+    check_docker
+    check_deps
     idf.py build
 ;;
 
@@ -106,14 +128,16 @@ mac-flash-app)
 flash)
     check_port
     check_screen
+    check_docker
+    check_deps
     print_monitor_help
     idf.py -p "$PORT" -b "$FLASH_BAUD" flash
     do_screen
-
 ;;
 
 monitor)
     check_port
+    check_screen
     print_monitor_help
     do_screen
 ;;
@@ -133,6 +157,11 @@ destroy)
 ;;
 
 install|setup)
+    check_docker
+    if [ -d deps ]; then
+        echo "You already have a deps directory - exiting"
+        exit 1
+    fi
     mkdir -p deps
     cd deps
     # Setup ADF
@@ -147,6 +176,7 @@ install|setup)
 ;;
 
 *)
+    check_docker
     echo "Passing args directly to idf.py"
     idf.py "$@"
 ;;
