@@ -150,7 +150,7 @@ CONFIG_PARTITION_TABLE_MD5=y
 CONFIG_WIFI_SSID="Willow"
 CONFIG_WIFI_PASSWORD="hiwillow"
 CONFIG_SERVER_URI="https://sinfer.tovera.io/api/sallow?model=medium&detect_language=False&beam_size=1&save_audio=True"
-CONFIG_HOMEASSISTANT_URI="http://YOUR_HA_INSTANCE:8123"
+CONFIG_HOMEASSISTANT_URI="http://homeassistant.local:8123"
 CONFIG_HOMEASSISTANT_TOKEN="YOUR_HA_AUTH_TOKEN"
 # end of Sallow Configuration
 
