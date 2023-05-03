@@ -13,6 +13,7 @@
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
 #include "esp_peripherals.h"
+#include "esp_sntp.h"
 #include "esp_wifi.h"
 #include "filter_resample.h"
 #include "http_stream.h"
@@ -25,7 +26,6 @@
 #include "raw_stream.h"
 #include "recorder_sr.h"
 #include "sdkconfig.h"
-#include "sntp.h"
 
 #include "shared.h"
 
