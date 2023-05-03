@@ -3,6 +3,7 @@ set -e # bail on error
 
 export PLATFORM="esp32s3" # Current general family
 export FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
+export CONSOLE_BAUD=115200 # Subject to change
 
 export SALLOW_PATH="$PWD"
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
@@ -21,7 +22,7 @@ fi
 
 print_monitor_help() {
 echo "
-You can exit the serial monitor with CTRL + ]
+You can exit the serial monitor with CTRL + A and then k
 "
 }
 
@@ -36,6 +37,18 @@ mac_esptool() {
         echo "Using venv for mac"
         source venv/bin/activate
     fi
+}
+
+check_screen() {
+    if ! command -v screen &> /dev/null
+    then
+        echo "GNU Screen could not be found in path - you need to install it"
+        exit 1
+    fi
+}
+
+do_screen() {
+    screen "$PORT" "$CONSOLE_BAUD"
 }
 
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
@@ -69,33 +82,40 @@ docker)
 # Needs to be updated if we change the partitions
 mac-flash)
     check_port
+    check_screen
     mac_esptool
     cd build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x10000 sallow.bin 0x8000 \
         partition_table/partition-table.bin 0x390000 audio.bin 0x210000 model.bin
-    screen "$PORT" 115200
+    print_monitor_help
+    do_screen
 ;;
 
 mac-flash-app)
     check_port
+    check_screen
     mac_esptool
     cd build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 sallow.bin
-    screen "$PORT" 115200
+    print_monitor_help
+    do_screen
 ;;
 
 flash)
     check_port
+    check_screen
     print_monitor_help
-    idf.py -p "$PORT" -b "$FLASH_BAUD" flash monitor
+    idf.py -p "$PORT" -b "$FLASH_BAUD" flash
+    do_screen
+
 ;;
 
 monitor)
     check_port
     print_monitor_help
-    idf.py -p "$PORT" monitor
+    do_screen
 ;;
 
 destroy)

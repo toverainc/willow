@@ -8,7 +8,8 @@ RUN apt-get -qq install \
 	libusb-1.0-0 \
 	python3 \
 	python3-pip \
-	python-is-python3
+	python-is-python3 \
+	screen
 
 RUN useradd --create-home --uid 1000 build
 COPY --chown=1000 container.gitconfig /home/build/.gitconfig
