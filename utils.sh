@@ -48,6 +48,11 @@ check_screen() {
     fi
 }
 
+fix_term() {
+    clear
+    reset
+}
+
 do_screen() {
     screen "$PORT" "$CONSOLE_BAUD"
 }
@@ -107,6 +112,7 @@ flash)
     check_port
     check_screen
     check_esptool
+    fix_term
     cd build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x10000 sallow.bin 0x8000 \
@@ -119,6 +125,7 @@ flash-app)
     check_port
     check_screen
     check_esptool
+    fix_term
     cd build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 sallow.bin
@@ -131,6 +138,7 @@ idf-flash)
     check_screen
     check_docker
     check_deps
+    fix_term
     print_monitor_help
     idf.py -p "$PORT" -b "$FLASH_BAUD" flash
     do_screen
@@ -139,6 +147,7 @@ idf-flash)
 monitor)
     check_port
     check_screen
+    fix_term
     print_monitor_help
     do_screen
 ;;
