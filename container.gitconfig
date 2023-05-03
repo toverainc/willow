@@ -1,2 +1,2 @@
 [safe]
-	directory = /opt/esp/idf
+	directory = *
