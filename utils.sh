@@ -63,7 +63,7 @@ build-docker)
 
 docker)
     check_port
-    docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT sallow:latest /bin/bash
+    docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT -e TERM sallow:latest /bin/bash
 ;;
 
 # Needs to be updated if we change the partitions
