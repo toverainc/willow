@@ -25,6 +25,18 @@ You can exit the serial monitor with CTRL + ]
 "
 }
 
+mac_esptool() {
+    if [ ! -d venv ]; then
+        echo "Creating venv for mac"
+        python3 -m venv venv
+        source venv/bin/activate
+        echo "Installing esptool..."
+        pip install esptool
+    else
+        echo "Using venv for mac"
+        source venv/bin/activate
+    fi
+}
 
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
@@ -55,12 +67,14 @@ docker)
 ;;
 
 # Needs to be updated if we change the partitions
-just-flash)
+mac-flash)
     check_port
+    mac_esptool
     cd build
-    esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
+    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x10000 sallow.bin 0x8000 \
         partition_table/partition-table.bin 0x390000 audio.bin 0x210000 model.bin
+    screen "$PORT" 115200
 ;;
 
 flash)
