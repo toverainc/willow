@@ -102,7 +102,7 @@ delete:
 void task_listen(void *arg)
 {
     esp_afe_sr_data_t *data_afe = arg;
-    int channels, csize;
+    int csize;
     int16_t *buf_i2s = NULL;
 
     if (data_afe == NULL) {
@@ -115,7 +115,6 @@ void task_listen(void *arg)
         goto delete;
     }
 
-    channels = if_afe->get_channel_num(data_afe);
     csize = if_afe->get_feed_chunksize(data_afe);
     buf_i2s = malloc(csize * sizeof(int16_t) * I2S_CHANNEL);
 
