@@ -173,7 +173,7 @@ destroy)
     #git reset --hard
     #git clean -fdx
     sudo rm -rf build/*
-    sudo rm -rf deps target venv
+    sudo rm -rf deps target venv managed_components
     echo "Not a trace left. You will have to run setup again."
 ;;
 
