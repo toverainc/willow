@@ -643,6 +643,11 @@ static esp_err_t init_lvgl(void)
     return ret;
 }
 
+static void cb_scr(lv_event_t *ev)
+{
+    printf("cb_scr\n");
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
@@ -722,6 +727,7 @@ void app_main(void)
             lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
             lv_obj_t *lbl_hdr = lv_label_create(scr_act);
             lv_obj_t *lbl_ip = lv_label_create(scr_act);
+            lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
             // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
             lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
             lv_label_set_text(lbl_ip, ip4);
