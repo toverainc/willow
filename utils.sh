@@ -161,6 +161,8 @@ dist)
     cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" merge_bin -o "$SALLOW_PATH/$DIST_FILE" \
         @flash_args
+    echo "Combined firmware image for flashing written"
+    ls -lh "$SALLOW_PATH/$DIST_FILE"
 ;;
 
 flash-dist|dist-flash)
