@@ -744,6 +744,11 @@ void app_main(void)
         printf("MALLOC_CAP_SPIRAM:\n");
         heap_caps_print_heap_info(MALLOC_CAP_SPIRAM);
 #endif
+#ifdef CONFIG_SALLOW_DEBUG_TASKS
+        char buf[128];
+        vTaskList(&buf);
+        printf("%s\n", buf);
+#endif
 	    vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }

@@ -42,4 +42,9 @@ config SALLOW_DEBUG_MEM
     help
         Sallow will periodically print memory debugging information when set
 
+config SALLOW_DEBUG_TASKS
+    bool "Debug Sallow tasks"
+    depends on FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
+    help
+        Sallow will periodically print task list when enabled
 endmenu
