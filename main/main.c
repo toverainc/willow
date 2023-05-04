@@ -427,7 +427,7 @@ static void start_rec()
         .fetch_task_stack = FETCH_TASK_STACK_SZ,
         .rb_size          = 12 * 1024,   // default is 6 * 1024
         .partition_label  = "model",
-        .mn_language      = ESP_MN_CHINESE,
+        .mn_language      = ESP_MN_ENGLISH,
     };
 
     audio_rec_cfg_t cfg_ar = {
