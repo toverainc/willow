@@ -2,8 +2,11 @@ FROM espressif/idf:release-v4.4
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
-RUN apt-get -qq update
-RUN apt-get -qq install \
+RUN \
+  --mount=type=cache,target=/var/cache/apt \
+  --mount=type=cache,target=/var/lib/apt/lists \
+  apt-get -qq update && \
+  apt-get -qq install \
 	git \
 	libusb-1.0-0 \
 	python3 \
@@ -11,10 +14,7 @@ RUN apt-get -qq install \
 	python-is-python3 \
 	python3-venv \
 	screen \
-	sudo \
-	&& \
-	apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+	sudo
 
 RUN useradd --create-home --uid 1000 build
 COPY --chown=1000 container.gitconfig /home/build/.gitconfig
