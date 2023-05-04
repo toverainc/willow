@@ -219,7 +219,7 @@ static void hass_post(char *data)
                     ok = true;
                     audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
                 }
-                ledc_set_fade_time_and_start(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 10000, LEDC_FADE_NO_WAIT);
+                ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
             }
         }
         json = cJSON_Print(cjson);
@@ -785,7 +785,9 @@ void app_main(void)
     }
 
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
-    ledc_set_fade_time_and_start(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 10000, LEDC_FADE_NO_WAIT);
+
+    vTaskDelay(10000 / portTICK_PERIOD_MS);
+    ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
 
     while (true) {
 #ifdef CONFIG_SALLOW_DEBUG_MEM
