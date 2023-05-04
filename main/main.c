@@ -9,6 +9,7 @@
 #include "esp_err.h"
 #include "esp_http_client.h"
 #include "esp_lcd_panel_ops.h"
+#include "esp_lcd_touch_gt911.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
@@ -607,6 +608,37 @@ static esp_err_t init_lvgl(void)
     };
 
     ld = lvgl_port_add_disp(&cfg_ld);
+
+    esp_lcd_touch_config_t cfg_lt = {
+        .flags = {
+            .mirror_x = LCD_MIRROR_X,
+            .mirror_y = LCD_MIRROR_Y,
+            .swap_xy = LCD_SWAP_XY,
+        },
+        .levels = {
+            .interrupt = 0,
+            .reset = 0,
+        },
+        .int_gpio_num = -1,
+        .rst_gpio_num = -1,
+        .x_max = LCD_H_RES,
+        .y_max = LCD_V_RES,
+    };
+    esp_lcd_touch_handle_t hdl_lt;
+
+    ret =  esp_lcd_touch_new_i2c_gt911(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to initialize touch screen: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    const lvgl_port_touch_cfg_t cfg_pt = {
+        .disp = ld,
+        .handle = hdl_lt,
+    };
+
+    lv_indev_t *lt = lvgl_port_add_touch(&cfg_pt);
+    lv_indev_enable(lt, true);
 
     return ret;
 }
