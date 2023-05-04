@@ -1,1 +1,9 @@
+# turns off the license screen
+startup_message off
+
+# Status bar
+hardstatus on
+hardstatus alwayslastline
+hardstatus string 'SALLOW CONSOLE %{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W}%c %{g}]'
+
 defscrollback 100000
