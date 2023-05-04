@@ -8,6 +8,8 @@ export PLATFORM="esp32s3" # Current general family
 export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
 export CONSOLE_BAUD=2000000 # Subject to change
 
+export DOCKER_IMAGE="sallow:latest"
+
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
 
@@ -109,13 +111,13 @@ build)
     idf.py build
 ;;
 
-build-docker)
-    docker build -t sallow:latest .
+build-docker|docker-build)
+    docker build -t "$DOCKER_IMAGE" .
 ;;
 
 docker)
     check_port
-    docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT -e TERM sallow:latest /bin/bash
+    docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT -e TERM "$DOCKER_IMAGE" /bin/bash
 ;;
 
 # Needs to be updated if we change the partitions
