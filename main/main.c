@@ -52,10 +52,10 @@ typedef struct periph_lcd {
 
 static bool stream_to_api = false;
 static const char *TAG = "SALLOW";
-static enum q_msg {
+typedef enum {
     MSG_STOP,
     MSG_START,
-};
+} q_msg;
 static int total_write = 0;
 
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
