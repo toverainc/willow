@@ -64,6 +64,7 @@ static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
 static esp_lcd_panel_handle_t hdl_lcd = NULL;
 static lv_disp_t *ld;
+static lv_obj_t *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
 static QueueHandle_t q_rec = NULL;
 
 const int32_t tone[] = {
@@ -154,6 +155,7 @@ static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
 
 static void hass_post(char *data)
 {
+    bool ok;
     char *body = NULL;
     char *hdr_auth = NULL;
     char *json = NULL;
@@ -201,6 +203,7 @@ static void hass_post(char *data)
         ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'",
                  http_status, esp_http_client_get_content_length(hdl_hc));
         if (http_status != 200) {
+            ok = false;
             audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 1, true, 0);
         }
         cJSON *cjson = cJSON_Parse(body);
@@ -210,8 +213,10 @@ static void hass_post(char *data)
             if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
                 ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                 if (!strcmp(response_type->valuestring, "error")) {
+                    ok = false;
                     audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 1, true, 0);
                 } else {
+                    ok = true;
                     audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
                 }
                 ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
@@ -222,6 +227,13 @@ static void hass_post(char *data)
         if (json != NULL) {
             ESP_LOGI(TAG, "HTTP POST response body:\n%s", json);
         }
+
+        lvgl_port_lock(0);
+        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_static(lbl_ln3, "HA response:");
+        lv_label_set_text(lbl_ln4, ok ? "done" : "error");
+        lvgl_port_unlock();
     } else {
         ESP_LOGE(TAG, "failed to read HTTP POST response");
     }
@@ -295,6 +307,22 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             buf[read_len] = 0;
             ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
             hass_post(buf);
+
+            cJSON *cjson = cJSON_Parse(buf);
+            cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
+
+            lvgl_port_lock(0);
+            lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+            lv_label_set_text_static(lbl_ln1, "Sent command to HA:");
+            if (cJSON_IsString(text) && text->valuestring != NULL) {
+                lv_label_set_text(lbl_ln2, text->valuestring);
+            } else {
+                lv_label_set_text(lbl_ln2, buf);
+            }
+            lvgl_port_unlock();
+
+            cJSON_Delete(cjson);
 
             audio_pipeline_pause(hdl_ap_to_api);
 
@@ -732,12 +760,25 @@ void app_main(void)
             lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
             lv_obj_t *lbl_hdr = lv_label_create(scr_act);
             lv_obj_t *lbl_ip = lv_label_create(scr_act);
+            lbl_ln1 = lv_label_create(scr_act);
+            lbl_ln2 = lv_label_create(scr_act);
+            lbl_ln3 = lv_label_create(scr_act);
+            lbl_ln4 = lv_label_create(scr_act);
             lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
             // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
             lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
             lv_label_set_text(lbl_ip, ip4);
+            lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
             lv_obj_align(lbl_ip, LV_ALIGN_BOTTOM_MID, 0, 0);
+            lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
+            lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
+            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 90);
+            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
+            lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
 
             lvgl_port_unlock();
         }
