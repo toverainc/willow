@@ -6,3 +6,4 @@ sdkconfig.old
 venv
 target
 sallow-dist.bin
+.env

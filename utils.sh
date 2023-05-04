@@ -16,6 +16,12 @@ ESPTOOL_VER="4.5.1"
 
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
 
+# Test for local environment file and use any overrides
+if [ -r .env ]; then
+    echo "Using configuration overrides from .env file"
+    . .env
+fi
+
 check_port() {
 if [ ! $PORT ]; then
     echo "You need to define the PORT environment variable to do serial stuff - exiting"
