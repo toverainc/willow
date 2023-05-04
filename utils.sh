@@ -122,10 +122,10 @@ flash)
     check_screen
     check_esptool
     fix_term
-    cd build
-    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
-        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 bootloader/bootloader.bin 0x10000 sallow.bin 0x8000 \
-        partition_table/partition-table.bin 0x390000 audio.bin 0x210000 model.bin
+    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
+        --flash_mode dio --flash_size detect --flash_freq 80m 0x0 \
+        build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000  \
+        build/sallow.bin 0x210000 build/model.bin 0x710000 build/audio.bin
     print_monitor_help
     do_screen
 ;;
@@ -135,9 +135,8 @@ flash-app)
     check_screen
     check_esptool
     fix_term
-    cd build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
-        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 sallow.bin
+        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 build/sallow.bin
     print_monitor_help
     do_screen
 ;;
