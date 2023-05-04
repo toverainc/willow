@@ -8,6 +8,9 @@ export PLATFORM="esp32s3" # Current general family
 export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
 export CONSOLE_BAUD=2000000 # Subject to change
 
+# esptool ver to install
+ESPTOOL_VER="4.5.1"
+
 export SALLOW_PATH="$PWD"
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
 
@@ -36,7 +39,7 @@ check_esptool() {
         source venv/bin/activate
         echo "Installing esptool..."
         pip install -U wheel setuptools pip
-        pip install esptool
+        pip install esptool=="$ESPTOOL_VER"
     else
         echo "Using venv for esptool"
         source venv/bin/activate
