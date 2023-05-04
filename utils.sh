@@ -9,6 +9,7 @@ export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
 export CONSOLE_BAUD=2000000 # Subject to change
 
 export DOCKER_IMAGE="sallow:latest"
+export DIST_FILE="sallow-dist.bin"
 
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
@@ -61,7 +62,7 @@ fix_term() {
 }
 
 do_screen() {
-    screen -c "$SCRIPT_DIR"/screenrc "$PORT" "$CONSOLE_BAUD"
+    screen -c "$SALLOW_PATH"/screenrc "$PORT" "$CONSOLE_BAUD"
 }
 
 check_container(){
@@ -142,6 +143,27 @@ flash-app)
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 build/sallow.bin
     print_monitor_help
+    do_screen
+;;
+
+dist)
+    check_esptool
+    python3 -m esptool --chip "$PLATFORM" merge_bin -o "$DIST_FILE" \
+        --flash_mode dio --flash_size 16MB --flash_freq 80m 0x0 \
+        build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000  \
+        build/sallow.bin 0x210000 build/model.bin 0x710000 build/audio.bin
+;;
+
+flash-dist|dist-flash)
+    if [ ! -r "$DIST_FILE" ]; then
+        echo "You need to run dist first"
+        exit 1
+    fi
+    check_esptool
+    fix_term
+    print_monitor_help
+    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
+        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$DIST_FILE"
     do_screen
 ;;
 
