@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e # bail on error
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd "$SCRIPT_DIR"
+
 export PLATFORM="esp32s3" # Current general family
-export FLASH_BAUD=1843200 # Optimistic but seems to work for me for now
-export CONSOLE_BAUD=115200 # Subject to change
+export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
+export CONSOLE_BAUD=2000000 # Subject to change
 
 export SALLOW_PATH="$PWD"
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
@@ -54,7 +57,7 @@ fix_term() {
 }
 
 do_screen() {
-    screen -c screenrc "$PORT" "$CONSOLE_BAUD"
+    screen -c "$SCRIPT_DIR"/screenrc "$PORT" "$CONSOLE_BAUD"
 }
 
 check_container(){
