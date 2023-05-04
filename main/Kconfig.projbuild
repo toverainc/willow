@@ -31,4 +31,9 @@ config HOMEASSISTANT_TOKEN
     help
         Long Lived Auth Token for Home Assistant.
 
+config SALLOW_DEBUG_MEM
+    bool "Debug Sallow memory"
+    help
+        Sallow will periodically print memory debugging information when set
+
 endmenu
