@@ -192,8 +192,8 @@ install|setup)
 ;;
 
 *)
+    echo "Uknown argument - passing directly to idf.py"
     check_container
-    echo "Passing args directly to idf.py"
     idf.py "$@"
 ;;
 
