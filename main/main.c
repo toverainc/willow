@@ -654,7 +654,7 @@ void app_main(void)
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-    audio_hal_set_volume(hdl_audio_board->audio_hal, 60);
+    audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_SALLOW_VOLUME);
 
     init_display();
     init_lvgl();
