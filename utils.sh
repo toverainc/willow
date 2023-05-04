@@ -121,16 +121,14 @@ docker)
     docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT -e TERM "$DOCKER_IMAGE" /bin/bash
 ;;
 
-# Needs to be updated if we change the partitions
 flash)
     check_port
     check_screen
     check_esptool
     fix_term
+    cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
-        --flash_mode dio --flash_size detect --flash_freq 80m 0x0 \
-        build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000  \
-        build/sallow.bin 0x210000 build/model.bin 0x710000 build/audio.bin
+        @flash_args
     print_monitor_help
     do_screen
 ;;
@@ -140,18 +138,18 @@ flash-app)
     check_screen
     check_esptool
     fix_term
+    cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
-        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x10000 build/sallow.bin
+        @flash_app_args
     print_monitor_help
     do_screen
 ;;
 
 dist)
     check_esptool
+    cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" merge_bin -o "$DIST_FILE" \
-        --flash_mode dio --flash_size 16MB --flash_freq 80m 0x0 \
-        build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000  \
-        build/sallow.bin 0x210000 build/model.bin 0x710000 build/audio.bin
+        @flash_args
 ;;
 
 flash-dist|dist-flash)
