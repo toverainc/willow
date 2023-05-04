@@ -678,7 +678,7 @@ static esp_err_t init_lvgl(void)
 
 static void cb_scr(lv_event_t *ev)
 {
-    printf("cb_scr\n");
+    // printf("cb_scr\n");
 }
 
 void app_main(void)
