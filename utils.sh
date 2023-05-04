@@ -54,7 +54,7 @@ fix_term() {
 }
 
 do_screen() {
-    screen "$PORT" "$CONSOLE_BAUD"
+    screen -c screenrc "$PORT" "$CONSOLE_BAUD"
 }
 
 check_container(){
