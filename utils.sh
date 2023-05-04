@@ -85,6 +85,11 @@ check_deps() {
     fi
 }
 
+do_patch() {
+    cd "$SALLOW_PATH"
+    cat patches/*.patch | patch -p0
+}
+
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
 
@@ -213,6 +218,9 @@ install|setup)
 
     cd $SALLOW_PATH
     cp sdkconfig.sallow sdkconfig
+    idf.py reconfigure
+    do_patch
+    rm "$SALLOW_PATH"/managed_components/espressif__esp-sr/.component_hash
 
     echo "You can now run ./utils.sh config and navigate to Sallow Configuration for your environment"
 ;;

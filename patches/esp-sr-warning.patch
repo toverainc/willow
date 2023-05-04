@@ -1,0 +1,11 @@
+--- managed_components/espressif__esp-sr/src/esp_process_sdkconfig.c.orig	2023-05-04 00:33:50
++++ managed_components/espressif__esp-sr/src/esp_process_sdkconfig.c	2023-05-04 00:34:26
+@@ -874,7 +874,7 @@
+ 
+ esp_mn_error_t* esp_mn_commands_update_from_sdkconfig(const esp_mn_iface_t *multinet,  model_iface_data_t *model_data)
+ {
+-#ifdef CONFIG_SR_MN_CN_MULTINET6_QUANT || CONFIG_SR_MN_EN_MULTINET6_QUANT
++#if defined(CONFIG_SR_MN_CN_MULTINET6_QUANT) || defined(CONFIG_SR_MN_EN_MULTINET6_QUANT)
+     return NULL;
+ #endif
+ 
