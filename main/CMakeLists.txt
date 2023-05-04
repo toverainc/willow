@@ -1,4 +1,4 @@
-set(COMPONENT_SRCS "i2s.c" "tasks.c" "main.c")
+set(COMPONENT_SRCS "tasks.c" "main.c")
 set(COMPONENT_ADD_INCLUDEDIRS .)
 set(COMPONENT_PRIV_REQUIRES
 	audio_board
