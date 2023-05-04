@@ -705,13 +705,13 @@ void app_main(void)
     vTaskDelay(10000 / portTICK_PERIOD_MS);
     ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
 
-#ifdef CONFIG_SALLOW_DEBUG_MEM
     while (true) {
+#ifdef CONFIG_SALLOW_DEBUG_MEM
         printf("MALLOC_CAP_INTERNAL:\n");
         heap_caps_print_heap_info(MALLOC_CAP_INTERNAL);
         printf("MALLOC_CAP_SPIRAM:\n");
         heap_caps_print_heap_info(MALLOC_CAP_SPIRAM);
+#endif
 	    vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
-#endif
 }
