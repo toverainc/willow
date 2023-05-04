@@ -63,7 +63,7 @@ check_container(){
     fi
 
     if [ "$container" = "podman" ]; then
-	return
+	    return
     fi
 
     echo "You need to run this command inside of a container"
