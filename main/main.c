@@ -737,7 +737,7 @@ void app_main(void)
             lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
             lv_label_set_text(lbl_ip, ip4);
             lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
-            lv_obj_align(lbl_ip, LV_ALIGN_CENTER, 0, 0);
+            lv_obj_align(lbl_ip, LV_ALIGN_BOTTOM_MID, 0, 0);
 
             lvgl_port_unlock();
         }
