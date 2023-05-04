@@ -159,7 +159,7 @@ flash-app)
 dist)
     check_esptool
     cd "$SALLOW_PATH"/build
-    python3 -m esptool --chip "$PLATFORM" merge_bin -o "$DIST_FILE" \
+    python3 -m esptool --chip "$PLATFORM" merge_bin -o "$SALLOW_PATH/$DIST_FILE" \
         @flash_args
 ;;
 
@@ -172,7 +172,7 @@ flash-dist|dist-flash)
     fix_term
     print_monitor_help
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
-        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$DIST_FILE"
+        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$SALLOW_PATH/$DIST_FILE"
     do_screen
 ;;
 
