@@ -139,7 +139,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
             lv_label_set_text_static(lbl_ln3, "Listening...");
             lvgl_port_unlock();
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023, 0);
+            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
         default:
@@ -556,7 +556,7 @@ static esp_err_t init_display(void)
 
     const ledc_channel_config_t cfg_bl_channel = {
         .channel = LEDC_CHANNEL_1,
-        .duty = 1023,
+        .duty = CONFIG_SALLOW_LCD_BRIGHTNESS,
         .gpio_num = GPIO_NUM_45,
         .hpoint = 0,
         .intr_type = LEDC_INTR_DISABLE,

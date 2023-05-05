@@ -37,6 +37,12 @@ config SALLOW_VOLUME
     help
         Audio level for playback
 
+config SALLOW_LCD_BRIGHTNESS
+    int "LCD Brightness"
+    default 700
+    help
+        LCD Brightness from 0-1023
+
 config SALLOW_DEBUG_MEM
     bool "Debug Sallow memory"
     help
