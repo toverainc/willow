@@ -222,7 +222,6 @@ static void hass_post(char *data)
                     ok = true;
                     audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
                 }
-                timer_start(TIMER_GROUP_0, TIMER_0);
             }
         }
         json = cJSON_Print(cjson);
@@ -240,6 +239,7 @@ static void hass_post(char *data)
     } else {
         ESP_LOGE(TAG, "failed to read HTTP POST response");
     }
+    timer_start(TIMER_GROUP_0, TIMER_0);
     free(body);
 cleanup:
     esp_http_client_cleanup(hdl_hc);
