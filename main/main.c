@@ -6,6 +6,7 @@
 #include "board.h"
 #include "cJSON.h"
 #include "driver/ledc.h"
+#include "driver/timer.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
 #include "esp_lcd_panel_ops.h"
@@ -29,6 +30,8 @@
 #include "sdkconfig.h"
 
 #include "shared.h"
+#include "tasks.h"
+#include "timer.h"
 
 #define I2S_PORT I2S_NUM_0
 
@@ -52,7 +55,6 @@ typedef struct periph_lcd {
 } periph_lcd_t;
 
 static bool stream_to_api = false;
-static const char *TAG = "SALLOW";
 typedef enum {
     MSG_STOP,
     MSG_START,
@@ -128,6 +130,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
+            timer_pause(TIMER_GROUP_0, TIMER_0);
+            timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023, 0);
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
@@ -219,7 +223,7 @@ static void hass_post(char *data)
                     ok = true;
                     audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
                 }
-                ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
+                timer_start(TIMER_GROUP_0, TIMER_0);
             }
         }
         json = cJSON_Print(cjson);
@@ -728,6 +732,7 @@ void app_main(void)
 
     init_display();
     init_lvgl();
+    init_timer();
     init_ap_to_api();
     start_rec();
 
@@ -786,8 +791,7 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
 
-    vTaskDelay(10000 / portTICK_PERIOD_MS);
-    ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
+    ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
 
     while (true) {
 #ifdef CONFIG_SALLOW_DEBUG_MEM
