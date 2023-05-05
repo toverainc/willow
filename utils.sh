@@ -34,12 +34,6 @@ if [ ! -c $PORT ]; then
 fi
 }
 
-print_monitor_help() {
-echo "
-You can exit the serial monitor with CTRL + A and then k
-"
-}
-
 check_esptool() {
     if [ ! -d venv ]; then
         echo "Creating venv for esptool"
@@ -54,10 +48,11 @@ check_esptool() {
     fi
 }
 
-check_screen() {
+check_tio() {
     if ! command -v screen &> /dev/null
     then
-        echo "GNU Screen could not be found in path - you need to install it"
+        echo "tio could not be found in path - you need to install it"
+        echo "More information: https://github.com/tio/tio"
         exit 1
     fi
 }
@@ -67,8 +62,8 @@ fix_term() {
     reset
 }
 
-do_screen() {
-    screen -c "$SALLOW_PATH"/screenrc "$PORT" "$CONSOLE_BAUD"
+do_term() {
+    tio -b "$CONSOLE_BAUD" "$PORT"
 }
 
 check_container(){
@@ -134,26 +129,22 @@ docker)
 
 flash)
     check_port
-    check_screen
+    check_tio
     check_esptool
-    fix_term
     cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
         @flash_args
-    print_monitor_help
-    do_screen
+    do_term
 ;;
 
 flash-app)
     check_port
-    check_screen
+    check_tio
     check_esptool
-    fix_term
     cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         @flash_app_args
-    print_monitor_help
-    do_screen
+    do_term
 ;;
 
 dist)
@@ -171,37 +162,30 @@ flash-dist|dist-flash)
         exit 1
     fi
     check_esptool
-    fix_term
-    print_monitor_help
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$SALLOW_PATH/$DIST_FILE"
-    do_screen
+    do_term
 ;;
 
 erase-flash)
     check_esptool
-    fix_term
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
 ;;
 
 idf-flash)
     check_port
-    check_screen
+    check_tio
     check_container
     check_deps
-    fix_term
-    print_monitor_help
     idf.py -p "$PORT" -b "$FLASH_BAUD" flash
-    do_screen
+    do_term
 ;;
 
 monitor)
     check_port
-    check_screen
-    fix_term
-    print_monitor_help
-    do_screen
+    check_tio
+    do_term
 ;;
 
 destroy)

@@ -13,7 +13,7 @@ RUN \
 	python3-pip \
 	python-is-python3 \
 	python3-venv \
-	screen \
+	tio \
 	sudo
 
 RUN useradd --create-home --uid 1000 build
