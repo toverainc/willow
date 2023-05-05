@@ -178,6 +178,13 @@ flash-dist|dist-flash)
     do_screen
 ;;
 
+erase-flash)
+    check_esptool
+    fix_term
+    python3 -m esptool --chip "$PLATFORM" -p "$PORT" erase_flash
+    echo "Flash erased. You will need to reflash."
+;;
+
 idf-flash)
     check_port
     check_screen
