@@ -66,7 +66,6 @@ static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
 static esp_lcd_panel_handle_t hdl_lcd = NULL;
 static lv_disp_t *ld;
-static lv_obj_t *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
 static QueueHandle_t q_rec = NULL;
 
 const int32_t tone[] = {

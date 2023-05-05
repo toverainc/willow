@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
+#include "lvgl.h"
 
 #include "shared.h"
 #include "timer.h"
@@ -16,6 +17,10 @@ void task_timer(void *data)
         // sleep value seconds
         vTaskDelay(value * 1000 / portTICK_PERIOD_MS);
         ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
+        lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         timer_pause(TIMER_GROUP_0, TIMER_0);
     }
 }

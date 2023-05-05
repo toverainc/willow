@@ -37,5 +37,5 @@ void init_timer(void)
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_enable_intr(TIMER_GROUP_0, TIMER_0));
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_isr_callback_add(TIMER_GROUP_0, TIMER_0, cb_timer_isr, NULL, 0));
 
-    xTaskCreate(&task_timer, "task_timer", 2 * 1024, NULL, 5, NULL);
+    xTaskCreate(&task_timer, "task_timer", 4 * 1024, NULL, 5, NULL);
 }
