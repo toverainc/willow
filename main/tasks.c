@@ -16,6 +16,10 @@ void task_timer(void *data)
         ESP_LOGI(TAG, "received event in timer queue");
         // sleep value seconds
         vTaskDelay(value * 1000 / portTICK_PERIOD_MS);
+        lv_label_set_text_static(lbl_ln1, "");
+        lv_label_set_text_static(lbl_ln2, "");
+        lv_label_set_text_static(lbl_ln3, "");
+        lv_label_set_text_static(lbl_ln4, "");
         ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);

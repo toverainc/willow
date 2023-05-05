@@ -131,6 +131,14 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
             timer_pause(TIMER_GROUP_0, TIMER_0);
             timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
+            lvgl_port_lock(0);
+            lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+            lv_label_set_text_static(lbl_ln1, "");
+            lv_label_set_text_static(lbl_ln2, "");
+            lv_label_set_text_static(lbl_ln4, "");
+            lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
+            lv_label_set_text_static(lbl_ln3, "Listening...");
+            lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023, 0);
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
             break;
@@ -233,8 +241,9 @@ static void hass_post(char *data)
         lvgl_port_lock(0);
         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text_static(lbl_ln3, "HA response:");
-        lv_label_set_text(lbl_ln4, ok ? "done" : "error");
+        lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
+        lv_label_set_text_static(lbl_ln3, "Command status:");
+        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Something went wrong");
         lvgl_port_unlock();
     } else {
         ESP_LOGE(TAG, "failed to read HTTP POST response");
@@ -317,7 +326,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-            lv_label_set_text_static(lbl_ln1, "Sent command to HA:");
+            lv_label_set_text_static(lbl_ln1, "I heard:");
             if (cJSON_IsString(text) && text->valuestring != NULL) {
                 lv_label_set_text(lbl_ln2, text->valuestring);
             } else {
@@ -768,6 +777,7 @@ void app_main(void)
             lbl_ln2 = lv_label_create(scr_act);
             lbl_ln3 = lv_label_create(scr_act);
             lbl_ln4 = lv_label_create(scr_act);
+            lv_label_set_recolor(lbl_ln4, true);
             lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
             // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
             lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
@@ -780,8 +790,8 @@ void app_main(void)
             lv_obj_align(lbl_ip, LV_ALIGN_BOTTOM_MID, 0, 0);
             lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
             lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
-            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 90);
-            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
+            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
+            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
             lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
             lv_obj_set_width(lbl_ln2, 320);
 
