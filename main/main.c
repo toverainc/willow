@@ -783,6 +783,7 @@ void app_main(void)
             lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 90);
             lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
             lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
+            lv_obj_set_width(lbl_ln2, 320);
 
             lvgl_port_unlock();
         }
