@@ -382,6 +382,8 @@ static esp_err_t init_ap_to_api()
 static esp_err_t init_sntp()
 {
     ESP_LOGI(TAG, "initializing SNTP client");
+    setenv("TZ", CONFIG_SALLOW_TIMEZONE, 1);
+    tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
 #ifdef LWIP_DHCP_GET_NTP_SRV
     sntp_servermode_dhcp(1);
