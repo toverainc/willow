@@ -786,16 +786,16 @@ void app_main(void)
             lv_label_set_text(lbl_ip, ip4);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
             lv_obj_align(lbl_ip, LV_ALIGN_BOTTOM_MID, 0, 0);
             lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
             lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
-            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
+            lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
             lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
             lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
             lv_obj_set_width(lbl_ln2, 320);
+            lv_label_set_text_static(lbl_ln3, "Ready!");
 
             lvgl_port_unlock();
         }
