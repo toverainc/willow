@@ -749,7 +749,7 @@ void app_main(void)
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
     q_rec = xQueueCreate(3, sizeof(int));
-    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 10, true, 1);
+    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
 
     ESP_LOGI(TAG, "esp_netif_get_nr_of_ifs: %d", esp_netif_get_nr_of_ifs());
     esp_netif_t *hdl_netif = esp_netif_next(NULL);
