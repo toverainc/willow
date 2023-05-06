@@ -137,7 +137,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-            lv_label_set_text_static(lbl_ln3, "Listening...");
+            lv_label_set_text_static(lbl_ln3, "Recording command...");
             lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 10, true, 1);
