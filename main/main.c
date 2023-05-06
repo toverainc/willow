@@ -132,10 +132,10 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             timer_pause(TIMER_GROUP_0, TIMER_0);
             timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
             lvgl_port_lock(0);
+            lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-            lv_label_set_text_static(lbl_ln1, "");
-            lv_label_set_text_static(lbl_ln2, "");
-            lv_label_set_text_static(lbl_ln4, "");
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
             lv_label_set_text_static(lbl_ln3, "Listening...");
             lvgl_port_unlock();
