@@ -170,7 +170,6 @@ static void hass_post(char *data)
     char *body = NULL;
     char *hdr_auth = NULL;
     char *json = NULL;
-    char *url = NULL;
     esp_err_t ret;
     int n;
 
@@ -182,13 +181,11 @@ static void hass_post(char *data)
     esp_http_client_handle_t hdl_hc = esp_http_client_init(&cfg_hc);
 
     hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
-    url = malloc(27 + strlen(CONFIG_HOMEASSISTANT_URI));
 
     snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
-    snprintf(url, 27 + strlen(CONFIG_HOMEASSISTANT_URI), "%s/api/conversation/process", CONFIG_HOMEASSISTANT_URI);
 
-    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
-    esp_http_client_set_url(hdl_hc, url);
+    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, CONFIG_HOMEASSISTANT_URI);
+    esp_http_client_set_url(hdl_hc, CONFIG_HOMEASSISTANT_URI);
     esp_http_client_set_method(hdl_hc, HTTP_METHOD_POST);
     esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     esp_http_client_set_header(hdl_hc, "Content-Type", "application/json");
@@ -254,7 +251,6 @@ cleanup:
     esp_http_client_cleanup(hdl_hc);
 
     free(hdr_auth);
-    free(url);
 }
 
 esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)

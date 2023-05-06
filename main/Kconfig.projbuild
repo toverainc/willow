@@ -22,7 +22,7 @@ config SERVER_URI
 
 config HOMEASSISTANT_URI
     string "HomeAssistant URI"
-    default "http://homeassistant.local:8123"
+    default "http://homeassistant.local:8123/api/conversation/process"
     help
         URL for your Home Assistant instance.
 
