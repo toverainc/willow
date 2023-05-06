@@ -49,7 +49,7 @@ check_esptool() {
 }
 
 check_tio() {
-    if ! command -v screen &> /dev/null
+    if ! command -v tio &> /dev/null
     then
         echo "tio could not be found in path - you need to install it"
         echo "More information: https://github.com/tio/tio"
