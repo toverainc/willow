@@ -140,7 +140,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_label_set_text_static(lbl_ln3, "Listening...");
             lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
-            // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 5, true, 0);
+            // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 10, true, 1);
             break;
         default:
             ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'\n", are);
@@ -215,7 +215,7 @@ static void hass_post(char *data)
                  http_status, esp_http_client_get_content_length(hdl_hc));
         if (http_status != 200) {
             ok = false;
-            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 1, true, 0);
+            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
         }
         cJSON *cjson = cJSON_Parse(body);
         cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
@@ -225,10 +225,10 @@ static void hass_post(char *data)
                 ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                 if (!strcmp(response_type->valuestring, "error")) {
                     ok = false;
-                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 1, true, 0);
+                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
                 } else {
                     ok = true;
-                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 1, true, 0);
+                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
                 }
             }
         }
@@ -749,7 +749,7 @@ void app_main(void)
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
     q_rec = xQueueCreate(3, sizeof(int));
-    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
+    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 10, true, 1);
 
     ESP_LOGI(TAG, "esp_netif_get_nr_of_ifs: %d", esp_netif_get_nr_of_ifs());
     esp_netif_t *hdl_netif = esp_netif_next(NULL);
