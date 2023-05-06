@@ -756,10 +756,19 @@ void app_main(void)
 
     if (hdl_netif != NULL) {
         char ip4[16];
+        char wake_help[32] = "Ready!";
         esp_netif_ip_info_t inf_ip;
         esp_netif_get_ip_info(hdl_netif, &inf_ip);
 
         snprintf(ip4, 16, IPSTR, IP2STR(&inf_ip.ip));
+
+#ifdef CONFIG_SR_WN_WN9_HIESP
+        snprintf(wake_help, 32, "Say 'Hi ESP' to start!");
+#endif
+
+#ifdef CONFIG_SR_WN_WN9_ALEXA
+        snprintf(wake_help, 32, "Say 'Alexa' to start!");
+#endif
 
         if (ld == NULL) {
             ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
@@ -795,7 +804,7 @@ void app_main(void)
             lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
             lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
             lv_obj_set_width(lbl_ln2, 320);
-            lv_label_set_text_static(lbl_ln3, "Ready!");
+            lv_label_set_text_static(lbl_ln3, wake_help);
 
             lvgl_port_unlock();
         }
