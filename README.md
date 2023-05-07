@@ -163,7 +163,7 @@ Unless you change the wake word you can selectively flash the application partit
 
 ```./utils.sh flash-app```
 
-## The Future
+## The Future (in no particular order)
 
 ### Performance improvements
 Sallow and Willow already provide "faster-than-Alexa" responsiveness for a voice user interface. However, there are multiple obvious optimizations that could be made:
@@ -178,6 +178,12 @@ These enchancements alone should dramatically improve responsiveness.
 ### On device command/speech recognition
 We use a recent version of the ESP-SR framework that supports their [Multinet 6 model](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/speech_command_recognition/README.html). This model provides support for 200 user specified speech commands processed on device (without an inference server). We will be working on supporting completely on device speech command recognition in the future.
 
+### No CUDA
+The air-infer-api inference server will run CPU only but the performance is not comparable to heavily optimized implementations like [whisper.cpp](https://github.com/ggerganov/whisper.cpp). For an Alexa/Echo competitive voice interface we currently believe that our implementation with CUDA is the best approach. However, we also understand that isn't practical for many users. Between on device Multinet and further development on CPU-only Whisper implementations we will get there.
+
+### TTS Output
+Given the capabilities of Whisper speech commands like "What is the weather in Sofia, Bulgaria?" are certainly possible. AIA (air-infer-api) has a text to speech engine and Home Assistant has a variety of options as well. In the event the final response to a given command results in audio output we can play that via the speakers in the ESP BOX.
+
 ### LCD, Touchscreen, and UI
 The ESP BOX has a multi-point capacitive touchscreen and support for many GUI elements. More to come here!
 
@@ -189,6 +195,9 @@ The good news is the far-field wake word recognition and speech recognition perf
 
 ### Custom Wake Word
 Espressif has a [wake word customization service](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/wake_word_engine/ESP_Wake_Words_Customization.html) that allows us (or you) to create custom wake words. We plan to create a "Hi Willow" or similar wake word.
+
+### Bandwidth Usage
+We currently stream raw 16 kHz 16 bit mono i2s audio frames (post AFE) on wake. However, ESP-ADF supports AMR-WB encoding and that would dramatically improve bandwidth utilization. This would be especially important in hostile WiFi environments as the ESP BOX with the ESP32-S3 is 2.4 GHz only.
 
 ### GPIO
 The ESP BOX provides 16 GPIOs to the user. We plan to make these configurable by the user to enable all kinds of interesting maker applications.
