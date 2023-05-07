@@ -1,147 +1,194 @@
 ﻿# Sallow client for Willow (air-infer-api)
 
+The only supported hardware currently is the [ESP BOX](https://github.com/espressif/esp-box).
+
 ## Getting Started
 
-Run ```./utils.sh setup``` and cross your fingers and toes.
+Configuring and building Sallow for the ESP BOX is a multi-step process.
 
-### Config
+### Dependencies
 
-The only supported hardware currently is the ESP32-S3-Korvo-2. Anything else will take some work - (we'll deal with this later).
+We use [tio](https://github.com/tio/tio) as a serial monitor so you will need to install that.
 
-For the time being you will need to run ```./utils.sh config``` and navigate to "Sallow Configuration" to fill in your WiFi SSID, WIFI password, and your Willow server URI (best-effort Tovera hosted example provided).
+Ubuntu:
 
-Once you've provided those press 'q'. When prompted to save, do that. Ignore my credentials (that's a TO-DO) - but if you get this far and come to Lake Geneva, WI let's hang out before you wardrive me!
+```sudo apt-get install tio```
 
-### Flash
+Arch Linux:
 
-To do anything involving the serial port you will need to set the PORT environment variable for all further invocations of utils.sh. Example:
+```yay -S tio```
+
+Mac (with homebrew):
+
+```brew install tio```
+
+### Set serial port
+
+To do anything involving the serial port you will need to set the ```PORT``` environment variable for all further invocations of ```utils.sh```. 
+
+With recent versions of ```tio``` you can use ```tio -L``` to list available ports. On Linux you can check ```dmesg``` and look for the path of the recently connected ESP BOX. On Linux it's ```/dev/ACM*``` and on Mac it's ```/dev/usbmodem*```.
+
+Examples:
 
 Linux:
 
-```export PORT=/dev/ttyUSB0```
+```export PORT=/dev/ttyACM0```
 
 Mac:
 
-```export PORT=/dev/cu.usbserial-31320```
+```export PORT=/dev/cu.usbmodem2101```
 
-Once you have done that, run ```./utils.sh flash```. It should build, flash, and connect you to the serial monitor.
+### Container
+We use Docker for the build container. To build the docker image:
 
-### Run
+```./utils.sh build-docker```
 
-If you have made it this far - congratulations! You will see output like this:
+Once the container has finished building you will need to enter it for all following commands:
+
+```./utils.sh docker```
+
+### Install
+Once inside the container install the environment:
+
+```./utils.sh install```
+
+### Config
+
+Start the config process:
+
+```./utils.sh config```
+
+Navigate to "Sallow Configuration" to fill in your WiFi SSID, WiFi password, and your Willow server URI (best-effort Tovera hosted example provided).
+
+For Home Assistant you will also need to create a [long lived access token](https://developers.home-assistant.io/docs/auth_api/#:~:text=Long%2Dlived%20access%20tokens%20can,access%20token%20for%20current%20user.) and configure your server address. By default we use ```homeassistant.local``` which should use mDNS to resolve your local Home Assistant instance.
+
+There are also various other configuration options for speaker volume, display brightness, NTP, etc.
+
+Once you've provided those press 'q'. When prompted to save, do that.
+
+### Build
+
+```./utils.sh build```
+
+### Flash
+
+NOTE: On Mac you need to flash from the host, so run the flash command in another terminal with ```PORT``` defined.
+
+Once you have done that you can flash:
+
+```./utils.sh flash```
+
+It should build, flash, and connect you to the serial monitor.
+
+### Let's talk!
+
+If you have made it this far - congratulations! You will see serial monitor output ending like this:
 
 ```
-ESP-ROM:esp32s3-20210327
-Build:Mar 27 2021
-rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
-SPIWP:0xee
-mode:DIO, clock div:1
-load:0x3fce3808,len:0x1664
-load:0x403c9700,len:0xbb8
-load:0x403cc700,len:0x2f74
-entry 0x403c9954
-I (24) boot: ESP-IDF v4.4.2-155-g23d5a582cb-dirty 2nd stage bootloader
-I (25) boot: compile time 21:23:35
-I (25) boot: chip revision: 0
-I (28) boot.esp32s3: Boot SPI Speed : 80MHz
-I (33) boot.esp32s3: SPI Mode       : DIO
-I (38) boot.esp32s3: SPI Flash Size : 16MB
-I (42) boot: Enabling RNG early entropy source...
-I (48) boot: Partition Table:
-I (51) boot: ## Label            Usage          Type ST Offset   Length
-I (59) boot:  0 nvs              WiFi data        01 02 00009000 00006000
-I (66) boot:  1 phy_init         RF data          01 01 0000f000 00001000
-I (74) boot:  2 factory          factory app      00 00 00010000 00200000
-I (81) boot: End of partition table
-I (85) esp_image: segment 0: paddr=00010020 vaddr=3c0a0020 size=2130ch (135948) map
-I (118) esp_image: segment 1: paddr=00031334 vaddr=3fc96580 size=045d8h ( 17880) load
-I (122) esp_image: segment 2: paddr=00035914 vaddr=40374000 size=0a704h ( 42756) load
-I (133) esp_image: segment 3: paddr=00040020 vaddr=42000020 size=93c70h (605296) map
-I (242) esp_image: segment 4: paddr=000d3c98 vaddr=4037e704 size=07e78h ( 32376) load
-I (250) esp_image: segment 5: paddr=000dbb18 vaddr=50000000 size=00010h (    16) load
-I (257) boot: Loaded app from partition at offset 0x10000
-I (258) boot: Disabling RNG early entropy source...
-I (271) opi psram: vendor id : 0x0d (AP)
-I (271) opi psram: dev id    : 0x02 (generation 3)
-I (271) opi psram: density   : 0x03 (64 Mbit)
-I (275) opi psram: good-die  : 0x01 (Pass)
-I (280) opi psram: Latency   : 0x01 (Fixed)
-I (285) opi psram: VCC       : 0x01 (3V)
-I (289) opi psram: SRF       : 0x01 (Fast Refresh)
-I (295) opi psram: BurstType : 0x01 (Hybrid Wrap)
-I (300) opi psram: BurstLen  : 0x01 (32 Byte)
-I (305) opi psram: Readlatency  : 0x02 (10 cycles@Fixed)
-I (311) opi psram: DriveStrength: 0x00 (1/1)
-W (316) PSRAM: DO NOT USE FOR MASS PRODUCTION! Timing parameters will be updated in future IDF version.
-I (327) spiram: Found 64MBit SPI RAM device
-I (331) spiram: SPI RAM mode: sram 80m
-I (335) spiram: PSRAM initialized, cache is in normal (1-core) mode.
-I (342) cpu_start: Pro cpu up.
-I (346) cpu_start: Starting app cpu, entry point is 0x40375494
-0x40375494: call_start_cpu1 at /home/kris/projects/willow/sallow/build/../deps/esp-adf/esp-idf/components/esp_system/port/cpu_start.c:148
+I (20:17:35.893) AUDIO_ELEMENT: [i2s_stream_reader] AEL_MSG_CMD_RESUME,state:1
+I (20:17:35.901) AUDIO_PIPELINE: Pipeline started
+I (20:17:35.906) MODEL_LOADER: 
+Initializing models from SPIFFS, partition label: model
 
-I (0) cpu_start: App cpu up.
-I (772) spiram: SPI SRAM memory test OK
-I (781) cpu_start: Pro cpu start user code
-I (781) cpu_start: cpu freq: 240000000
-I (781) cpu_start: Application information:
-I (784) cpu_start: Project name:     sallow
-I (789) cpu_start: App version:      362aafc-dirty
-I (794) cpu_start: Compile time:     Mar 31 2023 21:23:24
-I (800) cpu_start: ELF file SHA256:  382881ad951c1ac4...
-I (806) cpu_start: ESP-IDF:          v4.4.2-155-g23d5a582cb-dirty
-I (813) heap_init: Initializing. RAM available for dynamic allocation:
-I (820) heap_init: At 3FC9E968 len 0004ADA8 (299 KiB): D/IRAM
-I (827) heap_init: At 3FCE9710 len 00005724 (21 KiB): STACK/DRAM
-I (833) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
-I (839) heap_init: At 600FE000 len 00002000 (8 KiB): RTCRAM
-I (846) spiram: Adding pool of 8192K of external SPI memory to heap allocator
-I (854) spi_flash: detected chip: gd
-I (858) spi_flash: flash io: dio
-I (862) sleep: Configure to isolate all GPIO pins in sleep state
-I (869) sleep: Enable automatic switching of GPIO sleep configuration
-I (876) cpu_start: Starting scheduler on PRO CPU.
-I (0) cpu_start: Starting scheduler on APP CPU.
-I (886) spiram: Reserving pool of 32K of internal memory for DMA/internal allocations
-I (906) SALLOW: [ 1 ] Initialize Button Peripheral & Connect to wifi network
-E (2286) wifi:Association refused temporarily, comeback time 1048 mSec
-W (4336) PERIPH_WIFI: Wi-Fi disconnected from SSID kc11g, auto-reconnect enabled, reconnect after 1000 ms
-W (5356) PERIPH_WIFI: WiFi Event cb, Unhandle event_base:WIFI_EVENT, event_id:4
-W (5386) wifi:<ba-add>idx:0 (ifx:0, b4:fb:e4:80:c9:62), tid:6, ssn:1, winSize:64
-I (5906) SALLOW: [ 1 ] Start codec chip
-W (5926) I2C_BUS: i2c_bus_create:58: I2C bus has been already created, [port:0]
-W (5946) ES7210: Enable TDM mode. ES7210_SDP_INTERFACE2_REG12: 2
-I (5956) SALLOW: [2.0] Create audio pipeline for playback
-I (5956) SALLOW: [2.1] Create http stream to read data
-I (5966) SALLOW: [2.2] Create wav decoder to decode wav file
-I (5966) SALLOW: [2.3] Create i2s stream to write data to codec chip
-W (5976) I2S: APLL not supported on current chip, use I2S_CLK_D2CLK as default clock source
-I (5986) SALLOW: [2.4] Register all elements to audio pipeline
-I (5986) SALLOW: [2.5] Link it together http_stream-->wav_decoder-->i2s_stream-->[codec_chip]
-I (6026) SALLOW: [2.6] Set up  uri (http as http_stream, wav as wav_decoder, and default output is i2s)
-I (6026) SALLOW: [3.0] Create audio pipeline for recording
-I (6036) SALLOW: [3.1] Create http stream to post data to server
-I (6046) SALLOW: [3.2] Create i2s stream to read audio data from codec chip
-E (6046) I2S: register I2S object to platform failed
-I (6056) SALLOW: [3.3] Register all elements to audio pipeline
-I (6066) SALLOW: [3.4] Link it together [codec_chip]-->i2s_stream->http_stream-->[http_server]
-W (6076) I2S: APLL not supported on current chip, use I2S_CLK_D2CLK as default clock source
-W (6076) I2S: APLL not supported on current chip, use I2S_CLK_D2CLK as default clock source
-I (6086) SALLOW: [ 5 ] Press [Rec] button to record, Press [Mode] to exit
-W (10586) wifi:<ba-add>idx:1 (ifx:0, b4:fb:e4:80:c9:62), tid:0, ssn:0, winSize:64
+I (20:17:36.229) MODEL_LOADER: Partition size: total: 4811921, used: 4121420
+
+I (4575) AFE_SR: afe interface for speech recognition
+
+I (4575) AFE_SR: AFE version: SR_V220727
+
+I (4575) AFE_SR: Initial auido front-end, total channel: 3, mic num: 2, ref num: 1
+
+I (4585) AFE_SR: aec_init: 1, se_init: 1, vad_init: 1
+
+I (4585) AFE_SR: wakenet_init: 1
+
+model_name: wn9_hiesp model_data: /srmodel/wn9_hiesp/wn9_data
+MC Quantized wakenet9: wakeNet9_v1h24_hiesp_3_0.63_0.635, tigger:v3, mode:2, p:0, (Mar  3 2023 14:33:09)
+I (5495) AFE_SR: wake num: 3, mode: 1, (Mar  3 2023 14:37:26)
+
+I (20:17:37.428) AUDIO_THREAD: The feed_task task allocate stack on external memory
+I (20:17:37.432) AUDIO_THREAD: The fetch_task task allocate stack on external memory
+I (20:17:37.440) AUDIO_THREAD: The recorder_task task allocate stack on external memory
+I (20:17:37.449) SALLOW: app_main() - start_rec() finished
+I (20:17:37.455) AUDIO_THREAD: The at_read task allocate stack on external memory
+I (20:17:37.464) SALLOW: esp_netif_get_nr_of_ifs: 1
+I (20:17:37.475) SALLOW: Startup complete. Waiting for wake word.
 ```
 
-Ignore most of the warnings/errors, especially PSRAM - that's one of my (least) favorite aspects of ESP-IDF work...
+Your ESP BOX will initialize. You should see some help text on the display to use your configured wake word. Try some built in Home Assistant [intents](https://www.home-assistant.io/integrations/conversation/) like:
 
-At this point you can press and hold the record button (furthest to the right). When you release, and if you said anything and have a speaker connected, you will hear the T5 voice repeat whatever you said.
+- "(Your wake word) Turn on master bedroom lights"
+- "(Your wake work) Turn off kitchen lights"
 
+The available commands and specific names, etc will depend on your Home Assistant configuration.
 
-## TO-DO
+You can also provide free-form text to get an idea of the accuracy and speed provided by our inference server. The commands will fail unless you've defined them in Home Assistant but the display will show the speech recognition results.
 
-- We currently don't use the [AFE](https://www.espressif.com/en/solutions/audio-solutions/esp-afe) interface. There's no automatic gain control, acoustic echo cancelation, etc so Whisper isn't doing as well as it should. There are also probably acoustic issues with the out of the box mics on the dev kit.
-- There are some strange buffering/timing issues. You will notice audio clipping depending on timing with button presses. I've tweaked quite a few fundamental things in the SDK to improve this (and the S3 is a big help) but we will need to look at this further.
-- ESP-ADF audio [pipelines](https://espressif-docs.readthedocs-hosted.com/projects/esp-adf/en/latest/api-reference/framework/audio_pipeline.html) are somewhat difficult to manage. We're currently POSTing (stream at least) raw WAV frames to the air-infer-api endpoint with some hints on sample rate, etc. We then come back from the ESP to the air-infer-api with a separate HTTP GET playback pipeline to fetch a static file. Ideally we could return a formatted version of the TTS response in the body and play that directly. The current approach adds unnecessary latency and is completely unsuitable for production use. The use of [raw streams](https://espressif-docs.readthedocs-hosted.com/projects/esp-adf/en/latest/api-reference/streams/index.html#raw-stream) is potentially appropriate here. Initial approach is probably to use PSRAM ```malloc()``` to buffer audio response OR, given the flexibility of pipelines we may be able to directly stream the response from the POST to i2s output to avoid memory allocation and potential buffer overruns with longer segments.
-- Speaking of pipelines, we currently throw hammers at managing them with forced ```audio_pipeline_wait_for_stop()```, etc which probably adds to our latency and timing issues. At least it doesn't crash :). This could and should be MUCH better.
-- Wake word engine, VAD, mDNS, HA integration, LCD (with ESP BOX), etc.
-- We definitely will need to be able to parse JSON.
-- Much more.
+## Exit serial monitor
+To exit ```tio``` you need to press CTRL+t and then 'q'.
+
+## Recover from a bad flash
+
+ESP devices are very robust to flashing failures but it can happen! If you end up "bricking" your device you can erase the flash and re-flash:
+
+```./utils.sh erase-flash```
+
+```./utils.sh flash```
+
+## Advanced Usage
+
+```utils.sh``` will attempt to load environment variables from ```.env```. You can define your ```PORT``` here to avoid needing to define it over and over.
+
+The ESP-IDF, ESP-ADF, ESP-SR, LVGL, etc libraries have a plethora of configuration options. DO NOT change anything outside of "Sallow Configuration" unless you know what you are doing.
+
+If you want to quickly and easily flash multiple devices or distribute a combined firmware image you can use the ```dist``` arguments to ```utils.sh```:
+
+```./utils.sh dist``` - builds the combined flash image
+
+```./utils.sh flash-dist``` - flashes the combined flash image
+
+This combined firmware image can be used with any ESP flashing tool.
+
+## Development
+
+Development usually involves a few steps:
+
+1) Code - do your thing!
+2) Build
+3) Flash
+
+Unless you change the wake word you can selectively flash the application partition specifically. This avoids long flash times with the wakenet and multinet model partition, etc:
+
+```./utils.sh build```
+
+```./utils.sh flash-app```
+
+## The Future
+
+### Performance improvements
+Sallow and Willow already provide "faster-than-Alexa" responsiveness for a voice user interface. However, there are multiple obvious optimizations that could be made:
+
+- ADF pipeline handing (we're waiting on ESP-ADF 2.6 with ESP-IDF 5)
+- Websockets for inference server
+- Websockets for Home Assistant
+- Likely many more
+
+These enchancements alone should dramatically improve responsiveness.
+
+### On device command/speech recognition
+We use a recent version of the ESP-SR framework that supports their [Multinet 6 model](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/speech_command_recognition/README.html). This model provides support for 200 user specified speech commands processed on device (without an inference server). We will be working on supporting completely on device speech command recognition in the future.
+
+### LCD, Touchscreen, and UI
+The ESP BOX has a multi-point capacitive touchscreen and support for many GUI elements. More to come here!
+
+### Dynamic Configuration
+Docker, building, configuring, flashing, etc is a pain. There are several approaches we plan to take to avoid this and ease the barrier to entry for users to get started.
+
+### Multiple Devices
+The good news is the far-field wake word recognition and speech recognition performance is excellent. The bad news is if you have multiple devices in proximity they are all likely to wake and process speech simultaneously. We have a few ideas about dealing with this too :).
+
+### Custom Wake Word
+Espressif has a [wake word customization service](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/wake_word_engine/ESP_Wake_Words_Customization.html) that allows us (or you) to create custom wake words. We plan to create a "Hi Willow" or similar wake word.
+
+### GPIO
+The ESP BOX provides 16 GPIOs to the user. We plan to make these configurable by the user to enable all kinds of interesting maker applications.
