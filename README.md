@@ -191,6 +191,9 @@ The air-infer-api inference server will run CPU only but the performance is not 
 ### TTS Output
 Given the capabilities of Whisper speech commands like "What is the weather in Sofia, Bulgaria?" are certainly possible. AIA (air-infer-api) has a text to speech engine and Home Assistant has a variety of options as well. In the event the final response to a given command results in audio output we can play that via the speakers in the ESP BOX.
 
+### Audio Output
+The ESP BOX supports bluetooth. In applications where higher quality audio is desired (music streaming, etc) we could support pairing to bluetooth speaker devices. Who knows? Eventually we may even design our own device...
+
 ### LCD, Touchscreen, and UI
 The ESP BOX has a multi-point capacitive touchscreen and support for many GUI elements. More to come here!
 
@@ -204,7 +207,7 @@ The good news is the far-field wake word recognition and speech recognition perf
 Espressif has a [wake word customization service](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/wake_word_engine/ESP_Wake_Words_Customization.html) that allows us (or you) to create custom wake words. We plan to create a "Hi Willow" or similar wake word.
 
 ### Bandwidth Usage
-We currently stream raw 16 kHz 16 bit mono i2s audio frames (post AFE) on wake. However, ESP-ADF supports AMR-WB encoding and that would dramatically improve bandwidth utilization. This would be especially important in hostile WiFi environments as the ESP BOX with the ESP32-S3 is 2.4 GHz only.
+We currently stream raw 16 kHz 16 bit mono PCM audio frames (post AFE) on wake. However, ESP-ADF supports AMR-WB encoding and that would dramatically improve bandwidth utilization. This would be especially important in hostile WiFi environments as the ESP BOX with the ESP32-S3 is 2.4 GHz only.
 
 ### GPIO
 The ESP BOX provides 16 GPIOs to the user. We plan to make these configurable by the user to enable all kinds of interesting maker applications.
