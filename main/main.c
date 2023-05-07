@@ -704,6 +704,9 @@ void app_main(void)
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     hdl_pset = esp_periph_set_init(&pcfg);
 
+    init_display();
+    init_lvgl();
+
     ESP_ERROR_CHECK(esp_netif_init());
 
     esp_err_t err = nvs_flash_init();
@@ -738,8 +741,6 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_SALLOW_VOLUME);
 
-    init_display();
-    init_lvgl();
     init_timer();
     init_ap_to_api();
     start_rec();
