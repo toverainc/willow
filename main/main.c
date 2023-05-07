@@ -707,41 +707,41 @@ void app_main(void)
     init_display();
     init_lvgl();
 
-        if (ld == NULL) {
-            ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
-        } else {
-            // static lv_style_t lv_st_montserrat_20;
-            // lv_style_init(&lv_st_montserrat_20);
-            // lv_style_set_text_color(&lv_st_montserrat_20, lv_color_black());
-            // lv_style_set_text_font(&lv_st_montserrat_20, &lv_font_montserrat_14);
-            // lv_style_set_text_opa(&lv_st_montserrat_20, LV_OPA_30);
+    if (ld == NULL) {
+        ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
+    } else {
+        // static lv_style_t lv_st_montserrat_20;
+        // lv_style_init(&lv_st_montserrat_20);
+        // lv_style_set_text_color(&lv_st_montserrat_20, lv_color_black());
+        // lv_style_set_text_font(&lv_st_montserrat_20, &lv_font_montserrat_14);
+        // lv_style_set_text_opa(&lv_st_montserrat_20, LV_OPA_30);
 
-            lvgl_port_lock(0);
+        lvgl_port_lock(0);
 
-            lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
-            lv_obj_t *lbl_hdr = lv_label_create(scr_act);
-            lbl_ln1 = lv_label_create(scr_act);
-            lbl_ln2 = lv_label_create(scr_act);
-            lbl_ln3 = lv_label_create(scr_act);
-            lbl_ln4 = lv_label_create(scr_act);
-            lv_label_set_recolor(lbl_ln4, true);
-            lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
-            // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
-            lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
-            lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
-            lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
-            lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
-            lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
-            lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
-            lv_obj_set_width(lbl_ln2, 320);
-            lv_label_set_text_static(lbl_ln3, "Starting up...");
+        lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
+        lv_obj_t *lbl_hdr = lv_label_create(scr_act);
+        lbl_ln1 = lv_label_create(scr_act);
+        lbl_ln2 = lv_label_create(scr_act);
+        lbl_ln3 = lv_label_create(scr_act);
+        lbl_ln4 = lv_label_create(scr_act);
+        lv_label_set_recolor(lbl_ln4, true);
+        lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
+        // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
+        lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
+        lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
+        lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
+        lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
+        lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
+        lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
+        lv_obj_set_width(lbl_ln2, 320);
+        lv_label_set_text_static(lbl_ln3, "Starting up...");
 
-            lvgl_port_unlock();
-        }
+        lvgl_port_unlock();
+    }
 
     ESP_ERROR_CHECK(esp_netif_init());
 
