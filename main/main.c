@@ -381,10 +381,12 @@ static esp_err_t init_sntp()
     setenv("TZ", CONFIG_SALLOW_TIMEZONE, 1);
     tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-#ifdef LWIP_DHCP_GET_NTP_SRV
+#ifdef CONFIG_SALLOW_NTP_USE_DHCP
+    ESP_LOGI(TAG, "Using DHCP SNTP server");
     sntp_servermode_dhcp(1);
 #else
-    sntp_setservername(0, "pool.ntp.org");
+    ESP_LOGI(TAG, "Using configured SNTP server '%s'", CONFIG_SALLOW_NTP_HOST);
+    sntp_setservername(0, CONFIG_SALLOW_NTP_HOST);
 #endif
     sntp_set_time_sync_notification_cb(cb_sntp);
     sntp_init();

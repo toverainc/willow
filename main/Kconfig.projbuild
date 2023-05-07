@@ -49,6 +49,17 @@ config SALLOW_LCD_BRIGHTNESS
     help
         LCD Brightness from 0-1023
 
+config SALLOW_NTP_HOST
+    string "Sallow NTP host"
+    default "pool.ntp.org"
+    help
+        NTP host for obtaining system time
+
+config SALLOW_NTP_USE_DHCP
+    bool "Use NTP server provided by DHCP"
+    help
+        Override NTP server with host provided via DHCP
+
 config SALLOW_DEBUG_MEM
     bool "Debug Sallow memory"
     help
