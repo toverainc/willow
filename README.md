@@ -122,7 +122,14 @@ Your ESP BOX will initialize. You should see some help text on the display to us
 
 The available commands and specific names, etc will depend on your Home Assistant configuration.
 
-You can also provide free-form text to get an idea of the accuracy and speed provided by our inference server. The commands will fail unless you've defined them in Home Assistant but the display will show the speech recognition results.
+You can also provide free-form text to get an idea of the accuracy and speed provided by our inference server implementation. The commands will fail unless you've defined them in Home Assistant but the display will show the speech recognition results.
+
+### Things went sideways - reset
+In the event your environment gets out of whack we have a helper to reset:
+
+```./utils.sh destroy```
+
+As the plentiful messages indicate it's a very destructive process but it will reset your environment. After it completes you can start from the top and try again.
 
 ## Exit serial monitor
 To exit ```tio``` you need to press CTRL+t and then 'q'.
@@ -143,17 +150,17 @@ The ESP-IDF, ESP-ADF, ESP-SR, LVGL, etc libraries have a plethora of configurati
 
 If you want to quickly and easily flash multiple devices or distribute a combined firmware image you can use the ```dist``` arguments to ```utils.sh```:
 
-```./utils.sh dist``` - builds the combined flash image
+```./utils.sh dist``` - builds the combined flash image (```sallow-dist.bin```)
 
 ```./utils.sh flash-dist``` - flashes the combined flash image
 
-This combined firmware image can be used with any ESP flashing tool.
+This combined firmware image can be used with any ESP flashing tool like the web flasher [ESP Tool](https://espressif.github.io/esptool-js/) so you can send firmware images to your less technical friends!. Just make sure to use offset 0x0 as we include the bootloader.
 
 ## Development
 
 Development usually involves a few steps:
 
-1) Code - do your thing!
+1) Code - do your thang!
 2) Build
 3) Flash
 
