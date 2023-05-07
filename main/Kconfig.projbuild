@@ -60,6 +60,11 @@ config SALLOW_NTP_USE_DHCP
     help
         Override NTP server with host provided via DHCP
 
+config SALLOW_USE_AMRWB
+    bool "Stream audio with AMR-WB"
+    help
+        AMR-WB is a very low bitrate codec
+
 config SALLOW_DEBUG_MEM
     bool "Debug Sallow memory"
     help
