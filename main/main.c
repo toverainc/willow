@@ -754,12 +754,7 @@ void app_main(void)
     esp_netif_t *hdl_netif = esp_netif_next(NULL);
 
     if (hdl_netif != NULL) {
-        char ip4[16];
         char wake_help[32] = "Ready!";
-        esp_netif_ip_info_t inf_ip;
-        esp_netif_get_ip_info(hdl_netif, &inf_ip);
-
-        snprintf(ip4, 16, IPSTR, IP2STR(&inf_ip.ip));
 
 #ifdef CONFIG_SR_WN_WN9_HIESP
         snprintf(wake_help, 32, "Say 'Hi ESP' to start!");
@@ -782,7 +777,6 @@ void app_main(void)
 
             lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
             lv_obj_t *lbl_hdr = lv_label_create(scr_act);
-            lv_obj_t *lbl_ip = lv_label_create(scr_act);
             lbl_ln1 = lv_label_create(scr_act);
             lbl_ln2 = lv_label_create(scr_act);
             lbl_ln3 = lv_label_create(scr_act);
@@ -791,12 +785,10 @@ void app_main(void)
             lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
             // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
             lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
-            lv_label_set_text(lbl_ip, ip4);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
-            lv_obj_align(lbl_ip, LV_ALIGN_BOTTOM_MID, 0, 0);
             lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
             lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
