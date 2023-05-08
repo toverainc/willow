@@ -96,6 +96,22 @@ fix_components() {
     rm -rf "$SALLOW_PATH"/managed_components/espressif__esp-sr/.component_hash
 }
 
+default_speech_commands() {
+    if [ ! -r "$SALLOW_PATH"/speech_commands/commands_en.txt ]; then
+        echo "Copying default speech commands"
+        cp "$SALLOW_PATH"/managed_components/espressif__esp-sr/model/multinet_model/fst/commands_en.txt \
+            "$SALLOW_PATH"/speech_commands/commands_en.txt
+    fi
+}
+
+update_speech_commands() {
+    if [ -r "$SALLOW_PATH"/speech_commands/commands_en.txt ]; then
+        echo "Linking custom speech commands"
+        ln -sf "$SALLOW_PATH"/speech_commands/commands_en.txt \
+            "$SALLOW_PATH"/managed_components/espressif__esp-sr/model/multinet_model/fst/commands_en.txt
+    fi
+}
+
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
 
@@ -104,6 +120,7 @@ config)
     check_deps
     fix_components
     idf.py menuconfig
+    update_speech_commands
 ;;
 
 clean)
@@ -124,6 +141,7 @@ build)
     check_container
     check_deps
     fix_components
+    update_speech_commands
     idf.py build
 ;;
 
@@ -230,6 +248,14 @@ install|setup)
     do_patch
 
     echo "You can now run ./utils.sh config and navigate to Sallow Configuration for your environment"
+;;
+
+speech-commands)
+    default_speech_commands
+    update_speech_commands
+    idf.py clean
+    idf.py build
+    echo "You can now run ./utils.sh flash to update your speech commands"
 ;;
 
 *)
