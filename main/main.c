@@ -513,6 +513,11 @@ static void start_rec()
     cfg_srr.multinet_init = true;
 #endif
 
+#ifdef CONFIG_SALLOW_RECORD_BUFFER
+    ESP_LOGI(TAG, "Using record buffer '%d'", CONFIG_SALLOW_RECORD_BUFFER);
+    cfg_srr.rb_size = CONFIG_SALLOW_RECORD_BUFFER * 1024;
+#endif
+
 #ifdef CONFIG_SALLOW_USE_AMRWB
     recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
     amrwb_encoder_cfg_t amrwb_cfg = DEFAULT_AMRWB_ENCODER_CONFIG();

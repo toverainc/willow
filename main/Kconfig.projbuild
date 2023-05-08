@@ -98,6 +98,13 @@ config SALLOW_NTP_HOST
     help
         NTP host for obtaining system time
 
+config SALLOW_RECORD_BUFFER
+    int "Record buffer"
+    range 1 16
+    default 12
+    help
+        Custom record buffer for timing and latency
+
 config SALLOW_DEBUG_MEM
     bool "Debug Sallow memory"
     help
