@@ -27,11 +27,15 @@
 #include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_sr.h"
+#include "recorder_encoder.h"
 #include "sdkconfig.h"
 
 #ifdef CONFIG_SALLOW_USE_AMRWB
 #include "amrwb_encoder.h"
-#include "recorder_encoder.h"
+#endif
+
+#ifdef CONFIG_SALLOW_USE_WAV
+#include "wav_encoder.h"
 #endif
 
 #include "shared.h"
@@ -284,6 +288,9 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 #ifdef CONFIG_SALLOW_USE_AMRWB
             esp_http_client_set_header(http, "x-audio-codec", "amrwb");
 #endif
+#ifdef CONFIG_SALLOW_USE_WAV
+            esp_http_client_set_header(http, "x-audio-codec", "wav");
+#endif
             total_write = 0;
             return ESP_OK;
 
@@ -492,6 +499,17 @@ static void start_rec()
     recorder_encoder_cfg.encoder = amrwb_encoder_init(&amrwb_cfg);
 #endif
 
+#ifdef CONFIG_SALLOW_USE_WAV
+    recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
+    wav_encoder_cfg_t wav_cfg = DEFAULT_WAV_ENCODER_CONFIG();
+    wav_cfg.stack_in_ext = true;
+    wav_cfg.task_core = 0;
+    wav_cfg.task_prio = 5;
+    wav_cfg.out_rb_size = 8 * 1024;
+
+    recorder_encoder_cfg.encoder = wav_encoder_init(&wav_cfg);
+#endif
+
     audio_rec_cfg_t cfg_ar = {
         .pinned_core    = AUDIO_REC_DEF_TASK_CORE,
         .task_prio      = AUDIO_REC_DEF_TASK_PRIO,
@@ -509,7 +527,8 @@ static void start_rec()
         .encoder_iface  = NULL,
     };
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
-#ifdef CONFIG_SALLOW_USE_AMRWB
+#if defined(CONFIG_SALLOW_USE_AMRWB) || defined(CONFIG_SALLOW_USE_WAV)
+    ESP_LOGI(TAG, "Using recorder encoder");
     cfg_ar.encoder_handle = recorder_encoder_create(&recorder_encoder_cfg, &cfg_ar.encoder_iface);
 #endif
     cfg_srr.afe_cfg.wakenet_model_name = WAKENET_NAME;

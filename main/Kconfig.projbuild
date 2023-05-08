@@ -65,6 +65,11 @@ config SALLOW_USE_AMRWB
     help
         AMR-WB is a very low bitrate codec
 
+config SALLOW_USE_WAV
+    bool "Stream audio with WAV"
+    help
+        Industry standard WAV file
+
 config SALLOW_DEBUG_MEM
     bool "Debug Sallow memory"
     help
