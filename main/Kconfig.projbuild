@@ -20,6 +20,31 @@ config SERVER_URI
     help
         URI For your Willow instance. Supports HTTP and HTTPS.
 
+choice SALLOW_USE_CODEC
+    prompt "Audio codec to use"
+    default SALLOW_USE_PCM
+        config SALLOW_USE_PCM
+            bool "Raw PCM frames"
+            help
+                High bandwidth but very fast
+
+        config SALLOW_USE_AMRWB
+            bool "AMR-WB (incompatible with local recognition)"
+            help
+                AMR-WB is a very low bitrate codec
+
+        config SALLOW_USE_WAV
+            bool "WAV (incompatible with local recognition)"
+            help
+                Industry standard WAV file
+endchoice
+
+config SALLOW_USE_MULTINET
+    depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && SALLOW_USE_PCM
+    bool "Use local command detection via MultiNet"
+    help
+        Use local command detection via MultiNet
+
 config HOMEASSISTANT_URI
     string "HomeAssistant URI"
     default "http://homeassistant.local:8123/api/conversation/process"
@@ -39,36 +64,39 @@ config SALLOW_TIMEZONE
 
 config SALLOW_VOLUME
     int "Speaker volume"
+    range 0 100
     default 60
     help
-        Audio level for playback
+        Audio level for playback from 0-100
 
 config SALLOW_LCD_BRIGHTNESS
     int "LCD Brightness"
+    range 0 1023
     default 700
     help
         LCD Brightness from 0-1023
 
+choice SALLOW_NTP
+    prompt "NTP Configuration"
+    default SALLOW_NTP_USE_HOST
+
+    config SALLOW_NTP_USE_HOST
+        bool "Use specific NTP server"
+        help
+            NTP host for obtaining system time
+
+    config SALLOW_NTP_USE_DHCP
+        bool "Use NTP server provided by DHCP"
+        help
+            Override NTP server with host provided via DHCP
+endchoice
+
 config SALLOW_NTP_HOST
+    depends on SALLOW_NTP_USE_HOST
     string "Sallow NTP host"
     default "pool.ntp.org"
     help
         NTP host for obtaining system time
-
-config SALLOW_NTP_USE_DHCP
-    bool "Use NTP server provided by DHCP"
-    help
-        Override NTP server with host provided via DHCP
-
-config SALLOW_USE_AMRWB
-    bool "Stream audio with AMR-WB"
-    help
-        AMR-WB is a very low bitrate codec
-
-config SALLOW_USE_WAV
-    bool "Stream audio with WAV"
-    help
-        Industry standard WAV file
 
 config SALLOW_DEBUG_MEM
     bool "Debug Sallow memory"

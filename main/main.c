@@ -67,6 +67,7 @@ static bool stream_to_api = false;
 typedef enum {
     MSG_STOP,
     MSG_START,
+    MSG_START_LOCAL,
 } q_msg;
 static int total_write = 0;
 
@@ -125,7 +126,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_VAD_START:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
+#ifdef CONFIG_SALLOW_USE_MULTINET
+            msg = MSG_START_LOCAL;
+#else
             msg = MSG_START;
+#endif
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
@@ -152,7 +157,21 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 10, true, 1);
             break;
         default:
+#ifdef CONFIG_SALLOW_USE_MULTINET
+            // Catch all for local commands
+            ESP_LOGI(TAG, "Got local command ID: '%d'\n", are);
+            lvgl_port_lock(0);
+            lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+
+            lv_label_set_text_static(lbl_ln1, "I heard command");
+            lvgl_port_unlock();
+            timer_start(TIMER_GROUP_0, TIMER_0);
+#else
             ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'\n", are);
+#endif
             break;
     }
 
@@ -290,6 +309,9 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 #endif
 #ifdef CONFIG_SALLOW_USE_WAV
             esp_http_client_set_header(http, "x-audio-codec", "wav");
+#endif
+#ifdef CONFIG_SALLOW_USE_PCM
+            esp_http_client_set_header(http, "x-audio-codec", "pcm");
 #endif
             total_write = 0;
             return ESP_OK;
@@ -486,6 +508,14 @@ static void start_rec()
         .mn_language      = ESP_MN_ENGLISH,
     };
 
+#ifdef CONFIG_SALLOW_USE_MULTINET
+    ESP_LOGI(TAG, "Using local multinet");
+    lvgl_port_lock(0);
+    lv_label_set_text_static(lbl_ln3, "Loading commands...");
+    lvgl_port_unlock();
+    cfg_srr.multinet_init = true;
+#endif
+
 #ifdef CONFIG_SALLOW_USE_AMRWB
     recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
     amrwb_encoder_cfg_t amrwb_cfg = DEFAULT_AMRWB_ENCODER_CONFIG();
@@ -563,7 +593,7 @@ static void at_read(void *data)
                     stream_to_api = false;
                     break;
                 default:
-                    printf("at_read(): invalid msg\n");
+                    printf("at_read(): invalid msg '%d'\n", msg);
                     break;
             }
         }
@@ -745,6 +775,7 @@ void app_main(void)
     esp_err_t ret;
 
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
+    pcfg.extern_stack = true;
     hdl_pset = esp_periph_set_init(&pcfg);
 
     init_display();

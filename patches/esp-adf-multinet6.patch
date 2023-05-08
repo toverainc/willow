@@ -1,0 +1,38 @@
+diff --git a/components/audio_recorder/recorder_sr.c b/components/audio_recorder/recorder_sr.c
+index f8a449b..be7e3e6 100644
+--- deps/esp-adf/components/audio_recorder/recorder_sr.c
++++ deps/esp-adf/components/audio_recorder/recorder_sr.c
+@@ -185,8 +185,14 @@ static esp_err_t recorder_mn_detect(recorder_sr_t *recorder_sr, int16_t *buffer,
+         }
+         if (mn_state == ESP_MN_STATE_DETECTED) {
+             esp_mn_results_t *mn_result = multinet->get_results(recorder_sr->mn_handle);
++
++            for (int i = 0; i < mn_result->num; i++) {
++                printf("TOP %d, command_id: %d, phrase_id: %d, prob: %f\n",
++                i+1, mn_result->command_id[i], mn_result->phrase_id[i], mn_result->prob[i]);
++            }
++
+             if (recorder_sr->mn_monitor) {
+-                recorder_sr->mn_monitor(mn_result->command_id[0], recorder_sr->mn_monitor_ctx);
++                recorder_sr->mn_monitor(mn_result->phrase_id[0], recorder_sr->mn_monitor_ctx);
+             }
+ #if CONFIG_IDF_TARGET_ESP32
+             recorder_sr_enable_wakenet_aec(recorder_sr);
+@@ -455,7 +461,7 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
+         multinet = esp_mn_handle_from_name(mn_name);
+         recorder_sr->mn_handle = multinet->create(mn_name, 5760);
+         AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, return ESP_FAIL);
+-        esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
++        //esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
+     }
+     return ESP_OK;
+ #else
+@@ -550,7 +556,7 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
+         recorder_sr->mn_handle = multinet->create(mn_name, 5760);
+         AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, goto _failed);
+         recorder_sr->mn_enable = true;
+-        esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
++        //esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
+     }
+ #endif
+     recorder_sr->events = xEventGroupCreate();
