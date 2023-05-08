@@ -510,9 +510,6 @@ static void start_rec()
 
 #ifdef CONFIG_SALLOW_USE_MULTINET
     ESP_LOGI(TAG, "Using local multinet");
-    lvgl_port_lock(0);
-    lv_label_set_text_static(lbl_ln3, "Loading commands...");
-    lvgl_port_unlock();
     cfg_srr.multinet_init = true;
 #endif
 
