@@ -91,30 +91,39 @@ do_patch() {
     cat patches/*.patch | patch -p0
 }
 
+# Managed components are... Fun...
+fix_components() {
+    rm -rf "$SALLOW_PATH"/managed_components/espressif__esp-sr/.component_hash
+}
+
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
 
 config)
     check_container
     check_deps
+    fix_components
     idf.py menuconfig
 ;;
 
 clean)
     check_container
     check_deps
+    fix_components
     idf.py clean
 ;;
 
 fullclean)
     check_container
     check_deps
+    fix_components
     idf.py fullclean
 ;;
 
 build)
     check_container
     check_deps
+    fix_components
     idf.py build
 ;;
 
@@ -219,7 +228,6 @@ install|setup)
     cp sdkconfig.sallow sdkconfig
     idf.py reconfigure
     do_patch
-    rm "$SALLOW_PATH"/managed_components/espressif__esp-sr/.component_hash
 
     echo "You can now run ./utils.sh config and navigate to Sallow Configuration for your environment"
 ;;
