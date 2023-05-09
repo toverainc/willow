@@ -119,6 +119,7 @@ static void play_tone_err(void *data)
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     int msg = -1;
+    int command_id = 0;
 
     switch(are) {
         case AUDIO_REC_VAD_END:
@@ -159,14 +160,31 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
         default:
 #ifdef CONFIG_SALLOW_USE_MULTINET
             // Catch all for local commands
-            ESP_LOGI(TAG, "Got local command ID: '%d'\n", are);
+            command_id = are;
+            char command_text[64];
+            int max_len = sizeof command_text;
+
+            switch(command_id) {
+                case 10:
+                    snprintf(command_text, max_len, "%s", "TURN ON THE TV");
+                    break;
+                case 11:
+                    snprintf(command_text, max_len, "%s", "TURN OFF THE TV");
+                    break;
+                default:
+                    snprintf(command_text, max_len, "%s", "UNKNOWN");
+                    break;
+            }
+
+            ESP_LOGI(TAG, "Got local command ID: '%d'\n", command_id);
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
 
-            lv_label_set_text_static(lbl_ln1, "I heard command");
+            lv_label_set_text_static(lbl_ln1, "I heard command:");
+            lv_label_set_text(lbl_ln2, command_text);
             lvgl_port_unlock();
             timer_start(TIMER_GROUP_0, TIMER_0);
 #else
