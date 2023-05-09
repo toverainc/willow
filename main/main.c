@@ -119,7 +119,9 @@ static void play_tone_err(void *data)
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     int msg = -1;
+#ifdef CONFIG_SALLOW_USE_MULTINET
     int command_id = 0;
+#endif
 
     switch(are) {
         case AUDIO_REC_VAD_END:
