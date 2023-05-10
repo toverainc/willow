@@ -16,6 +16,13 @@ ESPTOOL_VER="4.5.1"
 
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
 
+# Number of loops for torture test
+TORTURE_LOOPS=50
+# Delay in between loops
+TORTURE_DELAY=1.5
+# File to play
+TORTURE_PLAY="misc/hi_esp_this_is_a_test_command.flac"
+
 # Test for local environment file and use any overrides
 if [ -r .env ]; then
     echo "Using configuration overrides from .env file"
@@ -256,6 +263,17 @@ speech-commands)
     idf.py clean
     idf.py build
     echo "You can now run ./utils.sh flash to update your speech commands"
+;;
+
+torture)
+    echo "Running torture test for $TORTURE_LOOPS loops..."
+    echo "WARNING: If testing against Tovera provided servers you will get rate-limited or blocked"
+
+    for i in `seq 1 $TORTURE_LOOPS`; do
+        echo -n "Running loop $i at" `date +"%H:%M:%S"`
+        ffplay -nodisp -hide_banner -loglevel error -autoexit -i "$TORTURE_PLAY"
+        sleep $TORTURE_DELAY
+    done
 ;;
 
 *)
