@@ -110,6 +110,12 @@ config SALLOW_DEBUG_MEM
     help
         Sallow will periodically print memory debugging information when set
 
+config SALLOW_DEBUG_RUNTIME_STATS
+    bool "Debug Sallow runtime stats"
+	depends on FREERTOS_GENERATE_RUN_TIME_STATS
+	help
+		Sallow will periodically print runtime stats when enabled
+
 config SALLOW_DEBUG_TASKS
     bool "Debug Sallow tasks"
     depends on FREERTOS_USE_STATS_FORMATTING_FUNCTIONS

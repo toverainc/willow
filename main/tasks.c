@@ -4,9 +4,23 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "lvgl.h"
+#include "sdkconfig.h"
 
 #include "shared.h"
 #include "timer.h"
+
+#ifdef CONFIG_SALLOW_DEBUG_RUNTIME_STATS
+void task_debug_runtime_stats(void *data)
+{
+    char buf[2048];
+    while(true) {
+        vTaskGetRunTimeStats(buf);
+        printf("%s\n", buf);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+    }
+    vTaskDelete(NULL);
+}
+#endif
 
 void task_timer(void *data)
 {
@@ -20,4 +34,5 @@ void task_timer(void *data)
         ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
         timer_pause(TIMER_GROUP_0, TIMER_0);
     }
+    vTaskDelete(NULL);
 }

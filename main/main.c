@@ -915,6 +915,10 @@ void app_main(void)
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
 
+#ifdef CONFIG_SALLOW_DEBUG_RUNTIME_STATS
+    xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
+#endif
+
     while (true) {
 #ifdef CONFIG_SALLOW_DEBUG_MEM
         printf("MALLOC_CAP_INTERNAL:\n");
