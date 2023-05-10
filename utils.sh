@@ -17,9 +17,9 @@ ESPTOOL_VER="4.5.1"
 export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
 
 # Number of loops for torture test
-TORTURE_LOOPS=50
+TORTURE_LOOPS=300
 # Delay in between loops
-TORTURE_DELAY=1.5
+TORTURE_DELAY=3
 # File to play
 TORTURE_PLAY="misc/hi_esp_this_is_a_test_command.flac"
 
