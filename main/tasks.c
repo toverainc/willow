@@ -20,4 +20,5 @@ void task_timer(void *data)
         ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
         timer_pause(TIMER_GROUP_0, TIMER_0);
     }
+    vTaskDelete(NULL);
 }
