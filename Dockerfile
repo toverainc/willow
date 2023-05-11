@@ -13,6 +13,7 @@ RUN \
 	python3-pip \
 	python-is-python3 \
 	python3-venv \
+	python3-requests \
 	tio \
 	sudo \
 	nano
