@@ -10,7 +10,7 @@
 #include "esp_err.h"
 #include "esp_http_client.h"
 #include "esp_lcd_panel_ops.h"
-#include "esp_lcd_touch_gt911.h"
+#include "esp_lcd_touch_tt21100.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
@@ -754,7 +754,7 @@ static esp_err_t init_lvgl(void)
     };
     esp_lcd_touch_handle_t hdl_lt;
 
-    ret =  esp_lcd_touch_new_i2c_gt911(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
+    ret =  esp_lcd_touch_new_i2c_tt21100(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize touch screen: %s", esp_err_to_name(ret));
         return ret;
