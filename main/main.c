@@ -688,7 +688,7 @@ void app_main(void)
     hdl_pset = esp_periph_set_init(&pcfg);
 
     init_display();
-    init_lvgl();
+    init_lvgl_display();
 
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
@@ -760,6 +760,7 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_SALLOW_VOLUME);
 
+    init_lvgl_touch();
     init_timer();
     init_ap_to_api();
     start_rec();

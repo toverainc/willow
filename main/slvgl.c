@@ -32,7 +32,9 @@ esp_lcd_panel_handle_t hdl_lcd = NULL;
 lv_disp_t *ld;
 lv_obj_t *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
 
-esp_err_t init_lvgl(void)
+static periph_lcd_t *lcdp;
+
+esp_err_t init_lvgl_display(void)
 {
     esp_err_t ret = ESP_OK;
     const lvgl_port_cfg_t cfg_lp = ESP_LVGL_PORT_INIT_CONFIG();
@@ -46,7 +48,7 @@ esp_err_t init_lvgl(void)
     esp_periph_handle_t hdl_plcd = esp_periph_set_get_by_id(hdl_pset, PERIPH_ID_LCD);
 
     // get data for LCD peripheral
-    periph_lcd_t *lcdp = esp_periph_get_data(hdl_plcd);
+    lcdp = esp_periph_get_data(hdl_plcd);
 
     if (lcdp == NULL || lcdp->lcd_io_handle == NULL) {
         ESP_LOGE(TAG, "failed to get LCD IO handle");
@@ -79,6 +81,12 @@ esp_err_t init_lvgl(void)
 
     ld = lvgl_port_add_disp(&cfg_ld);
 
+    return ret;
+}
+
+esp_err_t init_lvgl_touch(void)
+{
+    esp_err_t ret = ESP_OK;
     esp_lcd_touch_config_t cfg_lt = {
         .flags = {
             .mirror_x = LCD_MIRROR_X,
