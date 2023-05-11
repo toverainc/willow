@@ -747,8 +747,8 @@ static esp_err_t init_lvgl(void)
             .interrupt = 0,
             .reset = 0,
         },
-        .int_gpio_num = -1,
-        .rst_gpio_num = -1,
+        .int_gpio_num = GPIO_NUM_3,
+        .rst_gpio_num = GPIO_NUM_NC,
         .x_max = LCD_H_RES,
         .y_max = LCD_V_RES,
     };
