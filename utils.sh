@@ -106,14 +106,16 @@ do_patch() {
     cat patches/*.patch | patch -p0
 }
 
-# Managed components are... Fun...
-fix_components() {
-    rm -rf "$SALLOW_PATH"/managed_components/espressif__esp-sr/.component_hash
-}
-
 generate_speech_commands() {
     if `grep -q CONFIG_SALLOW_USE_MULTINET sdkconfig`; then
+        rm -rf build/srmodels
         python speech_commands/generate_commands.py
+    fi
+
+    if [ -r "$SALLOW_PATH"/speech_commands/commands_en.txt ]; then
+        echo "Linking custom speech commands"
+        ln -sf "$SALLOW_PATH"/speech_commands/commands_en.txt \
+            "$SALLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
     fi
 }
 
@@ -123,28 +125,24 @@ case $1 in
 config)
     check_container
     check_deps
-    fix_components
     idf.py menuconfig
 ;;
 
 clean)
     check_container
     check_deps
-    fix_components
     idf.py clean
 ;;
 
 fullclean)
     check_container
     check_deps
-    fix_components
     idf.py fullclean
 ;;
 
 build)
     check_container
     check_deps
-    fix_components
     generate_speech_commands
     idf.py build
 ;;

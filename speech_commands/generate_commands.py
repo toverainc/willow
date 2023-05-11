@@ -4,10 +4,11 @@ from requests import get
 import re
 import sys
 import os
+import string
 
-tag = "Generate speech commands"
+tag = "MULTINET: Generate speech commands:"
 
-print(f'{tag} Attempting to fetch your lights from Home Assistant')
+print(f'{tag} Attempting to fetch your lights from Home Assistant...')
 
 sallow_path = os.getenv('SALLOW_PATH')
 
@@ -51,6 +52,9 @@ headers = {
 response = get(url, headers=headers)
 entities = response.json()
 
+# Define re to remove numbers - multinet doesn't support them and too lazy to make them words
+pattern = r'[0-9]'
+
 devices = []
 for entity in entities:
     entity_id = entity['entity_id']
@@ -60,14 +64,14 @@ for entity in entities:
         friendly_name = attr.get('friendly_name')
         # Just in case so we don't blow up multinet
         friendly_name = friendly_name.replace('_',' ')
+        friendly_name = re.sub(pattern, '', friendly_name)
+        friendly_name = ' '.join(friendly_name.split())
+        friendly_name = friendly_name.upper()
         # Add device
         devices.append(friendly_name)
 
 # Make the devices unique
 devices = [*set(devices)]
-
-# Define re to remove numbers - multinet doesn't support them and too lazy to make them words
-pattern = r'[0-9]'
 
 # Start index
 index = 0
@@ -75,9 +79,6 @@ index = 0
 commands = []
 for device in devices:
     index = index + 1
-    device = re.sub(pattern, '', device)
-    device = ' '.join(device.split())
-    device = device.upper()
     on = (f'{index} TURN ON {device} LIGHT')
     index = index + 1
     off = (f'{index} TURN OFF {device} LIGHT')
@@ -89,10 +90,11 @@ if index >= 200:
     print(f'WARNING: YOU WILL NEED TO TRIM YOUR COMMANDS MANUALLY')
     sys.exit(1)
 
-multinet_command_file = open(f'{sallow_path}/managed_components/espressif__esp-sr/model/multinet_model/fst/commands_en.txt', 'w')
+multinet_command_file = open(f'{sallow_path}/speech_commands/commands_en.txt', 'w')
 
 for command in commands:
     multinet_command_file.write(f'{command}\n')
+
 multinet_command_file.close()
 
 multinet_header = open(f'{sallow_path}/main/generated_cmd_multinet.h', 'w')
@@ -101,13 +103,15 @@ multinet_header.write(f'#include <string.h> \n\n')
 
 multinet_header.write('char *cmd_multinet[] = {\n')
 
+# Different indexes
+multinet_header.write(f'\t\"DUMMY\",\n')
+
 for device in devices:
-    device = re.sub(pattern, '', device)
-    device = ' '.join(device.split())
+    device = string.capwords(device)
     on = f'Turn on {device} light'
     off = f'Turn off {device} light'
-    multinet_header.write(f'\t\"{on}\",\n')
-    multinet_header.write(f'\t\"{off}\",\n')
+    multinet_header.write(f'\t\"{on}.\",\n')
+    multinet_header.write(f'\t\"{off}.\",\n')
 
 multinet_header.write('};\n\n')
 
@@ -115,3 +119,4 @@ multinet_header.write('char *lookup_cmd_multinet(int id) {\n\treturn cmd_multine
 
 multinet_header.close()
 
+print(f'{tag} Success!')

@@ -35,7 +35,9 @@
 #include "wav_encoder.h"
 #endif
 
+#ifdef CONFIG_SALLOW_USE_MULTINET
 #include "generated_cmd_multinet.h"
+#endif
 
 #include "shared.h"
 #include "slvgl.h"
