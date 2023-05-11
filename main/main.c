@@ -752,8 +752,15 @@ static esp_err_t init_lvgl(void)
         .x_max = LCD_H_RES,
         .y_max = LCD_V_RES,
     };
-    esp_lcd_touch_handle_t hdl_lt;
 
+    esp_lcd_panel_io_i2c_config_t cfg_io_lt = ESP_LCD_TOUCH_IO_I2C_TT21100_CONFIG();
+    ret = esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)0, &cfg_io_lt, &lcdp->lcd_io_handle);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to initialize display panel IO: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    esp_lcd_touch_handle_t hdl_lt = NULL;
     ret =  esp_lcd_touch_new_i2c_tt21100(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize touch screen: %s", esp_err_to_name(ret));
