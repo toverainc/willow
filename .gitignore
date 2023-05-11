@@ -1,5 +1,6 @@
 build
 deps
+generated_*.h
 managed_components
 sdkconfig
 sdkconfig.old
