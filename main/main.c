@@ -129,8 +129,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
-            timer_pause(TIMER_GROUP_0, TIMER_0);
-            timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
+            reset_timer(true);
             lvgl_port_lock(0);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
