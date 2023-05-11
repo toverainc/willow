@@ -73,6 +73,14 @@ do_term() {
     tio -b "$CONSOLE_BAUD" "$PORT"
 }
 
+check_build_host() {
+    if [ "$BUILD_HOST_PATH" ]; then
+        echo "Copying build from defined remote build host and path $BUILD_HOST_PATH"
+        rm -rf build
+        rsync -az --exclude esp-idf "$BUILD_HOST_PATH/build" .
+    fi
+}
+
 check_container(){
     if [ -f /.dockerenv ]; then
         return
@@ -164,6 +172,7 @@ flash)
     check_port
     check_tio
     check_esptool
+    check_build_host
     cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
         @flash_args
@@ -174,6 +183,7 @@ flash-app)
     check_port
     check_tio
     check_esptool
+    check_build_host
     cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         @flash_app_args
@@ -182,6 +192,7 @@ flash-app)
 
 dist)
     check_esptool
+    check_build_host
     cd "$SALLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" merge_bin -o "$SALLOW_PATH/$DIST_FILE" \
         @flash_args
@@ -195,6 +206,7 @@ flash-dist|dist-flash)
         exit 1
     fi
     check_esptool
+    check_build_host
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$SALLOW_PATH/$DIST_FILE"
     do_term
@@ -204,15 +216,6 @@ erase-flash)
     check_esptool
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
-;;
-
-idf-flash)
-    check_port
-    check_tio
-    check_container
-    check_deps
-    idf.py -p "$PORT" -b "$FLASH_BAUD" flash
-    do_term
 ;;
 
 monitor)
