@@ -262,6 +262,7 @@ install|setup)
 speech-commands)
     default_speech_commands
     update_speech_commands
+    fix_components
     idf.py clean
     idf.py build
     echo "You can now run ./utils.sh flash to update your speech commands"
