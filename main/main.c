@@ -87,6 +87,8 @@ const int32_t tone[] = {
     0x00000000, 0x00000000,
 };
 
+static void hass_post(char *data);
+
 static void play_tone(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
@@ -165,6 +167,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 #ifdef CONFIG_SALLOW_USE_MULTINET
             // Catch all for local commands
             command_id = are;
+            char *json;
+            json = malloc(29 + strlen(lookup_cmd_multinet(command_id)));
+            snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}", lookup_cmd_multinet(command_id));
+            hass_post(json);
+            free(json);
 
             ESP_LOGI(TAG, "Got local command ID: '%d'\n", command_id);
             lvgl_port_lock(0);
