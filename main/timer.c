@@ -39,3 +39,11 @@ void init_timer(void)
 
     xTaskCreate(&task_timer, "task_timer", 4 * 1024, NULL, 5, NULL);
 }
+
+void reset_timer(bool pause)
+{
+    if (pause) {
+        timer_pause(TIMER_GROUP_0, TIMER_0);
+    }
+    timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
+}

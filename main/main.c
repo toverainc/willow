@@ -9,10 +9,8 @@
 #include "driver/timer.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
-#include "esp_lcd_panel_ops.h"
-#include "esp_lcd_touch_gt911.h"
-#include "esp_log.h"
 #include "esp_lvgl_port.h"
+#include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_peripherals.h"
 #include "esp_sntp.h"
@@ -23,7 +21,6 @@
 #include "lvgl.h"
 #include "model_path.h"
 #include "nvs_flash.h"
-#include "periph_lcd.h"
 #include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_sr.h"
@@ -41,29 +38,11 @@
 #include "generated_cmd_multinet.h"
 
 #include "shared.h"
+#include "slvgl.h"
 #include "tasks.h"
 #include "timer.h"
 
 #define I2S_PORT I2S_NUM_0
-
-// this is absolutely horrendous but lvgl_port_esp32 requires esp_lcd_panel_io_handle_t and esp-adf does not expose this
-typedef struct periph_lcd {
-    void                                *io_bus;
-    get_lcd_io_bus                      new_panel_io;
-    esp_lcd_panel_io_spi_config_t       lcd_io_cfg;
-    get_lcd_panel                       new_lcd_panel;
-    esp_lcd_panel_dev_config_t          lcd_dev_cfg;
-
-    esp_lcd_panel_io_handle_t           lcd_io_handle;
-    esp_lcd_panel_handle_t              lcd_panel_handle;
-
-    perph_lcd_rest                      rest_cb;
-    void                                *rest_cb_ctx;
-    bool                                lcd_swap_xy;
-    bool                                lcd_mirror_x;
-    bool                                lcd_mirror_y;
-    bool                                lcd_color_invert;
-} periph_lcd_t;
 
 static bool stream_to_api = false;
 typedef enum {
@@ -76,9 +55,9 @@ static int total_write = 0;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
-static esp_lcd_panel_handle_t hdl_lcd = NULL;
-static lv_disp_t *ld;
 static QueueHandle_t q_rec = NULL;
+
+esp_lcd_panel_handle_t hdl_lcd;
 
 const int32_t tone[] = {
     0x00007fff, 0x00007fff,
@@ -150,8 +129,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
-            timer_pause(TIMER_GROUP_0, TIMER_0);
-            timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 0);
+            reset_timer(true);
             lvgl_port_lock(0);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
@@ -690,97 +668,6 @@ static esp_err_t init_display(void)
     return ret;
 }
 
-static esp_err_t init_lvgl(void)
-{
-    esp_err_t ret = ESP_OK;
-    const lvgl_port_cfg_t cfg_lp = ESP_LVGL_PORT_INIT_CONFIG();
-    ret = lvgl_port_init(&cfg_lp);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to initialize LVGL port: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    // get peripheral handle for LCD
-    esp_periph_handle_t hdl_plcd = esp_periph_set_get_by_id(hdl_pset, PERIPH_ID_LCD);
-
-    // get data for LCD peripheral
-    periph_lcd_t *lcdp = esp_periph_get_data(hdl_plcd);
-
-    if (lcdp == NULL || lcdp->lcd_io_handle == NULL) {
-        ESP_LOGE(TAG, "failed to get LCD IO handle");
-        return ESP_FAIL;
-    }
-
-    ESP_LOGD(TAG, "init_lvgl: lcdp->lcd_io_handle: %p", lcdp->lcd_io_handle);
-
-    const lvgl_port_display_cfg_t cfg_ld = {
-        .buffer_size = LCD_H_RES * LCD_V_RES / 10,
-        .double_buffer = false,
-        // DMA and SPIRAM
-        // E (16:37:21.267) LVGL: lvgl_port_add_disp(190): Alloc DMA capable buffer in SPIRAM is not supported!
-        .flags = {
-            .buff_dma = true,
-            .buff_spiram = false,
-        },
-        .hres = LCD_H_RES,
-        // confirmed this is correct by printf %p periph_lcd->lcd_io_handle in esp_peripherals/periph_lcd.c
-        .io_handle = lcdp->lcd_io_handle,
-        .monochrome = false,
-        .panel_handle = hdl_lcd,
-        .rotation = {
-            .mirror_x = LCD_MIRROR_X,
-            .mirror_y = LCD_MIRROR_Y,
-            .swap_xy = LCD_SWAP_XY,
-        },
-        .vres = LCD_V_RES,
-    };
-
-    ld = lvgl_port_add_disp(&cfg_ld);
-
-    esp_lcd_touch_config_t cfg_lt = {
-        .flags = {
-            .mirror_x = LCD_MIRROR_X,
-            .mirror_y = LCD_MIRROR_Y,
-            .swap_xy = LCD_SWAP_XY,
-        },
-        .levels = {
-            .interrupt = 0,
-            .reset = 0,
-        },
-        .int_gpio_num = -1,
-        .rst_gpio_num = -1,
-        .x_max = LCD_H_RES,
-        .y_max = LCD_V_RES,
-    };
-    esp_lcd_touch_handle_t hdl_lt;
-
-    ret =  esp_lcd_touch_new_i2c_gt911(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to initialize touch screen: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    const lvgl_port_touch_cfg_t cfg_pt = {
-        .disp = ld,
-        .handle = hdl_lt,
-    };
-
-    lv_indev_t *lt = lvgl_port_add_touch(&cfg_pt);
-    lv_indev_enable(lt, true);
-
-    LV_IMG_DECLARE(lv_img_hand_left);
-    lv_obj_t *oc = lv_img_create(lv_scr_act());
-    lv_img_set_src(oc, &lv_img_hand_left);
-    lv_indev_set_cursor(lt, oc);
-
-    return ret;
-}
-
-static void cb_scr(lv_event_t *ev)
-{
-    // printf("cb_scr\n");
-}
-
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
@@ -794,7 +681,7 @@ void app_main(void)
     hdl_pset = esp_periph_set_init(&pcfg);
 
     init_display();
-    init_lvgl();
+    init_lvgl_display();
 
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
@@ -866,6 +753,7 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_SALLOW_VOLUME);
 
+    init_lvgl_touch();
     init_timer();
     init_ap_to_api();
     start_rec();
