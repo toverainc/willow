@@ -669,24 +669,6 @@ static esp_err_t init_display(void)
     return ret;
 }
 
-
-static void cb_scr(lv_event_t *ev)
-{
-    // printf("cb_scr\n");
-    switch (lv_event_get_code(ev)) {
-        case LV_EVENT_RELEASED:
-            timer_start(TIMER_GROUP_0, TIMER_0);
-            break;
-
-        case LV_EVENT_PRESSED:
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
-            break;
-
-        default:
-            break;
-    }
-}
-
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);

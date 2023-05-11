@@ -1,4 +1,6 @@
 #include "board.h"
+#include "driver/ledc.h"
+#include "driver/timer.h"
 #include "esp_err.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_touch_tt21100.h"
@@ -33,6 +35,23 @@ lv_disp_t *ld;
 lv_obj_t *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
 
 static periph_lcd_t *lcdp;
+
+void cb_scr(lv_event_t *ev)
+{
+    // printf("cb_scr\n");
+    switch (lv_event_get_code(ev)) {
+        case LV_EVENT_RELEASED:
+            timer_start(TIMER_GROUP_0, TIMER_0);
+            break;
+
+        case LV_EVENT_PRESSED:
+            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
+            break;
+
+        default:
+            break;
+    }
+}
 
 esp_err_t init_lvgl_display(void)
 {
