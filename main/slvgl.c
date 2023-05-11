@@ -10,6 +10,7 @@
 #include "periph_lcd.h"
 
 #include "shared.h"
+#include "timer.h"
 
 // this is absolutely horrendous but lvgl_port_esp32 requires esp_lcd_panel_io_handle_t and esp-adf does not expose this
 typedef struct periph_lcd {
@@ -45,6 +46,7 @@ void cb_scr(lv_event_t *ev)
             break;
 
         case LV_EVENT_PRESSED:
+            reset_timer(true);
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
             break;
 
