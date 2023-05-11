@@ -157,8 +157,7 @@ build-docker|docker-build)
 ;;
 
 docker)
-    check_port
-    docker run --rm -it -v "$PWD":/sallow -v /dev:/dev --privileged -e PORT -e TERM "$DOCKER_IMAGE" /bin/bash
+    docker run --rm -it -v "$PWD":/sallow -e TERM "$DOCKER_IMAGE" /bin/bash
 ;;
 
 flash)
