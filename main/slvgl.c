@@ -108,8 +108,8 @@ esp_err_t init_lvgl_touch(void)
     esp_err_t ret = ESP_OK;
     esp_lcd_touch_config_t cfg_lt = {
         .flags = {
-            .mirror_x = LCD_MIRROR_X,
-            .mirror_y = LCD_MIRROR_Y,
+            .mirror_x = true,
+            .mirror_y = false,
             .swap_xy = LCD_SWAP_XY,
         },
         .levels = {
