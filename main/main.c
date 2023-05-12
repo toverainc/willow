@@ -46,6 +46,7 @@
 
 #define I2S_PORT I2S_NUM_0
 
+static bool recording = false;
 static bool stream_to_api = false;
 typedef enum {
     MSG_STOP,
@@ -572,6 +573,7 @@ static void at_read(void *data)
             switch(msg) {
                 case MSG_START:
                     delay = 0;
+                    recording = true;
                     audio_pipeline_stop(hdl_ap_to_api);
                     audio_pipeline_wait_for_stop(hdl_ap_to_api);
                     audio_pipeline_reset_ringbuffer(hdl_ap_to_api);
@@ -581,10 +583,14 @@ static void at_read(void *data)
                     stream_to_api = true;
                     // this confirms that the URI is still set correctly
                     printf("audio_pipeline_run(hdl_ap_to_api) - uri: '%s'\n", audio_element_get_uri(hdl_ae_hs));
+                    __attribute__((fallthrough));
+                case MSG_START_LOCAL:
+                    recording = true;
                     break;
                 case MSG_STOP:
                     delay = portMAX_DELAY;
                     audio_element_set_ringbuf_done(hdl_ae_rs_to_api);
+                    recording = false;
                     stream_to_api = false;
                     break;
                 default:
