@@ -33,9 +33,16 @@ typedef struct periph_lcd {
 
 esp_lcd_panel_handle_t hdl_lcd = NULL;
 lv_disp_t *ld;
-lv_obj_t *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
+lv_obj_t *btn_cancel, *lbl_btn_cancel, *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
 
 static periph_lcd_t *lcdp;
+
+void cb_btn_cancel(lv_event_t *ev)
+{
+    ESP_LOGD(TAG, "btn_cancel pressed");
+    q_msg msg = MSG_STOP;
+    xQueueSend(q_rec, &msg, 0);
+}
 
 void cb_scr(lv_event_t *ev)
 {

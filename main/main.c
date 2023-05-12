@@ -48,18 +48,13 @@
 
 static bool recording = false;
 static bool stream_to_api = false;
-typedef enum {
-    MSG_STOP,
-    MSG_START,
-    MSG_START_LOCAL,
-} q_msg;
 static int total_write = 0;
 
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
-static QueueHandle_t q_rec = NULL;
 
+QueueHandle_t q_rec;
 esp_lcd_panel_handle_t hdl_lcd;
 
 const int32_t tone[] = {
@@ -142,9 +137,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
             lv_label_set_text_static(lbl_ln3, "Recording command...");
+            lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 10, true, 1);
@@ -267,6 +264,7 @@ static void hass_post(char *data)
         lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
         lv_label_set_text_static(lbl_ln3, "Command status:");
+        lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
         lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Something went wrong");
         lvgl_port_unlock();
     } else {
@@ -597,6 +595,7 @@ static void at_read(void *data)
                     audio_element_set_ringbuf_done(hdl_ae_rs_to_api);
                     recording = false;
                     stream_to_api = false;
+                    lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
                     break;
                 default:
                     printf("at_read(): invalid msg '%d'\n", msg);
@@ -709,6 +708,8 @@ void app_main(void)
 
         lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
         lv_obj_t *lbl_hdr = lv_label_create(scr_act);
+        btn_cancel = lv_btn_create(scr_act);
+        lbl_btn_cancel = lv_label_create(btn_cancel);
         lbl_ln1 = lv_label_create(scr_act);
         lbl_ln2 = lv_label_create(scr_act);
         lbl_ln3 = lv_label_create(scr_act);
@@ -716,10 +717,14 @@ void app_main(void)
         lv_label_set_recolor(lbl_ln4, true);
         lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
         // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
+        lv_label_set_text_static(lbl_btn_cancel, "Cancel");
         lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
+        lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_align(btn_cancel, LV_ALIGN_BOTTOM_MID, 0, -10);
+        lv_obj_align(lbl_btn_cancel, LV_ALIGN_CENTER, 0, 0);
         lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
         lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
         lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
