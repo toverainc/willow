@@ -8,9 +8,12 @@ import string
 
 max_commands = 400
 
+entity_types = ['light.']
+entity_types_str = str(entity_types)
+
 tag = "MULTINET: Generate speech commands:"
 
-print(f'{tag} Attempting to fetch your lights from Home Assistant...')
+print(f'{tag} Attempting to fetch your {entity_types_str} entities from Home Assistant...')
 
 sallow_path = os.getenv('SALLOW_PATH')
 
@@ -58,19 +61,22 @@ entities = response.json()
 pattern = r'[0-9]'
 
 devices = []
-for entity in entities:
-    entity_id = entity['entity_id']
 
-    if entity_id.startswith('light.'):
-        attr = entity.get('attributes')
-        friendly_name = attr.get('friendly_name')
-        # Just in case so we don't blow up multinet
-        friendly_name = friendly_name.replace('_',' ')
-        friendly_name = re.sub(pattern, '', friendly_name)
-        friendly_name = ' '.join(friendly_name.split())
-        friendly_name = friendly_name.upper()
-        # Add device
-        devices.append(friendly_name)
+for type in entity_types:
+    for entity in entities:
+        entity_id = entity['entity_id']
+
+        if entity_id.startswith(type):
+            attr = entity.get('attributes')
+            friendly_name = attr.get('friendly_name')
+            # Just in case so we don't blow up multinet
+            friendly_name = friendly_name.replace('_',' ')
+            friendly_name = re.sub(pattern, '', friendly_name)
+            friendly_name = ' '.join(friendly_name.split())
+            friendly_name = friendly_name.upper()
+            # Add device
+            devices.append(friendly_name)
+
 
 # Make the devices unique
 devices = [*set(devices)]
@@ -81,9 +87,9 @@ index = 0
 commands = []
 for device in devices:
     index = index + 1
-    on = (f'{index} TURN ON {device} LIGHT')
+    on = (f'{index} TURN ON {device}')
     index = index + 1
-    off = (f'{index} TURN OFF {device} LIGHT')
+    off = (f'{index} TURN OFF {device}')
     commands.append(on)
     commands.append(off)
 
@@ -110,8 +116,8 @@ multinet_header.write(f'\t\"DUMMY\",\n')
 
 for device in devices:
     device = string.capwords(device)
-    on = f'Turn on {device} light'
-    off = f'Turn off {device} light'
+    on = f'Turn on {device}'
+    off = f'Turn off {device}'
     multinet_header.write(f'\t\"{on}.\",\n')
     multinet_header.write(f'\t\"{off}.\",\n')
 
