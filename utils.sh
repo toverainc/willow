@@ -11,6 +11,9 @@ export CONSOLE_BAUD=2000000 # Subject to change
 export DOCKER_IMAGE="sallow:latest"
 export DIST_FILE="sallow-dist.bin"
 
+# ESP-SR Componenent ver hash
+ESP_SR_VER="a4f33325610c516482aeb168e508e6e074e2f251"
+
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
 
@@ -220,8 +223,7 @@ destroy)
     read
     #git reset --hard
     #git clean -fdx
-    sudo rm -rf build/*
-    sudo rm -rf deps target venv managed_components "$DIST_FILE"
+    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr
     echo "Not a trace left. You will have to run setup again."
 ;;
 
@@ -237,6 +239,12 @@ install|setup)
     git clone -b "$ADF_VER" https://github.com/espressif/esp-adf.git
     cd $ADF_PATH
     git submodule update --init components/esp-adf-libs
+
+    # Setup esp-sr
+    cd $SALLOW_PATH/components
+    git clone https://github.com/espressif/esp-sr.git
+    cd esp-sr
+    git checkout "$ESP_SR_VER"
 
     cd $SALLOW_PATH
     cp sdkconfig.sallow sdkconfig
