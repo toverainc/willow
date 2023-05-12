@@ -6,6 +6,8 @@ import sys
 import os
 import string
 
+max_commands = 400
+
 tag = "MULTINET: Generate speech commands:"
 
 print(f'{tag} Attempting to fetch your lights from Home Assistant...')
@@ -85,8 +87,8 @@ for device in devices:
     commands.append(on)
     commands.append(off)
 
-if index >= 200:
-    print(f'WARNING: Multinet supports a maximum of 200 commands and you have {index}')
+if index >= max_commands:
+    print(f'WARNING: Multinet supports a maximum of {max_commands} commands and you have {index}')
     print(f'WARNING: YOU WILL NEED TO TRIM YOUR COMMANDS MANUALLY')
     sys.exit(1)
 

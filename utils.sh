@@ -12,7 +12,7 @@ export DOCKER_IMAGE="sallow:latest"
 export DIST_FILE="sallow-dist.bin"
 
 # ESP-SR Componenent ver hash
-ESP_SR_VER="a4f33325610c516482aeb168e508e6e074e2f251"
+ESP_SR_VER="31b8cb6"
 
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
