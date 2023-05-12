@@ -132,6 +132,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
+            if (recording) {
+                msg = MSG_STOP;
+                xQueueSend(q_rec, &msg, 0);
+                break;
+            }
             reset_timer(true);
             lvgl_port_lock(0);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
