@@ -15,11 +15,11 @@ tag = "MULTINET: Generate speech commands:"
 
 print(f'{tag} Attempting to fetch your {entity_types_str} entities from Home Assistant...')
 
-sallow_path = os.getenv('SALLOW_PATH')
+willow_path = os.getenv('WILLOW_PATH')
 
-sallow_config = f'{sallow_path}/sdkconfig'
+willow_config = f'{willow_path}/sdkconfig'
 
-file = open(sallow_config, 'r')
+file = open(willow_config, 'r')
 lines = file.readlines()
 for line in lines:
     if 'CONFIG_HOMEASSISTANT_URI=' in line:
@@ -38,11 +38,11 @@ file.close()
 # Basic sanity checking
 substring = 'http'
 if substring not in ha_uri:
-    print('ERROR: Could not get Home Assistant URI from Sallow Configuration')
+    print('ERROR: Could not get Home Assistant URI from Willow Configuration')
     sys.exit(1)
 
 if ha_token is None:
-    print('ERROR: Could not get Home Assistant token from Sallow Configuration')
+    print('ERROR: Could not get Home Assistant token from Willow Configuration')
     sys.exit(1)
 
 # Construct auth header value
@@ -98,14 +98,14 @@ if index >= max_commands:
     print(f'WARNING: YOU WILL NEED TO TRIM YOUR COMMANDS MANUALLY')
     sys.exit(1)
 
-multinet_command_file = open(f'{sallow_path}/speech_commands/commands_en.txt', 'w')
+multinet_command_file = open(f'{willow_path}/speech_commands/commands_en.txt', 'w')
 
 for command in commands:
     multinet_command_file.write(f'{command}\n')
 
 multinet_command_file.close()
 
-multinet_header = open(f'{sallow_path}/main/generated_cmd_multinet.h', 'w')
+multinet_header = open(f'{willow_path}/main/generated_cmd_multinet.h', 'w')
 
 multinet_header.write(f'#include <string.h> \n\n')
 

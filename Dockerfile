@@ -21,8 +21,8 @@ RUN \
 RUN useradd --create-home --uid 1000 build
 COPY --chown=1000 container.gitconfig /home/build/.gitconfig
 
-ENV PATH="$PATH:/sallow/.local/bin"
-WORKDIR /sallow
+ENV PATH="$PATH:/willow/.local/bin"
+WORKDIR /willow
 
 ENV ADF_VER="v2.5"
 RUN \

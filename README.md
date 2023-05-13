@@ -1,10 +1,10 @@
-﻿# Sallow client for Willow (air-infer-api)
+﻿# Willow
 
 The only supported hardware currently is the [ESP BOX](https://github.com/espressif/esp-box).
 
 ## Getting Started
 
-Configuring and building Sallow for the ESP BOX is a multi-step process.
+Configuring and building Willow for the ESP BOX is a multi-step process.
 
 ### Dependencies
 
@@ -58,7 +58,7 @@ Start the config process:
 
 ```./utils.sh config```
 
-Navigate to "Sallow Configuration" to fill in your WiFi SSID, WiFi password, and your Willow server URI (best-effort Tovera hosted example provided).
+Navigate to "Willow Configuration" to fill in your WiFi SSID, WiFi password, and your Willow server URI (best-effort Tovera hosted example provided).
 
 For Home Assistant you will also need to create a [long lived access token](https://developers.home-assistant.io/docs/auth_api/#:~:text=Long%2Dlived%20access%20tokens%20can,access%20token%20for%20current%20user.) and configure your server address. By default we use ```homeassistant.local``` which should use mDNS to resolve your local Home Assistant instance.
 
@@ -109,10 +109,10 @@ I (5495) AFE_SR: wake num: 3, mode: 1, (Mar  3 2023 14:37:26)
 I (20:17:37.428) AUDIO_THREAD: The feed_task task allocate stack on external memory
 I (20:17:37.432) AUDIO_THREAD: The fetch_task task allocate stack on external memory
 I (20:17:37.440) AUDIO_THREAD: The recorder_task task allocate stack on external memory
-I (20:17:37.449) SALLOW: app_main() - start_rec() finished
+I (20:17:37.449) WILLOW: app_main() - start_rec() finished
 I (20:17:37.455) AUDIO_THREAD: The at_read task allocate stack on external memory
-I (20:17:37.464) SALLOW: esp_netif_get_nr_of_ifs: 1
-I (20:17:37.475) SALLOW: Startup complete. Waiting for wake word.
+I (20:17:37.464) WILLOW: esp_netif_get_nr_of_ifs: 1
+I (20:17:37.475) WILLOW: Startup complete. Waiting for wake word.
 ```
 
 Your ESP BOX will initialize. You should see some help text on the display to use your configured wake word. Try some built in Home Assistant [intents](https://www.home-assistant.io/integrations/conversation/) like:
@@ -146,11 +146,11 @@ ESP devices are very robust to flashing failures but it can happen! If you end u
 
 ```utils.sh``` will attempt to load environment variables from ```.env```. You can define your ```PORT``` here to avoid needing to define it over and over.
 
-The ESP-IDF, ESP-ADF, ESP-SR, LVGL, etc libraries have a plethora of configuration options. DO NOT change anything outside of "Sallow Configuration" unless you know what you are doing.
+The ESP-IDF, ESP-ADF, ESP-SR, LVGL, etc libraries have a plethora of configuration options. DO NOT change anything outside of "Willow Configuration" unless you know what you are doing.
 
 If you want to quickly and easily flash multiple devices or distribute a combined firmware image you can use the ```dist``` arguments to ```utils.sh```:
 
-```./utils.sh dist``` - builds the combined flash image (```sallow-dist.bin```)
+```./utils.sh dist``` - builds the combined flash image (```willow-dist.bin```)
 
 ```./utils.sh flash-dist``` - flashes the combined flash image
 
@@ -173,7 +173,7 @@ Unless you change the wake word you can selectively flash the application partit
 ## The Future (in no particular order)
 
 ### Performance improvements
-Sallow and Willow already provide "faster-than-Alexa" responsiveness for a voice user interface. However, there are multiple obvious optimizations that could be made:
+Willow and air-infer-api already provide "faster-than-Alexa" responsiveness for a voice user interface. However, there are multiple obvious optimizations that could be made:
 
 - ADF pipeline handing (we're waiting on ESP-ADF 2.6 with ESP-IDF 5)
 - Websockets for inference server

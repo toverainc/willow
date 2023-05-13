@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e # bail on error
 
-export SALLOW_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-cd "$SALLOW_PATH"
+export WILLOW_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+cd "$WILLOW_PATH"
 
 export PLATFORM="esp32s3" # Current general family
 export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
 export CONSOLE_BAUD=2000000 # Subject to change
 
-export DOCKER_IMAGE="sallow:latest"
-export DIST_FILE="sallow-dist.bin"
+export DOCKER_IMAGE="willow:latest"
+export DIST_FILE="willow-dist.bin"
 
 # ESP-SR Componenent ver hash
 ESP_SR_VER="31b8cb6"
@@ -17,7 +17,7 @@ ESP_SR_VER="31b8cb6"
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
 
-export ADF_PATH="$SALLOW_PATH/deps/esp-adf"
+export ADF_PATH="$WILLOW_PATH/deps/esp-adf"
 
 # Number of loops for torture test
 TORTURE_LOOPS=300
@@ -105,20 +105,20 @@ check_deps() {
 }
 
 do_patch() {
-    cd "$SALLOW_PATH"
+    cd "$WILLOW_PATH"
     cat patches/*.patch | patch -p0
 }
 
 generate_speech_commands() {
-    if `grep -q CONFIG_SALLOW_USE_MULTINET sdkconfig`; then
+    if `grep -q CONFIG_WILLOW_USE_MULTINET sdkconfig`; then
         rm -rf build/srmodels
         python speech_commands/generate_commands.py
     fi
 
-    if [ -r "$SALLOW_PATH"/speech_commands/commands_en.txt ]; then
+    if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
         echo "Linking custom speech commands"
-        ln -sf "$SALLOW_PATH"/speech_commands/commands_en.txt \
-            "$SALLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
+        ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
+            "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
     fi
 }
 
@@ -155,7 +155,7 @@ build-docker|docker-build)
 ;;
 
 docker)
-    docker run --rm -it -v "$PWD":/sallow -e TERM "$DOCKER_IMAGE" /bin/bash
+    docker run --rm -it -v "$PWD":/willow -e TERM "$DOCKER_IMAGE" /bin/bash
 ;;
 
 flash)
@@ -163,7 +163,7 @@ flash)
     check_tio
     check_esptool
     check_build_host
-    cd "$SALLOW_PATH"/build
+    cd "$WILLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
         @flash_args
     do_term
@@ -174,7 +174,7 @@ flash-app)
     check_tio
     check_esptool
     check_build_host
-    cd "$SALLOW_PATH"/build
+    cd "$WILLOW_PATH"/build
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         @flash_app_args
     do_term
@@ -183,11 +183,11 @@ flash-app)
 dist)
     check_esptool
     check_build_host
-    cd "$SALLOW_PATH"/build
-    python3 -m esptool --chip "$PLATFORM" merge_bin -o "$SALLOW_PATH/$DIST_FILE" \
+    cd "$WILLOW_PATH"/build
+    python3 -m esptool --chip "$PLATFORM" merge_bin -o "$WILLOW_PATH/$DIST_FILE" \
         @flash_args
     echo "Combined firmware image for flashing written"
-    ls -lh "$SALLOW_PATH/$DIST_FILE"
+    ls -lh "$WILLOW_PATH/$DIST_FILE"
 ;;
 
 flash-dist|dist-flash)
@@ -198,7 +198,7 @@ flash-dist|dist-flash)
     check_esptool
     check_build_host
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
-        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$SALLOW_PATH/$DIST_FILE"
+        --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$WILLOW_PATH/$DIST_FILE"
     do_term
 ;;
 
@@ -241,17 +241,17 @@ install|setup)
     git submodule update --init components/esp-adf-libs
 
     # Setup esp-sr
-    cd $SALLOW_PATH/components
+    cd $WILLOW_PATH/components
     git clone https://github.com/espressif/esp-sr.git
     cd esp-sr
     git checkout "$ESP_SR_VER"
 
-    cd $SALLOW_PATH
-    cp sdkconfig.sallow sdkconfig
+    cd $WILLOW_PATH
+    cp sdkconfig.willow sdkconfig
     idf.py reconfigure
     do_patch
 
-    echo "You can now run ./utils.sh config and navigate to Sallow Configuration for your environment"
+    echo "You can now run ./utils.sh config and navigate to Willow Configuration for your environment"
 ;;
 
 torture)

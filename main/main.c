@@ -27,15 +27,15 @@
 #include "recorder_encoder.h"
 #include "sdkconfig.h"
 
-#ifdef CONFIG_SALLOW_USE_AMRWB
+#ifdef CONFIG_WILLOW_USE_AMRWB
 #include "amrwb_encoder.h"
 #endif
 
-#ifdef CONFIG_SALLOW_USE_WAV
+#ifdef CONFIG_WILLOW_USE_WAV
 #include "wav_encoder.h"
 #endif
 
-#ifdef CONFIG_SALLOW_USE_MULTINET
+#ifdef CONFIG_WILLOW_USE_MULTINET
 #include "generated_cmd_multinet.h"
 #endif
 
@@ -100,7 +100,7 @@ static void play_tone_err(void *data)
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     int msg = -1;
-#ifdef CONFIG_SALLOW_USE_MULTINET
+#ifdef CONFIG_WILLOW_USE_MULTINET
     int command_id = 0;
 #endif
 
@@ -110,7 +110,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_VAD_START:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
-#ifdef CONFIG_SALLOW_USE_MULTINET
+#ifdef CONFIG_WILLOW_USE_MULTINET
             msg = MSG_START_LOCAL;
 #else
             msg = MSG_START;
@@ -143,11 +143,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_label_set_text_static(lbl_ln3, "Recording command...");
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_SALLOW_LCD_BRIGHTNESS, 0);
+            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
             // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 10, true, 1);
             break;
         default:
-#ifdef CONFIG_SALLOW_USE_MULTINET
+#ifdef CONFIG_WILLOW_USE_MULTINET
             // Catch all for local commands
             command_id = are;
             char *json;
@@ -301,13 +301,13 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             memset(dat, 0, sizeof(dat));
             snprintf(dat, sizeof(dat), "%d", 1);
             esp_http_client_set_header(http, "x-audio-channel", dat);
-#ifdef CONFIG_SALLOW_USE_AMRWB
+#ifdef CONFIG_WILLOW_USE_AMRWB
             esp_http_client_set_header(http, "x-audio-codec", "amrwb");
 #endif
-#ifdef CONFIG_SALLOW_USE_WAV
+#ifdef CONFIG_WILLOW_USE_WAV
             esp_http_client_set_header(http, "x-audio-codec", "wav");
 #endif
-#ifdef CONFIG_SALLOW_USE_PCM
+#ifdef CONFIG_WILLOW_USE_PCM
             esp_http_client_set_header(http, "x-audio-codec", "pcm");
 #endif
             total_write = 0;
@@ -412,15 +412,15 @@ static esp_err_t init_ap_to_api()
 static esp_err_t init_sntp()
 {
     ESP_LOGI(TAG, "initializing SNTP client");
-    setenv("TZ", CONFIG_SALLOW_TIMEZONE, 1);
+    setenv("TZ", CONFIG_WILLOW_TIMEZONE, 1);
     tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-#ifdef CONFIG_SALLOW_NTP_USE_DHCP
+#ifdef CONFIG_WILLOW_NTP_USE_DHCP
     ESP_LOGI(TAG, "Using DHCP SNTP server");
     sntp_servermode_dhcp(1);
 #else
-    ESP_LOGI(TAG, "Using configured SNTP server '%s'", CONFIG_SALLOW_NTP_HOST);
-    sntp_setservername(0, CONFIG_SALLOW_NTP_HOST);
+    ESP_LOGI(TAG, "Using configured SNTP server '%s'", CONFIG_WILLOW_NTP_HOST);
+    sntp_setservername(0, CONFIG_WILLOW_NTP_HOST);
 #endif
     sntp_set_time_sync_notification_cb(cb_sntp);
     sntp_init();
@@ -505,17 +505,17 @@ static void start_rec()
         .mn_language      = ESP_MN_ENGLISH,
     };
 
-#ifdef CONFIG_SALLOW_USE_MULTINET
+#ifdef CONFIG_WILLOW_USE_MULTINET
     ESP_LOGI(TAG, "Using local multinet");
     cfg_srr.multinet_init = true;
 #endif
 
-#ifdef CONFIG_SALLOW_RECORD_BUFFER
-    ESP_LOGI(TAG, "Using record buffer '%d'", CONFIG_SALLOW_RECORD_BUFFER);
-    cfg_srr.rb_size = CONFIG_SALLOW_RECORD_BUFFER * 1024;
+#ifdef CONFIG_WILLOW_RECORD_BUFFER
+    ESP_LOGI(TAG, "Using record buffer '%d'", CONFIG_WILLOW_RECORD_BUFFER);
+    cfg_srr.rb_size = CONFIG_WILLOW_RECORD_BUFFER * 1024;
 #endif
 
-#ifdef CONFIG_SALLOW_USE_AMRWB
+#ifdef CONFIG_WILLOW_USE_AMRWB
     recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
     amrwb_encoder_cfg_t amrwb_cfg = DEFAULT_AMRWB_ENCODER_CONFIG();
     amrwb_cfg.contain_amrwb_header = true;
@@ -528,7 +528,7 @@ static void start_rec()
     recorder_encoder_cfg.encoder = amrwb_encoder_init(&amrwb_cfg);
 #endif
 
-#ifdef CONFIG_SALLOW_USE_WAV
+#ifdef CONFIG_WILLOW_USE_WAV
     recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
     wav_encoder_cfg_t wav_cfg = DEFAULT_WAV_ENCODER_CONFIG();
     wav_cfg.stack_in_ext = true;
@@ -556,7 +556,7 @@ static void start_rec()
         .encoder_iface  = NULL,
     };
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
-#if defined(CONFIG_SALLOW_USE_AMRWB) || defined(CONFIG_SALLOW_USE_WAV)
+#if defined(CONFIG_WILLOW_USE_AMRWB) || defined(CONFIG_WILLOW_USE_WAV)
     ESP_LOGI(TAG, "Using recorder encoder");
     cfg_ar.encoder_handle = recorder_encoder_create(&recorder_encoder_cfg, &cfg_ar.encoder_iface);
 #endif
@@ -634,7 +634,7 @@ static esp_err_t init_display(void)
 
     const ledc_channel_config_t cfg_bl_channel = {
         .channel = LEDC_CHANNEL_1,
-        .duty = CONFIG_SALLOW_LCD_BRIGHTNESS,
+        .duty = CONFIG_WILLOW_LCD_BRIGHTNESS,
         .gpio_num = GPIO_NUM_45,
         .hpoint = 0,
         .intr_type = LEDC_INTR_DISABLE,
@@ -718,7 +718,7 @@ void app_main(void)
         lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
         // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
         lv_label_set_text_static(lbl_btn_cancel, "Cancel");
-        lv_label_set_text_static(lbl_hdr, "Welcome to Sallow!");
+        lv_label_set_text_static(lbl_hdr, "Welcome to Willow!");
         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
@@ -732,7 +732,7 @@ void app_main(void)
         lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
         lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
         lv_obj_set_width(lbl_ln2, 320);
-#ifdef CONFIG_SALLOW_USE_MULTINET
+#ifdef CONFIG_WILLOW_USE_MULTINET
         lv_label_set_text_static(lbl_ln3, "Starting up (local)...");
 #else
         lv_label_set_text_static(lbl_ln3, "Starting up (server)...");
@@ -772,7 +772,7 @@ void app_main(void)
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-    audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_SALLOW_VOLUME);
+    audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
     init_lvgl_touch();
     init_timer();
@@ -817,18 +817,18 @@ void app_main(void)
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
 
-#ifdef CONFIG_SALLOW_DEBUG_RUNTIME_STATS
+#ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
 #endif
 
     while (true) {
-#ifdef CONFIG_SALLOW_DEBUG_MEM
+#ifdef CONFIG_WILLOW_DEBUG_MEM
         printf("MALLOC_CAP_INTERNAL:\n");
         heap_caps_print_heap_info(MALLOC_CAP_INTERNAL);
         printf("MALLOC_CAP_SPIRAM:\n");
         heap_caps_print_heap_info(MALLOC_CAP_SPIRAM);
 #endif
-#ifdef CONFIG_SALLOW_DEBUG_TASKS
+#ifdef CONFIG_WILLOW_DEBUG_TASKS
         char buf[128];
         vTaskList(&buf);
         printf("%s\n", buf);

@@ -7,4 +7,4 @@ set(COMPONENTS main)
 include($ENV{ADF_PATH}/CMakeLists.txt)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-project(sallow)
+project(willow)

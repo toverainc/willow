@@ -9,7 +9,7 @@
 #include "shared.h"
 #include "timer.h"
 
-#ifdef CONFIG_SALLOW_DEBUG_RUNTIME_STATS
+#ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
 void task_debug_runtime_stats(void *data)
 {
     char buf[2048];
