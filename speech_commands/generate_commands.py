@@ -123,10 +123,11 @@ for device in devices:
     multinet_header.write(f'\t\"{off}.\",\n')
 
 multinet_header.write('};\n\n')
+multinet_header.write(f'int cmd_multinet_max = {index};\n')
 
 fn = """
 char *lookup_cmd_multinet(int id) {
-    if (cmd_multinet[id] == NULL) {
+    if (id > cmd_multinet_max) {
         return "INVALID";
     }
 
