@@ -813,7 +813,9 @@ void app_main(void)
         }
     }
 
+#ifdef CONFIG_WILLOW_USE_MULTINET
     ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
+#endif
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
