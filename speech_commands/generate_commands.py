@@ -124,7 +124,17 @@ for device in devices:
 
 multinet_header.write('};\n\n')
 
-multinet_header.write('char *lookup_cmd_multinet(int id) {\n\treturn cmd_multinet[id];\n}')
+fn = """
+char *lookup_cmd_multinet(int id) {
+    if (cmd_multinet[id] == NULL) {
+        return "INVALID";
+    }
+
+    return cmd_multinet[id];
+}
+"""
+
+multinet_header.write(fn);
 
 multinet_header.close()
 
