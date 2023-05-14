@@ -196,7 +196,6 @@ flash-dist|dist-flash)
         exit 1
     fi
     check_esptool
-    check_build_host
     python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$WILLOW_PATH/$DIST_FILE"
     do_term
