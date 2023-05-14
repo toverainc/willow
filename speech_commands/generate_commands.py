@@ -75,7 +75,8 @@ for type in entity_types:
             friendly_name = ' '.join(friendly_name.split())
             friendly_name = friendly_name.upper()
             # Add device
-            devices.append(friendly_name)
+            if friendly_name not in devices:
+                devices.append(friendly_name)
 
 
 # Make the devices unique
