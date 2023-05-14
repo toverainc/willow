@@ -8,7 +8,7 @@ import string
 
 max_commands = 400
 
-entity_types = ['light.']
+entity_types = ['light.', 'switch.']
 entity_types_str = str(entity_types)
 
 tag = "MULTINET: Generate speech commands:"
