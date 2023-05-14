@@ -132,6 +132,24 @@ char *lookup_cmd_multinet(int id) {
 
     return cmd_multinet[id];
 }
+
+size_t get_cmd_multinet_size(void)
+{
+    int i = 0;
+    size_t sz = 0;
+
+    while(true) {
+        if (strcmp(lookup_cmd_multinet(i), "INVALID") == 0) {
+            break;
+        }
+
+            // strlen excludes \0
+            sz += strlen(lookup_cmd_multinet(i)) + 1;
+            i++;
+    }
+
+    return sz;
+}
 """
 
 multinet_header.write(fn);
