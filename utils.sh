@@ -110,15 +110,15 @@ do_patch() {
 }
 
 generate_speech_commands() {
-    if `grep -q CONFIG_WILLOW_USE_MULTINET sdkconfig`; then
+    if `grep -q 'CONFIG_WILLOW_USE_MULTINET=y' sdkconfig`; then
         rm -rf build/srmodels
         /usr/bin/python3 speech_commands/generate_commands.py
-    fi
 
-    if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
-        echo "Linking custom speech commands"
-        ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
-            "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
+        if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
+            echo "Linking custom speech commands"
+            ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
+                "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
+        fi
     fi
 }
 
