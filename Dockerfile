@@ -9,14 +9,14 @@ RUN \
   apt-get -qq install \
 	git \
 	libusb-1.0-0 \
+	nano \
+	python-is-python3 \
 	python3 \
 	python3-pip \
-	python-is-python3 \
-	python3-venv \
 	python3-requests \
-	tio \
+	python3-venv \
 	sudo \
-	nano
+	tio
 
 RUN useradd --create-home --uid 1000 build
 COPY --chown=1000 container.gitconfig /home/build/.gitconfig
