@@ -144,7 +144,7 @@ size_t get_cmd_multinet_size(void)
             break;
         }
 
-            // strlen excludes \0
+            // strlen excludes terminating null byte
             sz += strlen(lookup_cmd_multinet(i)) + 1;
             i++;
     }
