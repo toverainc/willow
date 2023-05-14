@@ -149,7 +149,7 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 CONFIG_WIFI_SSID="myssid"
 CONFIG_WIFI_PASSWORD="myssid"
-CONFIG_SERVER_URI="https://infer.tovera.io/api/sallow"
+CONFIG_SERVER_URI="https://infer.tovera.io/api/willow"
 CONFIG_WILLOW_USE_PCM=y
 # CONFIG_WILLOW_USE_AMRWB is not set
 # CONFIG_WILLOW_USE_WAV is not set
