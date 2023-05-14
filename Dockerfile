@@ -12,6 +12,7 @@ RUN \
 	nano \
 	python-is-python3 \
 	python3 \
+  python3-num2words \
 	python3-pip \
 	python3-requests \
 	python3-venv \
