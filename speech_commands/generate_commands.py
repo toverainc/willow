@@ -79,10 +79,14 @@ for type in entity_types:
             friendly_name = re.sub(pattern, '', friendly_name)
             friendly_name = ' '.join(friendly_name.split())
             friendly_name = friendly_name.upper()
+            # ESP_MN_MAX_PHRASE_LEN=63
+            # "TURN OFF " = 9
+            if len(friendly_name) > 63 - 9:
+                print(f"Turn off command for {friendly_name} will be longer than ESP_MN_MAX_PHRASE_LEN, dropping this entity")
+                continue
             # Add device
             if friendly_name not in devices:
                 devices.append(friendly_name)
-
 
 # Make the devices unique
 devices = [*set(devices)]
