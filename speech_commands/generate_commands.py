@@ -57,8 +57,8 @@ headers = {
 response = get(url, headers=headers)
 entities = response.json()
 
-# Define re to remove numbers - multinet doesn't support them and too lazy to make them words
-pattern = r'[0-9]'
+# Define re to remove anything but alphabet and spaces - multinet doesn't support them and too lazy to make them words
+pattern = r'[^A-Za-z ]'
 
 devices = []
 
