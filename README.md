@@ -16,7 +16,7 @@ Current features include:
 - Operation on Wi-Fi "IoT" networks with no external internet/network access.
 - LCD and touchscreen. The ESP BOX has color LCD and capacitive mult-point touchscreen. We support them with an initial (limited) user interface.
 - Ready to go! The ESP BOX can be taken out of the package, flashed with Willow, and placed in your home or commercial/office environment and not look like a science experiment. All in a package that measures less than 3" x 3".
-- Very low power. In our measurements the ESP BOX uses a maximum of 200 mW.
+- Very low power. In our measurements the ESP BOX uses roughly 100 mW.
 - Completely on device speech command recognition and support for our (soon to be released) Whisper-powered inference server (Tovera hosted best-effort inference server provided). Configure up to 400 commands detected completely on device or self-host our (coming soon) inference server to transcribe any speech!
 
 Not bad for hardware you can order today from Amazon, Adafruit, The Pi Hut, or other preferred vendor for (approximately) $50 USD. Add a USB-C power supply and go!
@@ -171,7 +171,7 @@ If you want to quickly and easily flash multiple devices or distribute a combine
 
 ```./utils.sh flash-dist``` - flashes the combined flash image
 
-This combined firmware image can be used with any ESP flashing tool like the web flasher [ESP Tool](https://espressif.github.io/esptool-js/) so you can send firmware images to your less technical friends!. Just make sure to use offset 0x0 with those tools as we include the bootloader.
+This combined firmware image can be used with any ESP flashing tool like the web flasher [ESP Tool](https://espressif.github.io/esptool-js/) so you can send firmware images to your less technical friends! Just make sure to erase flash first and use offset 0x0 with those tools as we include the bootloader.
 
 ## Development
 
@@ -195,7 +195,7 @@ Willow and air-infer-api/Multinet already provide "faster-than-Alexa" responsive
 - ADF pipeline handing (we're waiting on ESP-ADF 2.6 with ESP-IDF 5)
 - Websockets for inference server
 - Websockets for Home Assistant
-- Likely many more
+- Likely many, many more
 
 These enhancements alone should dramatically improve responsiveness.
 
