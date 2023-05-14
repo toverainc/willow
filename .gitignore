@@ -6,5 +6,5 @@ sdkconfig
 sdkconfig.old
 venv
 target
-sallow-dist.bin
+willow-dist.bin
 .env
