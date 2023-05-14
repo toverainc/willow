@@ -1,5 +1,6 @@
 # This script is GROSS
 
+from num2words import num2words
 from requests import get
 import re
 import sys
@@ -69,6 +70,10 @@ for type in entity_types:
         if entity_id.startswith(type):
             attr = entity.get('attributes')
             friendly_name = attr.get('friendly_name')
+            numbers = re.search(r'(\d{1,})', friendly_name)
+            if numbers:
+                for number in numbers.groups():
+                    friendly_name = friendly_name.replace(number, f" {num2words(int(number))} ")
             # Just in case so we don't blow up multinet
             friendly_name = friendly_name.replace('_',' ')
             friendly_name = re.sub(pattern, '', friendly_name)

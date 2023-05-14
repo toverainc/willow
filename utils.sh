@@ -112,7 +112,7 @@ do_patch() {
 generate_speech_commands() {
     if `grep -q CONFIG_WILLOW_USE_MULTINET sdkconfig`; then
         rm -rf build/srmodels
-        python speech_commands/generate_commands.py
+        /usr/bin/python3 speech_commands/generate_commands.py
     fi
 
     if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
