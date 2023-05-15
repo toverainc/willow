@@ -21,6 +21,7 @@
 #include "lvgl.h"
 #include "model_path.h"
 #include "nvs_flash.h"
+#include "periph_button.h"
 #include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_encoder.h"
@@ -683,6 +684,18 @@ static esp_err_t init_display(void)
     return ret;
 }
 
+static esp_err_t init_buttons(void)
+{
+    periph_button_cfg_t cfg_btn = {
+        .gpio_mask = GPIO_SEL_0 | GPIO_SEL_1, // BOOT/CONFIG | MUTE
+    };
+    esp_periph_handle_t hdl_btn = periph_button_init(&cfg_btn);
+    if (hdl_btn == NULL) {
+        return ESP_ERR_ADF_MEMORY_LACK;
+    }
+    return esp_periph_start(hdl_pset, hdl_btn);
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
@@ -777,6 +790,7 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
+    init_buttons();
     init_lvgl_touch();
     init_timer();
     init_ap_to_api();
