@@ -7,6 +7,7 @@
 #include "cJSON.h"
 #include "driver/ledc.h"
 #include "driver/timer.h"
+#include "es7210.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
@@ -177,6 +178,35 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
     }
 
     return ESP_OK;
+}
+
+static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev, void *data)
+{
+    int key = (int)ev->data;
+    int ret = ESP_OK;
+    ESP_LOGD(TAG, "key pressed: type='%d', key='%d'", ev->type, key);
+
+    if (key == INPUT_KEY_USER_ID_MUTE) {
+        if (ev->type == INPUT_KEY_SERVICE_ACTION_PRESS_RELEASE) {
+            ESP_LOGI(TAG, "unmute");
+            audio_hal_codec_config_t cfg_ahc = {
+                .adc_input  = AUDIO_HAL_ADC_INPUT_LINE1,
+                .dac_output = AUDIO_HAL_DAC_OUTPUT_ALL,
+                .codec_mode = AUDIO_HAL_CODEC_MODE_BOTH,
+                .i2s_iface = {
+                    .mode = AUDIO_HAL_MODE_SLAVE,
+                    .fmt = AUDIO_HAL_I2S_NORMAL,
+                    .samples = AUDIO_HAL_16K_SAMPLES,
+                    .bits = AUDIO_HAL_BIT_LENGTH_32BITS,
+                },
+            };
+
+            es7210_adc_init(&cfg_ahc);
+            es7210_adc_set_gain(GAIN_37_5DB);
+        }
+    }
+
+    return ret;
 }
 
 void cb_sntp(struct timeval *tv)
@@ -718,7 +748,11 @@ static esp_err_t init_input_key_service()
     input_key_service_cfg_t cfg_iks = INPUT_KEY_SERVICE_DEFAULT_CONFIG();
     cfg_iks.handle = hdl_pset;
     periph_service_handle_t hld_psvc_iks = input_key_service_create(&cfg_iks);
-    return input_key_service_add_key(hld_psvc_iks, inf_iks, INPUT_KEY_NUM);
+    ret = input_key_service_add_key(hld_psvc_iks, inf_iks, INPUT_KEY_NUM);
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    return periph_service_set_callback(hld_psvc_iks, cb_iks, NULL);
 }
 
 void app_main(void)
