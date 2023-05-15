@@ -111,11 +111,11 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_IMG_HAND_LEFT uint8_t lv_img_hand_left
 // clang-format on
 
 const lv_img_dsc_t lv_img_hand_left = {
-  .header.cf = LV_IMG_CF_TRUE_COLOR_ALPHA,
-  .header.always_zero = 0,
-  .header.reserved = 0,
-  .header.w = 30,
-  .header.h = 22,
-  .data_size = 660 * LV_IMG_PX_SIZE_ALPHA_BYTE,
-  .data = lv_img_hand_left_map,
+    .header.cf = LV_IMG_CF_TRUE_COLOR_ALPHA,
+    .header.always_zero = 0,
+    .header.reserved = 0,
+    .header.w = 30,
+    .header.h = 22,
+    .data_size = 660 * LV_IMG_PX_SIZE_ALPHA_BYTE,
+    .data = lv_img_hand_left_map,
 };

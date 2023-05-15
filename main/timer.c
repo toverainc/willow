@@ -10,7 +10,6 @@
 
 xQueueHandle hdl_q_timer = NULL;
 
-
 static bool IRAM_ATTR cb_timer_isr(void *data)
 {
     BaseType_t hiprio_woken = pdFALSE;

@@ -14,21 +14,21 @@
 
 // this is absolutely horrendous but lvgl_port_esp32 requires esp_lcd_panel_io_handle_t and esp-adf does not expose this
 typedef struct periph_lcd {
-    void                                *io_bus;
-    get_lcd_io_bus                      new_panel_io;
-    esp_lcd_panel_io_spi_config_t       lcd_io_cfg;
-    get_lcd_panel                       new_lcd_panel;
-    esp_lcd_panel_dev_config_t          lcd_dev_cfg;
+    void *io_bus;
+    get_lcd_io_bus new_panel_io;
+    esp_lcd_panel_io_spi_config_t lcd_io_cfg;
+    get_lcd_panel new_lcd_panel;
+    esp_lcd_panel_dev_config_t lcd_dev_cfg;
 
-    esp_lcd_panel_io_handle_t           lcd_io_handle;
-    esp_lcd_panel_handle_t              lcd_panel_handle;
+    esp_lcd_panel_io_handle_t lcd_io_handle;
+    esp_lcd_panel_handle_t lcd_panel_handle;
 
-    perph_lcd_rest                      rest_cb;
-    void                                *rest_cb_ctx;
-    bool                                lcd_swap_xy;
-    bool                                lcd_mirror_x;
-    bool                                lcd_mirror_y;
-    bool                                lcd_color_invert;
+    perph_lcd_rest rest_cb;
+    void *rest_cb_ctx;
+    bool lcd_swap_xy;
+    bool lcd_mirror_x;
+    bool lcd_mirror_y;
+    bool lcd_color_invert;
 } periph_lcd_t;
 
 esp_lcd_panel_handle_t hdl_lcd = NULL;
@@ -139,7 +139,7 @@ esp_err_t init_lvgl_touch(void)
     }
 
     esp_lcd_touch_handle_t hdl_lt = NULL;
-    ret =  esp_lcd_touch_new_i2c_tt21100(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
+    ret = esp_lcd_touch_new_i2c_tt21100(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize touch screen: %s", esp_err_to_name(ret));
         return ret;
