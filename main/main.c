@@ -9,8 +9,8 @@
 #include "driver/timer.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
-#include "esp_lvgl_port.h"
 #include "esp_log.h"
+#include "esp_lvgl_port.h"
 #include "esp_netif.h"
 #include "esp_peripherals.h"
 #include "esp_sntp.h"
@@ -23,8 +23,8 @@
 #include "nvs_flash.h"
 #include "periph_wifi.h"
 #include "raw_stream.h"
-#include "recorder_sr.h"
 #include "recorder_encoder.h"
+#include "recorder_sr.h"
 #include "sdkconfig.h"
 
 #ifdef CONFIG_WILLOW_USE_AMRWB
@@ -57,12 +57,14 @@ static audio_rec_handle_t hdl_ar = NULL;
 QueueHandle_t q_rec;
 esp_lcd_panel_handle_t hdl_lcd;
 
+// clang-format off
 const int32_t tone[] = {
     0x00007fff, 0x00007fff,
     0x00000000, 0x00000000,
     0x80008000, 0x80008000,
     0x00000000, 0x00000000,
 };
+// clang-format on
 
 static void hass_post(char *data);
 
@@ -104,7 +106,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
     int command_id = 0;
 #endif
 
-    switch(are) {
+    switch (are) {
         case AUDIO_REC_VAD_END:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_END");
             break;
@@ -152,7 +154,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             command_id = are;
             char *json;
             json = malloc(29 + strlen(lookup_cmd_multinet(command_id)));
-            snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}", lookup_cmd_multinet(command_id));
+            snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
+                     lookup_cmd_multinet(command_id));
             hass_post(json);
             free(json);
 
@@ -232,8 +235,8 @@ static void hass_post(char *data)
     n = esp_http_client_read_response(hdl_hc, body, n);
     if (n >= 0) {
         int http_status = esp_http_client_get_status_code(hdl_hc);
-        ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'",
-                 http_status, esp_http_client_get_content_length(hdl_hc));
+        ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'", http_status,
+                 esp_http_client_get_content_length(hdl_hc));
         if (http_status != 200) {
             ok = false;
             audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
@@ -288,7 +291,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
     char len_buf[16];
     int wlen = 0;
 
-    switch(msg->event_id) {
+    switch (msg->event_id) {
         case HTTP_STREAM_PRE_REQUEST:
             ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
             esp_http_client_set_method(http, HTTP_METHOD_POST);
@@ -380,7 +383,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 static esp_err_t init_ap_to_api()
 {
     ESP_LOGD(TAG, "init_ap_to_api()");
-    //audio_element_handle_t hdl_ae_hs;
+    // audio_element_handle_t hdl_ae_hs;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
     hdl_ap_to_api = audio_pipeline_init(&cfg_ap);
 
@@ -390,7 +393,7 @@ static esp_err_t init_ap_to_api()
     hdl_ae_hs = http_stream_init(&cfg_hs);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
-    cfg_rs.out_rb_size = 64 * 1024;     // default is 8 * 1024
+    cfg_rs.out_rb_size = 64 * 1024; // default is 8 * 1024
     cfg_rs.type = AUDIO_STREAM_WRITER;
     hdl_ae_rs_to_api = raw_stream_init(&cfg_rs);
 
@@ -441,9 +444,9 @@ static void start_rec()
 
     i2s_stream_cfg_t cfg_is = I2S_STREAM_CFG_DEFAULT();
     cfg_is.i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM;
-    cfg_is.i2s_config.use_apll = 0;     // not supported on ESP32-S3-BOX
+    cfg_is.i2s_config.use_apll = 0; // not supported on ESP32-S3-BOX
     cfg_is.i2s_port = CODEC_ADC_I2S_PORT;
-    cfg_is.out_rb_size = 8 * 1024;      // default is 8 * 1024
+    cfg_is.out_rb_size = 8 * 1024; // default is 8 * 1024
     cfg_is.type = AUDIO_STREAM_READER;
     hdl_ae_is = i2s_stream_init(&cfg_is);
 
@@ -491,18 +494,18 @@ static void start_rec()
     // cfg_srr.afe_cfg.pcm_config.sample_rate = CFG_AUDIO_SR_SAMPLE_RATE;
 
     recorder_sr_cfg_t cfg_srr = {
-        .afe_cfg          = cfg_afe,
-        .input_order      = INPUT_ORDER_DEFAULT(),
-        .multinet_init    = false,
-        .feed_task_core   = FEED_TASK_PINNED_CORE,
-        .feed_task_prio   = FEED_TASK_PRIO,
-        .feed_task_stack  = FEED_TASK_STACK_SZ,
-        .fetch_task_core  = FETCH_TASK_PINNED_CORE,
-        .fetch_task_prio  = FETCH_TASK_PRIO,
+        .afe_cfg = cfg_afe,
+        .input_order = INPUT_ORDER_DEFAULT(),
+        .multinet_init = false,
+        .feed_task_core = FEED_TASK_PINNED_CORE,
+        .feed_task_prio = FEED_TASK_PRIO,
+        .feed_task_stack = FEED_TASK_STACK_SZ,
+        .fetch_task_core = FETCH_TASK_PINNED_CORE,
+        .fetch_task_prio = FETCH_TASK_PRIO,
         .fetch_task_stack = FETCH_TASK_STACK_SZ,
-        .rb_size          = 12 * 1024,   // default is 6 * 1024
-        .partition_label  = "model",
-        .mn_language      = ESP_MN_ENGLISH,
+        .rb_size = 12 * 1024, // default is 6 * 1024
+        .partition_label = "model",
+        .mn_language = ESP_MN_ENGLISH,
     };
 
 #ifdef CONFIG_WILLOW_USE_MULTINET
@@ -516,7 +519,7 @@ static void start_rec()
 #endif
 
 #ifdef CONFIG_WILLOW_USE_AMRWB
-    recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
+    recorder_encoder_cfg_t recorder_encoder_cfg = {0};
     amrwb_encoder_cfg_t amrwb_cfg = DEFAULT_AMRWB_ENCODER_CONFIG();
     amrwb_cfg.contain_amrwb_header = true;
     amrwb_cfg.stack_in_ext = true;
@@ -529,7 +532,7 @@ static void start_rec()
 #endif
 
 #ifdef CONFIG_WILLOW_USE_WAV
-    recorder_encoder_cfg_t recorder_encoder_cfg = { 0 };
+    recorder_encoder_cfg_t recorder_encoder_cfg = {0};
     wav_encoder_cfg_t wav_cfg = DEFAULT_WAV_ENCODER_CONFIG();
     wav_cfg.stack_in_ext = true;
     wav_cfg.task_core = 0;
@@ -540,20 +543,20 @@ static void start_rec()
 #endif
 
     audio_rec_cfg_t cfg_ar = {
-        .pinned_core    = AUDIO_REC_DEF_TASK_CORE,
-        .task_prio      = AUDIO_REC_DEF_TASK_PRIO,
-        .task_size      = AUDIO_REC_DEF_TASK_SZ,
-        .event_cb       = cb_ar_event,
-        .user_data      = NULL,
-        .read           = (recorder_data_read_t)&feed_afe,
-        .sr_handle      = NULL,
-        .sr_iface       = NULL,
-        .wakeup_time    = AUDIO_REC_DEF_WAKEUP_TM,
-        .vad_start      = AUDIO_REC_VAD_START_SPEECH_MS,
-        .vad_off        = 300,
-        .wakeup_end     = 100,
+        .pinned_core = AUDIO_REC_DEF_TASK_CORE,
+        .task_prio = AUDIO_REC_DEF_TASK_PRIO,
+        .task_size = AUDIO_REC_DEF_TASK_SZ,
+        .event_cb = cb_ar_event,
+        .user_data = NULL,
+        .read = (recorder_data_read_t)&feed_afe,
+        .sr_handle = NULL,
+        .sr_iface = NULL,
+        .wakeup_time = AUDIO_REC_DEF_WAKEUP_TM,
+        .vad_start = AUDIO_REC_VAD_START_SPEECH_MS,
+        .vad_off = 300,
+        .wakeup_end = 100,
         .encoder_handle = NULL,
-        .encoder_iface  = NULL,
+        .encoder_iface = NULL,
     };
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
 #if defined(CONFIG_WILLOW_USE_AMRWB) || defined(CONFIG_WILLOW_USE_WAV)
@@ -573,7 +576,7 @@ static void at_read(void *data)
 
     while (true) {
         if (xQueueReceive(q_rec, &msg, delay) == pdTRUE) {
-            switch(msg) {
+            switch (msg) {
                 case MSG_START:
                     delay = 0;
                     recording = true;
@@ -604,7 +607,7 @@ static void at_read(void *data)
         }
 
         if (stream_to_api) {
-            //printf("at_read() audio_recorder_data_read()\n");
+            // printf("at_read() audio_recorder_data_read()\n");
             ret = audio_recorder_data_read(hdl_ar, buf, len, portMAX_DELAY);
             if (ret <= 0) {
                 printf("at_read() ret leq 0\n");
@@ -619,7 +622,7 @@ static void at_read(void *data)
             //     delay = portMAX_DELAY;
             //     return;
             // }
-            //printf("at_read() raw_stream_write()\n");
+            // printf("at_read() raw_stream_write()\n");
             raw_stream_write(hdl_ae_rs_to_api, buf, ret);
         }
     }
@@ -836,6 +839,6 @@ void app_main(void)
         vTaskList(&buf);
         printf("%s\n", buf);
 #endif
-	    vTaskDelay(5000 / portTICK_PERIOD_MS);
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }
