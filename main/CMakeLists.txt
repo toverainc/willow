@@ -9,6 +9,7 @@ set(COMPONENT_PRIV_REQUIRES
 	audio_stream
 	esp_http_client
 	esp_peripherals
+	input_key_service
 	spiffs
 )
 register_component()

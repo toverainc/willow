@@ -18,6 +18,7 @@
 #include "filter_resample.h"
 #include "http_stream.h"
 #include "i2s_stream.h"
+#include "input_key_service.h"
 #include "lvgl.h"
 #include "model_path.h"
 #include "nvs_flash.h"
@@ -696,6 +697,30 @@ static esp_err_t init_buttons(void)
     return esp_periph_start(hdl_pset, hdl_btn);
 }
 
+static esp_err_t init_input_key_service()
+{
+    int ret = ESP_OK;
+    input_key_service_info_t inf_iks_boot = {
+        .act_id = GPIO_NUM_0,
+        .type = PERIPH_ID_BUTTON,
+        .user_id = INPUT_KEY_USER_ID_REC,
+    };
+    input_key_service_info_t inf_iks_mute = {
+        .act_id = GPIO_NUM_1,
+        .type = PERIPH_ID_BUTTON,
+        .user_id = INPUT_KEY_USER_ID_MUTE,
+    };
+    input_key_service_info_t inf_iks[] = {
+        inf_iks_boot,
+        inf_iks_mute,
+    };
+
+    input_key_service_cfg_t cfg_iks = INPUT_KEY_SERVICE_DEFAULT_CONFIG();
+    cfg_iks.handle = hdl_pset;
+    periph_service_handle_t hld_psvc_iks = input_key_service_create(&cfg_iks);
+    return input_key_service_add_key(hld_psvc_iks, inf_iks, INPUT_KEY_NUM);
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
@@ -791,6 +816,7 @@ void app_main(void)
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
     init_buttons();
+    init_input_key_service();
     init_lvgl_touch();
     init_timer();
     init_ap_to_api();
