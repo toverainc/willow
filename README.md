@@ -54,6 +54,10 @@ Mac (with homebrew):
 
 ```brew install tio```
 
+### Clone this repo
+
+```git clone https://github.com/toverainc/willow.git && cd willow```
+
 ### Container
 
 We use Docker (also supports podman) for the build container. To build the container with docker:
