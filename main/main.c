@@ -57,12 +57,14 @@ static audio_rec_handle_t hdl_ar = NULL;
 QueueHandle_t q_rec;
 esp_lcd_panel_handle_t hdl_lcd;
 
+// clang-format off
 const int32_t tone[] = {
     0x00007fff, 0x00007fff,
     0x00000000, 0x00000000,
     0x80008000, 0x80008000,
     0x00000000, 0x00000000,
 };
+// clang-format on
 
 static void hass_post(char *data);
 
