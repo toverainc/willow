@@ -4,13 +4,13 @@ Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project prima
 
 <img src="https://github.com/espressif/esp-box/blob/master/docs/_static/esp32_s3_box.png" width="400px" />
 
-**FAST** - Check the demo. Response times faster than Alexa/Echo or Google Home.
+**FAST** - Check the demo. Response times faster than Alexa/Echo or Google Home. From end of speech to action completed in 500ms or less.
 
 **ACCURATE** - High wake word accuracy, low false activation, and powered by a server you host and control using Whisper or command recognition solely on the device.
 
 **RELIABLE** - We've tested thousands of cycles of voice commands with a < 1% failure rate. No one likes to repeat themselves!
 
-**FLEXIBLE** - Use a server anywhere or don't with command recognition on the device. Have the results go anywhere you want. Integrate with whatever you want. Completely open source so it does what you want, only what you want, and only how you want it. No more annoying extra prompts or sales pitches to upsell you on other products. Supports multiple wake words with more coming soon.
+**FLEXIBLE** - Use a server anywhere or don't use a server at all with command recognition on the device. Have the results go anywhere you want. Integrate with whatever you want. Completely open source so it does what you want, only what you want, and only how you want it. No more annoying extra prompts or sales pitches to upsell you. Supports multiple wake words with more coming soon.
 
 **PRIVATE** - Check the source. Build and flash yourself. Proxy through another server to inspect traffic. Use on your own server. Use only local commands. Use on a network without access to the internet. Dig as deep as you want because you're not going to find anything fishy here!
 
