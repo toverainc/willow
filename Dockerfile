@@ -4,6 +4,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 RUN apt-get -qq update && \
     apt-get -qq install \
+    clang-tidy-12 \
     git \
     libusb-1.0-0 \
     nano \
@@ -16,6 +17,9 @@ RUN apt-get -qq update && \
     sudo \
     tio \
     && rm -rf /var/lib/apt/lists/*
+
+RUN --mount=type=cache,target=/opt/esp/dist/ /opt/esp/idf/tools/idf_tools.py install xtensa-clang
+RUN /opt/esp/python_env/idf4.4_py3.8_env/bin/pip install --upgrade pyclang
 
 # Podman
 RUN useradd --create-home --uid 1000 build
