@@ -142,7 +142,7 @@ cleanup:
     free(url);
 }
 
-void hass_post(char *data)
+static void hass_post(char *data)
 {
     bool ok;
     char *body = NULL;
@@ -225,6 +225,11 @@ cleanup:
     esp_http_client_cleanup(hdl_hc);
 
     free(url);
+}
+
+void hass_send(char *data)
+{
+    hass_post(data);
 }
 
 void init_hass(void)

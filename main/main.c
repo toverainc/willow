@@ -158,7 +158,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             json = malloc(29 + strlen(lookup_cmd_multinet(command_id)));
             snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
                      lookup_cmd_multinet(command_id));
-            hass_post(json);
+            hass_send(json);
             free(json);
 
             ESP_LOGI(TAG, "Got local command ID: '%d'\n", command_id);
@@ -292,7 +292,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             }
             buf[read_len] = 0;
             ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
-            hass_post(buf);
+            hass_send(buf);
 
             cJSON *cjson = cJSON_Parse(buf);
             cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");

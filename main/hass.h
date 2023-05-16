@@ -1,2 +1,2 @@
-void hass_post(char *data);
+void hass_send(char *data);
 void init_hass(void);
