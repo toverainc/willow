@@ -317,6 +317,11 @@ static void hass_send_ws(char *data)
 {
     int ret;
 
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        esp_websocket_client_destroy(hdl_wc);
+        init_hass_ws_client();
+    }
+
     cJSON *cjson = cJSON_Parse(data);
     cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
 
