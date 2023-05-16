@@ -1,0 +1,1 @@
+void hass_post(char *data);
