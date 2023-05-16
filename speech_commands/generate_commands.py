@@ -20,14 +20,23 @@ willow_path = os.getenv('WILLOW_PATH')
 
 willow_config = f'{willow_path}/sdkconfig'
 
+ha_tls = False
+
 file = open(willow_config, 'r')
 lines = file.readlines()
 for line in lines:
-    if 'CONFIG_HOMEASSISTANT_URI=' in line:
-        ha_uri = line.replace('CONFIG_HOMEASSISTANT_URI=', '')
-        ha_uri = ha_uri.strip('\n')
-        ha_uri = ha_uri.replace('\"', '')
-        ha_uri = ha_uri.replace('/api/conversation/process', '')
+    if 'CONFIG_HOMEASSISTANT_HOST=' in line:
+        ha_host = line.replace('CONFIG_HOMEASSISTANT_HOST=', '')
+        ha_host = ha_host.strip('\n')
+        ha_host = ha_host.replace('\"', '')
+
+    if 'CONFIG_HOMEASSISTANT_PORT=' in line:
+        ha_port = line.replace('CONFIG_HOMEASSISTANT_PORT=', '')
+        ha_port = ha_port.strip('\n')
+
+    if 'CONFIG_HOMEASSISTANT_TLS=' in line:
+        ha_tls = line.replace('CONFIG_HOMEASSISTANT_TLS=', '')
+        ha_tls = ha_tls.strip('\n')
 
     if 'CONFIG_HOMEASSISTANT_TOKEN=' in line:
         ha_token = line.replace('CONFIG_HOMEASSISTANT_TOKEN=', '')
@@ -36,12 +45,14 @@ for line in lines:
 
 file.close()
 
-# Basic sanity checking
-substring = 'http'
-if substring not in ha_uri:
-    print('ERROR: Could not get Home Assistant URI from Willow Configuration')
-    sys.exit(1)
+if ha_tls == 'y':
+    ha_url_scheme = "https"
+else:
+    ha_url_scheme = "http"
 
+ha_uri = f"{ha_url_scheme}://{ha_host}:{ha_port}"
+
+# Basic sanity checking
 if ha_token is None:
     print('ERROR: Could not get Home Assistant token from Willow Configuration')
     sys.exit(1)

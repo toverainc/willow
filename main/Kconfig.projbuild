@@ -45,11 +45,23 @@ config WILLOW_USE_MULTINET
     help
         Use local command detection via MultiNet
 
-config HOMEASSISTANT_URI
-    string "HomeAssistant URI"
-    default "http://homeassistant.local:8123/api/conversation/process"
+config HOMEASSISTANT_HOST
+    string "HomeAssistant host"
+    default "homeassistant.local"
     help
-        URL for your Home Assistant instance.
+        Hostname/IP address for your Home Assistant instance.
+
+config HOMEASSISTANT_PORT
+    int "HomeAssistant port"
+    default 8123
+    range 0 65535
+    help
+        TCP port for your Home Assistant instance.
+
+config HOMEASSISTANT_TLS
+    bool "HomeAssistant TLS/SSL"
+    help
+        Enable if your Home Assistant port has TLS/SSL enabled.
 
 config HOMEASSISTANT_TOKEN
     string "HomeAssistant Auth Token"
