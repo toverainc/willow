@@ -11,6 +11,7 @@
 #include "shared.h"
 #include "slvgl.h"
 
+#define HASS_URI_COMPONENTS           "/api/components"
 #define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
 #define STRLEN(s)                     strlen(s)
 #define URL_CLEN                      (8 + 1 + 5 + 1) // https:// + : + $PORT + NULL terminator
@@ -20,6 +21,8 @@
 #else
 #define HOMEASSISTANT_TLS false
 #endif
+
+static bool has_assist_pipeline = false;
 
 static esp_http_client_handle_t init_hass_http_client(void)
 {
@@ -37,6 +40,63 @@ static esp_http_client_handle_t init_hass_http_client(void)
     free(hdr_auth);
 
     return hdl_hc;
+}
+
+void hass_check_assist_pipeline(void)
+{
+    char *body = NULL;
+    char *url = NULL;
+    esp_err_t ret;
+    int len_url, n;
+
+    esp_http_client_handle_t hdl_hc = init_hass_http_client();
+
+    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + STRLEN(HASS_URI_COMPONENTS);
+    url = malloc(len_url);
+    snprintf(url, len_url, "%s://%s:%d%s", HOMEASSISTANT_TLS ? "https" : "http", CONFIG_HOMEASSISTANT_HOST,
+             CONFIG_HOMEASSISTANT_PORT, HASS_URI_COMPONENTS);
+
+    esp_http_client_set_url(hdl_hc, url);
+    esp_http_client_set_method(hdl_hc, HTTP_METHOD_GET);
+    ret = esp_http_client_open(hdl_hc, 0);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to open HTTP connection to %s (%s)", url, esp_err_to_name(ret));
+        return;
+    }
+    n = esp_http_client_fetch_headers(hdl_hc);
+    if (n < 0) {
+        ESP_LOGE(TAG, "failed to get HTTP headers");
+    }
+    body = malloc(n + 1);
+    n = esp_http_client_read_response(hdl_hc, body, n);
+    if (n >= 0) {
+        int http_status = esp_http_client_get_status_code(hdl_hc);
+        if (http_status != 200) {
+            ESP_LOGE(TAG, "failed to get Home Assistant components from API");
+            goto cleanup;
+        }
+        cJSON *cjson = cJSON_Parse(body);
+        if (cJSON_IsArray(cjson)) {
+            cJSON *component = NULL;
+            cJSON_ArrayForEach(component, cjson)
+            {
+                if (cJSON_IsString(component) && component->valuestring != NULL) {
+                    if (strcmp(component->valuestring, "assist_pipeline") == 0) {
+                        ESP_LOGI(TAG, "Home Assistant has Assist Pipeline support");
+                        has_assist_pipeline = true;
+                        break;
+                    }
+                }
+            }
+        }
+        cJSON_Delete(cjson);
+    }
+
+cleanup:
+    esp_http_client_cleanup(hdl_hc);
+
+    free(body);
+    free(url);
 }
 
 void hass_post(char *data)
