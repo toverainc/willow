@@ -47,7 +47,7 @@ fi
 check_esptool() {
     if [ ! -d venv ]; then
         echo "Creating venv for esptool"
-        python3 -m venv --no-site-packages venv
+        python3 -m venv venv
         source venv/bin/activate
         echo "Installing esptool..."
         pip install -U wheel setuptools pip
