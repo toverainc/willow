@@ -758,7 +758,7 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
-    hass_check_assist_pipeline();
+    init_hass();
     init_buttons();
     init_input_key_service();
     init_lvgl_touch();
