@@ -19,8 +19,12 @@ RUN \
 	sudo \
 	tio
 
+# Podman
 RUN useradd --create-home --uid 1000 build
 COPY --chown=1000 container.gitconfig /home/build/.gitconfig
+
+# Docker
+COPY container.gitconfig /root/.gitconfig
 
 ENV PATH="$PATH:/willow/.local/bin"
 WORKDIR /willow
