@@ -11,14 +11,25 @@
 #include "shared.h"
 #include "slvgl.h"
 
+#define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
+#define STRLEN(s)                     strlen(s)
+#define URL_CLEN                      (8 + 1 + 5 + 1) // https:// + : + $PORT + NULL terminator
+
+#ifdef CONFIG_HOMEASSISTANT_TLS
+#define HOMEASSISTANT_TLS true
+#else
+#define HOMEASSISTANT_TLS false
+#endif
+
 void hass_post(char *data)
 {
     bool ok;
     char *body = NULL;
     char *hdr_auth = NULL;
     char *json = NULL;
+    char *url = NULL;
     esp_err_t ret;
-    int n;
+    int len_url, n;
 
     esp_http_client_config_t cfg_hc = {
         // either host and path or url should be set
@@ -27,12 +38,16 @@ void hass_post(char *data)
 
     esp_http_client_handle_t hdl_hc = esp_http_client_init(&cfg_hc);
 
-    hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
+    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + STRLEN(HASS_URI_CONVERSATION_PROCESS);
+    url = malloc(len_url);
+    snprintf(url, len_url, "%s://%s:%d%s", HOMEASSISTANT_TLS ? "https" : "http", CONFIG_HOMEASSISTANT_HOST,
+             CONFIG_HOMEASSISTANT_PORT, HASS_URI_CONVERSATION_PROCESS);
 
+    hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
     snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
 
-    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, CONFIG_HOMEASSISTANT_URI);
-    esp_http_client_set_url(hdl_hc, CONFIG_HOMEASSISTANT_URI);
+    ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
+    esp_http_client_set_url(hdl_hc, url);
     esp_http_client_set_method(hdl_hc, HTTP_METHOD_POST);
     esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     esp_http_client_set_header(hdl_hc, "Content-Type", "application/json");
@@ -99,4 +114,5 @@ cleanup:
     esp_http_client_cleanup(hdl_hc);
 
     free(hdr_auth);
+    free(url);
 }
