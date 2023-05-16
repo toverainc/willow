@@ -269,7 +269,7 @@ ESP IDF and ESP BOX has robust support for over the air firmware (OTA) updates. 
 The good news is the far-field wake word recognition and speech recognition performance is very good. The bad news is if you have multiple devices in proximity they are all likely to wake and process speech simultaneously. Commands will still work but multiple confirmation/error beeps and hammering your destination command endpoint is less than ideal. We have a few ideas about dealing with this too.
 
 ### Custom Wake Word
-Espressif has a [wake word customization service](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/wake_word_engine/ESP_Wake_Words_Customization.html) that enables us (or you!) to create custom wake words. We plan to create a "Hi Willow" or similar wake word and potentially others depending on input from the community.
+Espressif has a [wake word customization service](https://docs.espressif.com/projects/esp-sr/en/latest/esp32s3/wake_word_engine/ESP_Wake_Words_Customization.html) that enables us (and commercial users) to create custom wake words. We plan to create a "Hi Willow" or similar wake word and potentially others depending on input from the community.
 
 ### GPIO
 The ESP BOX provides 16 GPIOs to the user that are readily accessed from sockets on the rear of the device. We plan to make these configurable by the user to enable all kinds of interesting maker/DIY functions.
