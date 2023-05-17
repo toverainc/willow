@@ -81,6 +81,9 @@ for type in entity_types:
         if entity_id.startswith(type):
             attr = entity.get('attributes')
             friendly_name = attr.get('friendly_name')
+            if friendly_name is None:
+                # in case of blank or misconfigured HA entities
+                continue
             numbers = re.search(r'(\d{1,})', friendly_name)
             if numbers:
                 for number in numbers.groups():
