@@ -1,7 +1,5 @@
 ﻿# Willow - A Practical, Open Source, Privacy-Focused Platform for Voice Assistants and other Applications
 
-Hi [Hacker News](https://news.ycombinator.com/item?id=35948462)! Please check-out our [wiki](https://github.com/toverainc/willow/wiki) for more details and answers to many of your excellent questions!
-
 Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project primarily targetting the [ESP BOX](https://github.com/espressif/esp-box) hardware from Espressif. Our goal is to provide Amazon Echo/Google Home competitive performance, accuracy, cost, and functionality with [Home Assistant](https://www.home-assistant.io/) and other platforms - 100% open source and completely self-hosted by the user with "ready for the kitchen counter" low cost commercially available hardware.
 
 <img src="https://github.com/espressif/esp-box/blob/master/docs/_static/esp32_s3_box.png" width="400px" />
@@ -76,15 +74,25 @@ Once inside the container install the environment:
 
 ```./utils.sh install```
 
-### Config
+### Start Configuration
 
 Start the config process:
 
 ```./utils.sh config```
 
+## ESP BOX LITE NOTE: FOR USERS WHO PURCHASED THE ESP BOX LITE
+You will need to build for the ESP BOX LITE. From the main menu, select:
+Audio HAL ---> Audio Board ---> ESP32-S3-BOX-Lite
+
+Return to main menu and continue.
+
+### Willow Configuration
+
 Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports WPA/WPA2/WPA3), and your Willow server URI (best-effort Tovera hosted example provided).
 
 For Home Assistant you will also need to create a [long lived access token](https://developers.home-assistant.io/docs/auth_api/#:~:text=Long%2Dlived%20access%20tokens%20can,access%20token%20for%20current%20user.) and configure your server address. By default we use ```homeassistant.local``` which should use mDNS to resolve your local Home Assistant instance. Put your long lived access token in the text input area. We recommend testing both your Home Assistant server address and token before flashing.
+
+If your Home Assistant server requires TLS make sure to select it.
 
 There are also various other configuration options for speaker volume, display brightness, NTP, etc.
 
@@ -168,15 +176,15 @@ You can also provide free-form speech to get an idea of the accuracy and speed p
 
 You can now repeat the erase and flash process for as many devices as you want!
 
-## Exit serial monitor
+### Exit serial monitor
 To exit ```tio``` you need to press 'CTRL+t' and then 'q'. Or you can unplug your device and ```tio``` will wait until you reconnect it.
 
-## Start serial monitor
+### Start serial monitor
 If you want to see what your device is up to you can start the serial monitor anytime:
 
 ```./utils.sh monitor```
 
-### Things went sideways - reset
+## Things went sideways - reset
 In the event your environment gets out of whack we have a helper to reset:
 
 ```./utils.sh destroy```
