@@ -96,7 +96,7 @@ static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev,
                 lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
                 lv_label_set_text_static(lbl_ln3, "Command status:");
                 lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-                lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Something went wrong");
+                lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
                 lvgl_port_unlock();
 
                 timer_start(TIMER_GROUP_0, TIMER_0);
@@ -300,7 +300,7 @@ static void hass_post(char *data)
         lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
         lv_label_set_text_static(lbl_ln3, "Command status:");
         lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Something went wrong");
+        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
         lvgl_port_unlock();
     } else {
         ESP_LOGE(TAG, "failed to read HTTP POST response");
