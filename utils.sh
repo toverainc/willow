@@ -164,7 +164,7 @@ flash)
     check_esptool
     check_build_host
     cd "$WILLOW_PATH"/build
-    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
+    esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
         @flash_args
     do_term
 ;;
@@ -175,7 +175,7 @@ flash-app)
     check_esptool
     check_build_host
     cd "$WILLOW_PATH"/build
-    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
+    esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         @flash_app_args
     do_term
 ;;
@@ -184,7 +184,7 @@ dist)
     check_esptool
     check_build_host
     cd "$WILLOW_PATH"/build
-    python3 -m esptool --chip "$PLATFORM" merge_bin -o "$WILLOW_PATH/$DIST_FILE" \
+    esptool.py --chip "$PLATFORM" merge_bin -o "$WILLOW_PATH/$DIST_FILE" \
         @flash_args
     echo "Combined firmware image for flashing written"
     ls -lh "$WILLOW_PATH/$DIST_FILE"
@@ -196,14 +196,14 @@ flash-dist|dist-flash)
         exit 1
     fi
     check_esptool
-    python3 -m esptool --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
+    esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$WILLOW_PATH/$DIST_FILE"
     do_term
 ;;
 
 erase-flash)
     check_esptool
-    python3 -m esptool --chip "$PLATFORM" -p "$PORT" erase_flash
+    esptool.py --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
 ;;
 
