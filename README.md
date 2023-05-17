@@ -239,7 +239,6 @@ Willow and air-infer-api/Multinet already provide "faster-than-Alexa" responsive
 
 - ESP ADF pipeline handing (we're waiting on ESP-ADF 2.6 with ESP-IDF 5)
 - Websockets for inference server (avoids TLS handshake and connection establishment for each session)
-- Websockets for Home Assistant (same)
 - Code in general (we're new to ESP IDF and it could use review)
 - Various performance-related sdkconfig parameters (again, we're new to ESP IDF)
 - Likely many, many more
