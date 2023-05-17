@@ -26,6 +26,12 @@ TORTURE_DELAY=3
 # File to play
 TORTURE_PLAY="misc/hi_esp_this_is_a_test_command.flac"
 
+# Container or host?
+# podman sets container var to podman, make docker act like that
+if [ -f /.dockerenv ]; then
+    export container="docker"
+fi
+
 # Test for local environment file and use any overrides
 if [ -r .env ]; then
     echo "Using configuration overrides from .env file"
@@ -85,15 +91,20 @@ check_build_host() {
 }
 
 check_container(){
-    if [ -f /.dockerenv ]; then
+    if [ "$container" ]; then
         return
     fi
 
-    if [ "$container" = "podman" ]; then
-	    return
+    echo "You need to run this command inside of the container - you are on the host"
+    exit 1
+}
+
+check_host(){
+    if [ ! "$container" ]; then
+        return
     fi
 
-    echo "You need to run this command inside of a container"
+    echo "You need to run this command from the host - you are in the container"
     exit 1
 }
 
@@ -159,6 +170,7 @@ docker)
 ;;
 
 flash)
+    check_host
     check_port
     check_tio
     check_esptool
@@ -170,6 +182,7 @@ flash)
 ;;
 
 flash-app)
+    check_host
     check_port
     check_tio
     check_esptool
@@ -202,12 +215,14 @@ flash-dist|dist-flash)
 ;;
 
 erase-flash)
+    check_host
     check_esptool
     esptool.py --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
 ;;
 
 monitor)
+    check_host
     check_port
     check_tio
     do_term
@@ -254,6 +269,7 @@ install|setup)
 ;;
 
 torture)
+    check_host
     echo "Running torture test for $TORTURE_LOOPS loops..."
     echo "WARNING: If testing against Tovera provided servers you will get rate-limited or blocked"
 
