@@ -1,0 +1,16 @@
+# normalize line endings
+*	text=auto
+.c	text
+.csv	text
+.h	text
+.lock	text
+.md	text
+.mk	text
+.py	text
+.yml	text
+
+# binary file types
+*.bin	binary
+*.flac	binary
+*.mp3	binary
+*.wav	binary
