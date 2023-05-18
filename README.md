@@ -10,11 +10,11 @@ Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project prima
 
 **FAST** - [Watch the demo](https://www.youtube.com/watch?v=8ETQaLfoImc). Response times faster than Alexa/Echo or Google Home. From end of speech to action completed in 500ms or less.
 
-**ACCURATE** - High wake word accuracy, low false activation, and powered by a server you host and control using Whisper or command recognition solely on the device.
+**ACCURATE** - High wake word accuracy, low false activation, and speech recognition powered by our Willow Inference Server (coming soon) or command recognition solely on the device.
 
 **RELIABLE** - We've tested thousands of cycles of voice commands with a < 1% failure rate. No one likes to repeat themselves!
 
-**FLEXIBLE** - Use a server anywhere or don't use a server at all with command recognition on the device. Have the results go anywhere you want. Integrate with whatever you want. Completely open source so it does what you want, only what you want, and only how you want it. No more annoying extra prompts or sales pitches to upsell you. Supports multiple wake words with more coming soon.
+**FLEXIBLE** - Use Willow Inference Server anywhere or don't use it at all with command recognition on the device. Have the results go anywhere you want. Integrate with whatever you want. Completely open source so it does what you want, only what you want, and only how you want it. No more annoying extra prompts or sales pitches to upsell you. Supports multiple wake words with more coming soon.
 
 **PRIVATE** - Check the source. Build and flash yourself. Proxy through another server to inspect traffic. Use on your own server. Use only local commands. Use on a network without access to the internet. Dig as deep as you want because you're not going to find anything fishy here!
 
@@ -26,7 +26,7 @@ Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project prima
 
 Current supported features include:
 
-- Wake Word Engine. Say "Hi ESP" or "Alexa" (user configurable) and start talking!
+- Wake Word Engine. Say "Hi ESP" or "Alexa" (user selectable) and start talking!
 - Voice Activity Detection. When you stop talking it will stop recording and take action.
 - Support for Home Assistant! Simply configure Willow with your Home Assistant server address and access token.
 - Support for other platforms. As long as your configured endpoint can take an HTTP POST you can do anything with the speech output!
@@ -34,7 +34,7 @@ Current supported features include:
 - Good audio quality - Willow provides features such as automatic gain control, noise separation, etc.
 - Support for challenging Wi-Fi environments. Willow can (optionally) use audio compression to reduce airtime on 2.4 GHz Wi-Fi in cases where it's very busy.
 - LCD and touchscreen. The ESP BOX has color LCD and capacitive mult-point touchscreen. We support them with an initial user interface.
-- Completely on device speech command recognition and support for our (soon to be released) open source Whisper-powered inference server (Tovera hosted best-effort example inference server provided). Configure up to 400 commands completely on device or self-host our (coming soon) inference server to transcribe any speech!
+- Completely on device speech command recognition and support for our (soon to be released) open source Willow Inference Server (Tovera hosted best-effort WIS provided). Configure up to 400 commands completely on device or self-host our (coming soon) inference server to transcribe any speech!
 
 All with hardware you can order today from Amazon, Adafruit, The Pi Hut, Mouser, or other preferred vendor for (approximately) $50 USD. Add a USB-C power supply and go!
 
@@ -84,7 +84,7 @@ Start the config process:
 
 ```./utils.sh config```
 
-## ESP BOX LITE NOTE: FOR USERS WHO PURCHASED THE ESP BOX LITE
+## ESP BOX LITE NOTE: FOR USERS WHO PURCHASED THE ESP BOX LITE!!!
 You will need to build for the ESP BOX LITE. From the main menu, select:
 Audio HAL ---> Audio Board ---> ESP32-S3-BOX-Lite
 
@@ -236,10 +236,10 @@ Unless you change the wake word and/or are using local command recognition (Mult
 ## The Future (in no particular order)
 
 ### Multiple Languages
-Willow supports UTF characters and our inference server implementation supports all the languages of Whisper. We have some polishing to do here but it is coming very soon. For the interface language on device we're looking for translation help!
+Willow supports UTF characters and our Willow Inference Server supports all the languages of Whisper. We have some polishing to do here but it is coming very soon. For the interface language on device we're looking for translation help!
 
 ### Performance Improvements
-Willow and air-infer-api/Multinet already provide "faster-than-Alexa" responsiveness for a voice user interface. However, there are multiple obvious optimizations we're aware of:
+Willow and Willow Inference Server/Multinet already provide "faster-than-Alexa" responsiveness for a voice user interface. However, there are multiple obvious optimizations we're aware of:
 
 - ESP ADF pipeline handing (we're waiting on ESP-ADF 2.6 with ESP-IDF 5)
 - Websockets for inference server (avoids TLS handshake and connection establishment for each session)
@@ -250,7 +250,7 @@ Willow and air-infer-api/Multinet already provide "faster-than-Alexa" responsive
 These enhancements alone should dramatically improve responsiveness.
 
 ### No CUDA
-The air-infer-api inference server (open source release soon) will run CPU only but the performance on CPU is not comparable to heavily optimized implementations like [whisper.cpp](https://github.com/ggerganov/whisper.cpp). For an Alexa/Echo competitive voice interface we currently believe that our implementation with CUDA or local Multinet (for limited commands) is the best approach. However, we also understand that isn't practical or preferred for many users. Between on device Multinet command recognition and further development on CPU-only Whisper implementations, ROCm, etc we will get there. That said, if you can make the audio streaming API work you can use any speech to text and text to speech implementation you want!
+The Whisper Inference Server (open source release soon) will run CPU only but the performance on CPU is not comparable to heavily optimized implementations like [whisper.cpp](https://github.com/ggerganov/whisper.cpp). For an Alexa/Echo competitive voice interface we currently believe that our approach with CUDA or local Multinet (for limited commands) is the best approach. However, we also understand that isn't practical or preferred for many users. Between on device Multinet command recognition and further development on CPU-only Whisper implementations, ROCm, etc we will get there. That said, if you can make the audio streaming API work you can use any speech to text and text to speech implementation you want!
 
 ### TTS Output
 Given the capabilities of Whisper speech commands like "What is the weather in Sofia, Bulgaria?" are transcribed but need to match a command (like a Home Assistant intent) on the destination. Our inference server implementation has a text to speech engine and Home Assistant has a variety of options as well. In the event the final response to a given command results in audio output we can play that via the speakers in the ESP BOX (not yet supported).
