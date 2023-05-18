@@ -1,5 +1,5 @@
 diff --git a/components/audio_recorder/recorder_sr.c b/components/audio_recorder/recorder_sr.c
-index f8a449b..456a66e 100644
+index f8a449b..8aa4cca 100644
 --- deps/esp-adf/components/audio_recorder/recorder_sr.c
 +++ deps/esp-adf/components/audio_recorder/recorder_sr.c
 @@ -185,8 +185,14 @@ static esp_err_t recorder_mn_detect(recorder_sr_t *recorder_sr, int16_t *buffer,
@@ -30,17 +30,24 @@ index f8a449b..456a66e 100644
          }
      }
      return ESP_OK;
-@@ -455,7 +464,7 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
+@@ -453,9 +462,9 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
+     if (recorder_sr->mn_enable && !recorder_sr->mn_handle) {
+         char *mn_name = esp_srmodel_filter(recorder_sr->models, ESP_MN_PREFIX, recorder_sr->mn_language);
          multinet = esp_mn_handle_from_name(mn_name);
-         recorder_sr->mn_handle = multinet->create(mn_name, 5760);
+-        recorder_sr->mn_handle = multinet->create(mn_name, 5760);
++        recorder_sr->mn_handle = multinet->create(mn_name, 2000);
          AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, return ESP_FAIL);
 -        esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
 +        //esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
      }
      return ESP_OK;
  #else
-@@ -550,7 +559,7 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
-         recorder_sr->mn_handle = multinet->create(mn_name, 5760);
+@@ -547,10 +556,10 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
+         char *mn_name = esp_srmodel_filter(recorder_sr->models, ESP_MN_PREFIX, recorder_sr->mn_language);
+         AUDIO_NULL_CHECK(TAG, mn_name, goto _failed);
+         multinet = esp_mn_handle_from_name(mn_name);
+-        recorder_sr->mn_handle = multinet->create(mn_name, 5760);
++        recorder_sr->mn_handle = multinet->create(mn_name, 2000);
          AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, goto _failed);
          recorder_sr->mn_enable = true;
 -        esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
