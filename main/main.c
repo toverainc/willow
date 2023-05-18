@@ -122,7 +122,15 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
+            // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
+            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+            lvgl_port_lock(0);
+            lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+
+            lv_label_set_text(lbl_ln3, "#ff0000 Unrecognized Command");
+            lvgl_port_unlock();
+            timer_start(TIMER_GROUP_0, TIMER_0);
             break;
         case AUDIO_REC_WAKEUP_END:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
@@ -698,6 +706,7 @@ void app_main(void)
         lbl_ln2 = lv_label_create(scr_act);
         lbl_ln3 = lv_label_create(scr_act);
         lbl_ln4 = lv_label_create(scr_act);
+        lv_label_set_recolor(lbl_ln3, true);
         lv_label_set_recolor(lbl_ln4, true);
         lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
         // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);

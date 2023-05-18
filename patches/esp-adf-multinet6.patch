@@ -1,5 +1,5 @@
 diff --git a/components/audio_recorder/recorder_sr.c b/components/audio_recorder/recorder_sr.c
-index f8a449b..be7e3e6 100644
+index f8a449b..456a66e 100644
 --- deps/esp-adf/components/audio_recorder/recorder_sr.c
 +++ deps/esp-adf/components/audio_recorder/recorder_sr.c
 @@ -185,8 +185,14 @@ static esp_err_t recorder_mn_detect(recorder_sr_t *recorder_sr, int16_t *buffer,
@@ -18,7 +18,19 @@ index f8a449b..be7e3e6 100644
              }
  #if CONFIG_IDF_TARGET_ESP32
              recorder_sr_enable_wakenet_aec(recorder_sr);
-@@ -455,7 +461,7 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
+@@ -199,7 +205,10 @@ static esp_err_t recorder_mn_detect(recorder_sr_t *recorder_sr, int16_t *buffer,
+             recorder_sr_enable_wakenet_aec(recorder_sr);
+ #endif
+             detect_flag = 0;
+-            ESP_LOGI(TAG, "MN dect quit");
++            ESP_LOGI(TAG, "MN TIMEOUT - No valid command detected");
++            recorder_sr->mn_monitor(0, recorder_sr->mn_monitor_ctx);
++
++            return ESP_OK;
+         }
+     }
+     return ESP_OK;
+@@ -455,7 +464,7 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
          multinet = esp_mn_handle_from_name(mn_name);
          recorder_sr->mn_handle = multinet->create(mn_name, 5760);
          AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, return ESP_FAIL);
@@ -27,7 +39,7 @@ index f8a449b..be7e3e6 100644
      }
      return ESP_OK;
  #else
-@@ -550,7 +556,7 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
+@@ -550,7 +559,7 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
          recorder_sr->mn_handle = multinet->create(mn_name, 5760);
          AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, goto _failed);
          recorder_sr->mn_enable = true;
