@@ -52,7 +52,7 @@ Ubuntu/Debian:
 
 Arch Linux:
 
-```sudo yay -S tio```
+```yay -S tio```
 
 Mac (with homebrew):
 
