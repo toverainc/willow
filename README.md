@@ -27,11 +27,11 @@ Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project prima
 Current supported features include:
 
 - Wake Word Engine. Say "Hi ESP" or "Alexa" (user selectable) and start talking!
-- Voice Activity Detection. When you stop talking it will stop recording and take action.
-- Support for Home Assistant! Simply configure Willow with your Home Assistant server address and access token.
+- Voice Activity Detection. When you stop talking it will stop listening and take action.
+- Support for Home Assistant! Simply configure Willow with your Home Assistant server address and access token. Backwards compatible with multiple releases.
 - Support for other platforms. As long as your configured endpoint can take an HTTP POST you can do anything with the speech output!
-- Good far-field performance. We've tested wake and speech recognition from roughly 25 feet away in challenging environments with good results.
-- Good audio quality - Willow provides features such as automatic gain control, noise separation, etc.
+- Great far-field performance. We've tested wake and speech recognition from roughly 25 feet away in challenging environments with good results.
+- Great audio quality - Willow provides features such as automatic gain control, acoustic echo cancellation, noise supression, blind source separation, etc.
 - Support for challenging Wi-Fi environments. Willow can (optionally) use audio compression to reduce airtime on 2.4 GHz Wi-Fi in cases where it's very busy.
 - LCD and touchscreen. The ESP BOX has color LCD and capacitive mult-point touchscreen. We support them with an initial user interface.
 - Completely on device speech command recognition and support for our (soon to be released) open source Willow Inference Server (Tovera hosted best-effort WIS provided). Configure up to 400 commands completely on device or self-host our (coming soon) inference server to transcribe any speech!
@@ -92,11 +92,11 @@ Return to main menu and continue.
 
 ### Willow Configuration
 
-Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports WPA/WPA2/WPA3), and your Willow server URI (best-effort Tovera hosted example provided).
+Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports WPA/WPA2/WPA3), and your Willow Inference Server URI (best-effort Tovera hosted example provided).
 
 For Home Assistant you will also need to create a [long lived access token](https://developers.home-assistant.io/docs/auth_api/#:~:text=Long%2Dlived%20access%20tokens%20can,access%20token%20for%20current%20user.) and configure your server address. By default we use ```homeassistant.local``` which should use mDNS to resolve your local Home Assistant instance. Put your long lived access token in the text input area. We recommend testing both your Home Assistant server address and token before flashing.
 
-If your Home Assistant server requires TLS make sure to select it.
+If your Home Assistant instance requires TLS make sure to select it.
 
 There are also various other configuration options for speaker volume, display brightness, NTP, etc.
 
@@ -250,7 +250,7 @@ Willow and Willow Inference Server/Multinet already provide "faster-than-Alexa" 
 These enhancements alone should dramatically improve responsiveness.
 
 ### No CUDA
-The Whisper Inference Server (open source release soon) will run CPU only but the performance on CPU is not comparable to heavily optimized implementations like [whisper.cpp](https://github.com/ggerganov/whisper.cpp). For an Alexa/Echo competitive voice interface we currently believe that our approach with CUDA or local Multinet (for limited commands) is the best approach. However, we also understand that isn't practical or preferred for many users. Between on device Multinet command recognition and further development on CPU-only Whisper implementations, ROCm, etc we will get there. That said, if you can make the audio streaming API work you can use any speech to text and text to speech implementation you want!
+The Whisper Inference Server (open source release soon) will run CPU only but the performance on CPU is not comparable to heavily optimized implementations like [whisper.cpp](https://github.com/ggerganov/whisper.cpp). For an Alexa/Echo competitive voice interface we currently believe that our approach with CUDA or local Multinet (up to 400 commands) is the best approach. However, we also understand that isn't practical or preferred for many users. Between on device Multinet command recognition and further development on CPU-only Whisper implementations, ROCm, etc we will get there. That said, if you can make the audio streaming API work you can use any speech to text and text to speech implementation you want!
 
 ### TTS Output
 Given the capabilities of Whisper speech commands like "What is the weather in Sofia, Bulgaria?" are transcribed but need to match a command (like a Home Assistant intent) on the destination. Our inference server implementation has a text to speech engine and Home Assistant has a variety of options as well. In the event the final response to a given command results in audio output we can play that via the speakers in the ESP BOX (not yet supported).
