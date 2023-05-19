@@ -9,7 +9,8 @@ export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
 export CONSOLE_BAUD=2000000 # Subject to change
 
 export DOCKER_IMAGE="willow:latest"
-export DIST_FILE="willow-dist.bin"
+export DIST_FILE="serve/willow-dist.bin"
+export SERVE_PORT="10000"
 
 # ESP-SR Componenent ver hash
 ESP_SR_VER="31b8cb6"
@@ -134,7 +135,7 @@ generate_speech_commands() {
 }
 
 # Just in case
-mkdir -p flags
+mkdir -p flags serve
 
 check_flag() {
     FLAG="$1"
@@ -152,6 +153,15 @@ add_flag() {
 remove_flag() {
     FLAG="$1"
     rm -f flags/"$FLAG"
+}
+
+do_dist() {
+    cd "$WILLOW_PATH"/build
+    esptool.py --chip "$PLATFORM" merge_bin -o "$WILLOW_PATH/$DIST_FILE" \
+    @flash_args
+    echo "Combined firmware image for flashing written"
+    ls -lh "$WILLOW_PATH/$DIST_FILE"
+    cd "$WILLOW_PATH"
 }
 
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
@@ -187,7 +197,7 @@ build-docker|docker-build)
 ;;
 
 docker)
-    docker run --rm -it -v "$PWD":/willow -e TERM "$DOCKER_IMAGE" /bin/bash
+    docker run --rm -it -v "$PWD":/willow -e TERM -p "$SERVE_PORT":"$SERVE_PORT" "$DOCKER_IMAGE" /bin/bash
 ;;
 
 flash)
@@ -219,11 +229,7 @@ flash-app)
 dist)
     check_esptool
     check_build_host
-    cd "$WILLOW_PATH"/build
-    esptool.py --chip "$PLATFORM" merge_bin -o "$WILLOW_PATH/$DIST_FILE" \
-        @flash_args
-    echo "Combined firmware image for flashing written"
-    ls -lh "$WILLOW_PATH/$DIST_FILE"
+    do_dist
 ;;
 
 flash-dist|dist-flash)
@@ -304,6 +310,14 @@ torture)
         sleep $TORTURE_DELAY
     done
 ;;
+
+serve)
+    do_dist
+    cd "$WILLOW_PATH"/serve
+    echo "Serving your Willow dist firmare image - go to http://[YOUR HOST IP]:$SERVE_PORT"
+    python3 -m http.server "$SERVE_PORT"
+;;
+
 
 *)
     echo "Uknown argument - passing directly to idf.py"

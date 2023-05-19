@@ -8,3 +8,4 @@ venv
 target
 willow-dist.bin
 .env
+serve
