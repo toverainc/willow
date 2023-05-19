@@ -121,6 +121,7 @@ config WILLOW_VAD_TIMEOUT
         Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck...
 
 config WILLOW_RECORD_BUFFER
+    depends on !WILLOW_USE_MULTINET
     int "Record buffer"
     range 1 16
     default 12
