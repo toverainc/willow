@@ -187,7 +187,7 @@ build-docker|docker-build)
 ;;
 
 docker)
-    docker run --rm -it -v "$PWD":/willow -e TERM "$DOCKER_IMAGE" /bin/bash
+    docker run --user build --rm -it -v "$PWD":/willow -e TERM "$DOCKER_IMAGE" /bin/bash
 ;;
 
 flash)
