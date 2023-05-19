@@ -13,6 +13,7 @@
 #include "shared.h"
 #include "slvgl.h"
 
+#define HASS_SPEECH_MAX_LEN           64
 #define HASS_URI_COMPONENTS           "/api/components"
 #define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
 #define HASS_URI_WEBSOCKET            "/api/websocket"
@@ -25,8 +26,15 @@
 #define HOMEASSISTANT_TLS false
 #endif
 
+struct hass_intent_response {
+    bool has_speech;
+    bool ok;
+    char speech[64];
+};
+
+static struct hass_intent_response hir;
+
 static bool has_assist_pipeline = false;
-static bool ok = false;
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
 static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev, void *ev_data)
@@ -78,13 +86,30 @@ static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev,
                     goto cleanup;
                 }
 
+                cJSON *speech = cJSON_GetObjectItemCaseSensitive(response, "speech");
+                if (!cJSON_IsObject(speech)) {
+                    goto no_speech;
+                }
+
+                cJSON *plain = cJSON_GetObjectItemCaseSensitive(speech, "plain");
+                if (!cJSON_IsObject(plain)) {
+                    goto no_speech;
+                }
+
+                cJSON *speech2 = cJSON_GetObjectItemCaseSensitive(plain, "speech");
+                if (cJSON_IsString(speech2) && speech2->valuestring != NULL) {
+                    hir.has_speech = true;
+                    strncpy(hir.speech, speech2->valuestring, HASS_SPEECH_MAX_LEN - 1);
+                }
+
+no_speech:;
                 cJSON *response_type = cJSON_GetObjectItemCaseSensitive(response, "response_type");
                 if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
                     ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
-                    if (!strcmp(response_type->valuestring, "error")) {
-                        ok = false;
+                    if (strcmp(response_type->valuestring, "error") == 0) {
+                        hir.ok = false;
                     } else {
-                        ok = true;
+                        hir.ok = true;
                     }
                     goto cleanup;
                 }
@@ -97,15 +122,20 @@ end:
                 lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
-                lv_label_set_text_static(lbl_ln3, "Command status:");
                 lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-                lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Error!");
+                if (hir.has_speech) {
+                    lv_label_set_text_static(lbl_ln3, "Response:");
+                    lv_label_set_text(lbl_ln4, hir.speech);
+                } else {
+                    lv_label_set_text_static(lbl_ln3, "Command status:");
+                    lv_label_set_text(lbl_ln4, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
+                }
                 lvgl_port_unlock();
 
-                if (ok) {
-                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
-                } else {
+                if (hir.ok) {
                     audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
+                } else {
+                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
                 }
 
                 timer_start(TIMER_GROUP_0, TIMER_0);
@@ -357,7 +387,8 @@ static void hass_send_ws(char *data)
     struct timeval tv_now;
     gettimeofday(&tv_now, NULL);
 
-    ok = false;
+    hir.has_speech = false;
+    hir.ok = false;
 
     cJSON *end_stage = cJSON_CreateString("intent");
     cJSON *id = cJSON_CreateNumber(tv_now.tv_sec);
