@@ -122,7 +122,15 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
+            // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
+            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+            lvgl_port_lock(0);
+            lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+
+            lv_label_set_text(lbl_ln3, "#ff0000 Unrecognized Command");
+            lvgl_port_unlock();
+            timer_start(TIMER_GROUP_0, TIMER_0);
             break;
         case AUDIO_REC_WAKEUP_END:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
@@ -664,6 +672,15 @@ static esp_err_t init_input_key_service()
     return periph_service_set_callback(hld_psvc_iks, cb_iks, NULL);
 }
 
+#define MAC_ADDR_SIZE 6
+uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+static void get_mac_address()
+{
+    uint8_t mac[MAC_ADDR_SIZE];
+    esp_wifi_get_mac(ESP_IF_WIFI_STA, mac);
+    ESP_LOGI(TAG, "MAC address: %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+}
+
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
@@ -698,6 +715,7 @@ void app_main(void)
         lbl_ln2 = lv_label_create(scr_act);
         lbl_ln3 = lv_label_create(scr_act);
         lbl_ln4 = lv_label_create(scr_act);
+        lv_label_set_recolor(lbl_ln3, true);
         lv_label_set_recolor(lbl_ln4, true);
         lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
         // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
@@ -810,6 +828,8 @@ void app_main(void)
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
 #endif
+
+    get_mac_address(); // should be on wifi by now; print the MAC
 
     while (true) {
 #ifdef CONFIG_WILLOW_DEBUG_MEM
