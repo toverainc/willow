@@ -302,9 +302,9 @@ CONFIG_ADC_DISABLE_DAC=y
 #
 # SPI configuration
 #
-# CONFIG_SPI_MASTER_IN_IRAM is not set
+CONFIG_SPI_MASTER_IN_IRAM=y
 CONFIG_SPI_MASTER_ISR_IN_IRAM=y
-# CONFIG_SPI_SLAVE_IN_IRAM is not set
+CONFIG_SPI_SLAVE_IN_IRAM=y
 CONFIG_SPI_SLAVE_ISR_IN_IRAM=y
 # end of SPI configuration
 
@@ -324,7 +324,7 @@ CONFIG_SPI_SLAVE_ISR_IN_IRAM=y
 #
 # GDMA Configuration
 #
-# CONFIG_GDMA_CTRL_FUNC_IN_IRAM is not set
+CONFIG_GDMA_CTRL_FUNC_IN_IRAM=y
 # CONFIG_GDMA_ISR_IRAM_SAFE is not set
 # end of GDMA Configuration
 # end of Driver configurations
