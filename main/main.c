@@ -422,12 +422,34 @@ static void start_rec()
         return;
     }
 
-    i2s_stream_cfg_t cfg_is = I2S_STREAM_CFG_DEFAULT();
-    cfg_is.i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM;
-    cfg_is.i2s_config.use_apll = 0; // not supported on ESP32-S3-BOX
-    cfg_is.i2s_port = CODEC_ADC_I2S_PORT;
-    cfg_is.out_rb_size = 8 * 1024; // default is 8 * 1024
-    cfg_is.type = AUDIO_STREAM_READER;
+    i2s_stream_cfg_t cfg_is = {
+        .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
+        .i2s_config = {
+            .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+            .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+            .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+            .dma_buf_count = 3,
+            .dma_buf_len = 300,
+            .fixed_mclk = 0,
+            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM,
+            .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX),
+            .sample_rate = 44100,
+            .tx_desc_auto_clear = true,
+            .use_apll = false,	// not supported on ESP32-S3-BOX
+        },
+        .i2s_port = CODEC_ADC_I2S_PORT,
+        .multi_out_num = 0,
+        .need_expand = false,
+        .out_rb_size = 8 * 1024, // default is 8 * 1024
+        .stack_in_ext = false,
+        .task_core = I2S_STREAM_TASK_CORE,
+        .task_prio = I2S_STREAM_TASK_PRIO,
+        .task_stack = I2S_STREAM_TASK_STACK,
+        .type = AUDIO_STREAM_READER,
+        .uninstall_drv = true,
+        .use_alc = false,
+        .volume = 0,
+    };
     hdl_ae_is = i2s_stream_init(&cfg_is);
 
     i2s_stream_set_clk(hdl_ae_is, 16000, 32, 2);
