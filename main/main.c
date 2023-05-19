@@ -737,7 +737,9 @@ void app_main(void)
         lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
         lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
         lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
+        lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
         lv_obj_set_width(lbl_ln2, 320);
+        lv_obj_set_width(lbl_ln4, 320);
 #ifdef CONFIG_WILLOW_USE_MULTINET
         lv_label_set_text_static(lbl_ln3, "Starting up (local)...");
 #else
