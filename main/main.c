@@ -813,7 +813,7 @@ void app_main(void)
             // lv_style_set_text_opa(&lv_st_montserrat_20, LV_OPA_30);
 
             lvgl_port_lock(0);
-            lv_label_set_text_static(lbl_ln3, wake_help);
+            lv_label_set_text(lbl_ln3, wake_help);
             lvgl_port_unlock();
         }
     }
