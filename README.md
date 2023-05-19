@@ -195,9 +195,13 @@ In the event your environment gets out of whack we have a helper to reset:
 
 As the plentiful messages indicate it's a destructive process but it will reset your environment. After it completes you can start from the top and try again.
 
-## Recover from a bad flash
+## Recover from a bad flash/persistent flash failures
 
-ESP devices are very robust to flashing failures but it can happen! If you end up "bricking" your device you can erase the flash:
+In some hardware combinations the ESP BOX can be stubborn and won't successfully flash.
+
+In these cases, press the BOOT/CONFIG button (top button on the left side) while powering up the device, then:
+
+Erase the flash:
 
 ```./utils.sh erase-flash```
 
