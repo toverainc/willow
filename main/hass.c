@@ -10,6 +10,7 @@
 #include "lvgl.h"
 #include "sdkconfig.h"
 
+#include "http.h"
 #include "shared.h"
 #include "slvgl.h"
 
@@ -150,24 +151,6 @@ cleanup:
     }
 }
 
-static esp_http_client_handle_t init_hass_http_client(void)
-{
-    char *hdr_auth = NULL;
-    esp_http_client_config_t cfg_hc = {
-        // either host and path or url should be set
-        .url = "http://dummy",
-    };
-
-    esp_http_client_handle_t hdl_hc = esp_http_client_init(&cfg_hc);
-
-    hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
-    snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
-    esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
-    free(hdr_auth);
-
-    return hdl_hc;
-}
-
 static void init_hass_ws_client(void)
 {
     char *auth = NULL;
@@ -211,39 +194,36 @@ static void init_hass_ws_client(void)
     }
 }
 
+static esp_err_t hass_set_http_auth(esp_http_client_handle_t hdl_hc)
+{
+    char *hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
+    snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
+    esp_err_t ret = esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set authorization header: %s", esp_err_to_name(ret));
+    }
+    free(hdr_auth);
+    return ret;
+}
+
 static void hass_check_assist_pipeline(void)
 {
     char *body = NULL;
     char *url = NULL;
     esp_err_t ret;
-    int len_url, n;
+    int http_status, len_url;
 
-    esp_http_client_handle_t hdl_hc = init_hass_http_client();
+    esp_http_client_handle_t hdl_hc = init_http_client();
+    ret = hass_set_http_auth(hdl_hc);
 
     len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + STRLEN(HASS_URI_COMPONENTS);
     url = malloc(len_url);
     snprintf(url, len_url, "%s://%s:%d%s", HOMEASSISTANT_TLS ? "https" : "http", CONFIG_HOMEASSISTANT_HOST,
              CONFIG_HOMEASSISTANT_PORT, HASS_URI_COMPONENTS);
 
-    esp_http_client_set_url(hdl_hc, url);
-    esp_http_client_set_method(hdl_hc, HTTP_METHOD_GET);
-    ret = esp_http_client_open(hdl_hc, 0);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to open HTTP connection to %s (%s)", url, esp_err_to_name(ret));
-        return;
-    }
-    n = esp_http_client_fetch_headers(hdl_hc);
-    if (n < 0) {
-        ESP_LOGE(TAG, "failed to get HTTP headers");
-    }
-    body = malloc(n + 1);
-    n = esp_http_client_read_response(hdl_hc, body, n);
-    if (n >= 0) {
-        int http_status = esp_http_client_get_status_code(hdl_hc);
-        if (http_status != 200) {
-            ESP_LOGE(TAG, "failed to get Home Assistant components from API");
-            goto cleanup;
-        }
+    ret = http_get(hdl_hc, url, &body, &http_status);
+
+    if (ret == ESP_OK) {
         cJSON *cjson = cJSON_Parse(body);
         if (cJSON_IsArray(cjson)) {
             cJSON *component = NULL;
@@ -261,9 +241,6 @@ static void hass_check_assist_pipeline(void)
         cJSON_Delete(cjson);
     }
 
-cleanup:
-    esp_http_client_cleanup(hdl_hc);
-
     free(body);
     free(url);
 }
@@ -275,9 +252,9 @@ static void hass_post(char *data)
     char *json = NULL;
     char *url = NULL;
     esp_err_t ret;
-    int len_url, n;
+    int http_status, len_url;
 
-    esp_http_client_handle_t hdl_hc = init_hass_http_client();
+    esp_http_client_handle_t hdl_hc = init_http_client();
 
     len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + STRLEN(HASS_URI_CONVERSATION_PROCESS);
     url = malloc(len_url);
@@ -285,30 +262,9 @@ static void hass_post(char *data)
              CONFIG_HOMEASSISTANT_PORT, HASS_URI_CONVERSATION_PROCESS);
 
     ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
-    esp_http_client_set_url(hdl_hc, url);
-    esp_http_client_set_method(hdl_hc, HTTP_METHOD_POST);
-    esp_http_client_set_header(hdl_hc, "Content-Type", "application/json");
-    ret = esp_http_client_open(hdl_hc, strlen(data));
+
+    ret = http_post(hdl_hc, url, data, &body, &http_status);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to open HTTP connection: %s", esp_err_to_name(ret));
-        goto cleanup;
-    }
-    n = esp_http_client_write(hdl_hc, data, strlen(data));
-    if (n < 0) {
-        ESP_LOGE(TAG, "failed to POST HTTP data");
-        goto cleanup;
-    }
-    n = esp_http_client_fetch_headers(hdl_hc);
-    if (n < 0) {
-        ESP_LOGE(TAG, "failed to get HTTP headers");
-        goto cleanup;
-    }
-    body = malloc(n + 1);
-    n = esp_http_client_read_response(hdl_hc, body, n);
-    if (n >= 0) {
-        int http_status = esp_http_client_get_status_code(hdl_hc);
-        ESP_LOGI(TAG, "HTTP POST status='%d' content_length='%d'", http_status,
-                 esp_http_client_get_content_length(hdl_hc));
         if (http_status != 200) {
             ok = false;
             audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
@@ -347,8 +303,6 @@ static void hass_post(char *data)
     }
     timer_start(TIMER_GROUP_0, TIMER_0);
     free(body);
-cleanup:
-    esp_http_client_cleanup(hdl_hc);
 
     free(url);
 }
