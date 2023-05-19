@@ -26,6 +26,7 @@
 #endif
 
 static bool has_assist_pipeline = false;
+static bool ok = false;
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
 static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev, void *ev_data)
@@ -34,7 +35,6 @@ static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev,
     switch (id_ev) {
         case WEBSOCKET_EVENT_DATA:
             if (data->op_code == WS_TRANSPORT_OPCODES_TEXT) {
-                bool ok = false;
                 char *json = NULL;
                 char *resp = strndup((char *)data->data_ptr, data->data_len);
 
@@ -55,7 +55,10 @@ static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev,
                     goto cleanup;
                 }
 
-                // only handle intent-end for now
+                if (strcmp(type->valuestring, "run-end") == 0) {
+                    goto end;
+                }
+
                 if (strcmp(type->valuestring, "intent-end") != 0) {
                     goto cleanup;
                 }
@@ -80,15 +83,15 @@ static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev,
                     ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                     if (!strcmp(response_type->valuestring, "error")) {
                         ok = false;
-                        audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
                     } else {
                         ok = true;
-                        audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
                     }
+                    goto cleanup;
                 }
 
+end:
                 json = cJSON_Print(cjson);
-                ESP_LOGI(TAG, "received intent-end event on WebSocket: %s", json);
+                ESP_LOGI(TAG, "received run-end event on WebSocket: %s", json);
 
                 lvgl_port_lock(0);
                 lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
@@ -96,8 +99,14 @@ static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev,
                 lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
                 lv_label_set_text_static(lbl_ln3, "Command status:");
                 lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-                lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
+                lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Error!");
                 lvgl_port_unlock();
+
+                if (ok) {
+                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+                } else {
+                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
+                }
 
                 timer_start(TIMER_GROUP_0, TIMER_0);
 cleanup:
@@ -346,6 +355,8 @@ static void hass_send_ws(char *data)
     // increase."}}
     struct timeval tv_now;
     gettimeofday(&tv_now, NULL);
+
+    ok = false;
 
     cJSON *end_stage = cJSON_CreateString("intent");
     cJSON *id = cJSON_CreateNumber(tv_now.tv_sec);
