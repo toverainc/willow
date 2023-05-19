@@ -15,10 +15,10 @@ config WIFI_PASSWORD
 		Can be left blank if the network is open.
 
 config SERVER_URI
-    string "Willow server URI"
-    default "https://infer.tovera.io/api/sallow"
+    string "Willow Inference Server URI"
+    default "https://infer.tovera.io/api/willow"
     help
-        URI For your Willow instance. Supports HTTP and HTTPS.
+        URI For your WIS instance. Supports HTTP and HTTPS.
 
 choice WILLOW_USE_CODEC
     prompt "Audio codec to use"
