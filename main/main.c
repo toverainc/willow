@@ -461,14 +461,15 @@ static void start_rec()
         .mn_language = ESP_MN_ENGLISH,
     };
 
-#ifdef CONFIG_WILLOW_USE_MULTINET
-    ESP_LOGI(TAG, "Using local multinet");
-    cfg_srr.multinet_init = true;
-#endif
-
 #ifdef CONFIG_WILLOW_RECORD_BUFFER
     ESP_LOGI(TAG, "Using record buffer '%d'", CONFIG_WILLOW_RECORD_BUFFER);
     cfg_srr.rb_size = CONFIG_WILLOW_RECORD_BUFFER * 1024;
+#endif
+
+#ifdef CONFIG_WILLOW_USE_MULTINET
+    ESP_LOGI(TAG, "Using local multinet");
+    cfg_srr.multinet_init = true;
+    cfg_srr.rb_size = 6 * 1024;
 #endif
 
 #ifdef CONFIG_WILLOW_USE_AMRWB
