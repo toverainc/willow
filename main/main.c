@@ -507,7 +507,7 @@ static void start_rec()
         .wakeup_time = AUDIO_REC_DEF_WAKEUP_TM,
         .vad_start = AUDIO_REC_VAD_START_SPEECH_MS,
         .vad_off = 300,
-        .wakeup_end = 100,
+        .wakeup_end = 1,
         .encoder_handle = NULL,
         .encoder_iface = NULL,
     };
