@@ -152,7 +152,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-            lv_label_set_text_static(lbl_ln3, "Recording command...");
+#ifdef CONFIG_WILLOW_USE_MULTINET
+            lv_label_set_text_static(lbl_ln3, "Say local command...");
+#else
+            lv_label_set_text_static(lbl_ln3, "Say command...");
+#endif
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
