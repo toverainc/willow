@@ -133,6 +133,27 @@ generate_speech_commands() {
     fi
 }
 
+# Just in case
+mkdir -p flags
+
+check_flag() {
+    FLAG="$1"
+    if [ ! -r flags/"$FLAG" ]; then
+        echo "You need to run $FLAG first"
+        exit 1
+    fi
+}
+
+add_flag() {
+    FLAG="$1"
+    date > flags/"$FLAG"
+}
+
+remove_flag() {
+    FLAG="$1"
+    rm -f flags/"$FLAG"
+}
+
 # Some of this may seem redundant but for build, clean, etc we'll probably need to do our own stuff later
 case $1 in
 
@@ -174,6 +195,7 @@ flash)
     check_port
     check_tio
     check_esptool
+    check_flag "erase-flash"
     check_build_host
     cd "$WILLOW_PATH"/build
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before default_reset --after hard_reset write_flash \
@@ -186,6 +208,7 @@ flash-app)
     check_port
     check_tio
     check_esptool
+    check_flag "erase-flash"
     check_build_host
     cd "$WILLOW_PATH"/build
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
@@ -209,6 +232,7 @@ flash-dist|dist-flash)
         exit 1
     fi
     check_esptool
+    check_flag "erase-flash"
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$WILLOW_PATH/$DIST_FILE"
     do_term
@@ -219,6 +243,7 @@ erase-flash)
     check_esptool
     esptool.py --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
+    add_flag "erase-flash"
 ;;
 
 monitor)
@@ -237,7 +262,7 @@ destroy)
     read
     #git reset --hard
     #git clean -fdx
-    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr
+    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
     echo "Not a trace left. You will have to run setup again."
 ;;
 
