@@ -8,7 +8,7 @@ Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project prima
 
 <img src="https://github.com/espressif/esp-box/blob/master/docs/_static/esp32_s3_box.png" width="400px" />
 
-**FAST** - [Watch the demo](https://www.youtube.com/watch?v=8ETQaLfoImc). Response times faster than Alexa/Echo or Google Home. From end of speech to action completed in 500ms or less.
+**FAST** - [Watch the demo](https://www.youtube.com/watch?v=8ETQaLfoImc). Response times faster than Alexa/Echo or Google Home. From end of speech to action completed in 500ms or less. If you're curious how it's so fast (and accurate) you can watch the [technical deep dive](https://www.youtube.com/watch?v=WvgeSp94ZWE).
 
 **ACCURATE** - High wake word accuracy, low false activation, and speech recognition powered by our Willow Inference Server (coming soon) or command recognition solely on the device.
 
