@@ -759,8 +759,6 @@ void app_main(void)
         ESP_ERROR_CHECK(nvs_flash_init());
     }
 
-    init_sntp();
-
     periph_wifi_cfg_t cfg_pwifi = {
         .ssid = CONFIG_WIFI_SSID,
         .password = CONFIG_WIFI_PASSWORD,
@@ -775,6 +773,8 @@ void app_main(void)
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to set Wi-Fi power save mode");
     }
+
+    init_sntp();
 
     audio_board_handle_t hdl_audio_board = audio_board_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
