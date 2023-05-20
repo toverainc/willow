@@ -39,34 +39,72 @@ choice WILLOW_USE_CODEC
                 Industry standard WAV file
 endchoice
 
-config WILLOW_USE_MULTINET
-    depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_PCM
-    bool "Use local command detection via MultiNet"
-    help
-        Use local command detection via MultiNet
+choice WILLOW_USE_ENDPOINT
+    prompt "Command Endpoint"
+    default WILLOW_USE_ENDPOINT_HOMEASSISTANT
+        config WILLOW_USE_ENDPOINT_HOMEASSISTANT
+            bool "Home Assistant"
+            help
+                Send command inferred from speech to Home Assistant
+
+        config WILLOW_USE_ENDPOINT_REST
+            bool "Generic REST endpoint"
+            help
+                Send command inferred from speech to generic REST endpoint
+endchoice
 
 config HOMEASSISTANT_HOST
     string "HomeAssistant host"
     default "homeassistant.local"
+    depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     help
         Hostname/IP address for your Home Assistant instance.
 
 config HOMEASSISTANT_PORT
     int "HomeAssistant port"
     default 8123
+    depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     range 0 65535
     help
         TCP port for your Home Assistant instance.
 
 config HOMEASSISTANT_TLS
     bool "HomeAssistant TLS/SSL"
+    depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     help
         Enable if your Home Assistant port has TLS/SSL enabled.
 
 config HOMEASSISTANT_TOKEN
+    depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     string "HomeAssistant Auth Token"
     help
         Long Lived Auth Token for Home Assistant.
+
+config WILLOW_ENDPOINT_REST_USE_AUTH
+    depends on WILLOW_USE_ENDPOINT_REST
+    bool "Use Authorization with REST endpoint"
+    help
+        Use Authorization with REST endpoint
+
+config WILLOW_ENDPOINT_REST_URL
+    depends on WILLOW_USE_ENDPOINT_REST
+    string "Generic REST endpoint URL"
+    help
+        URL for the generic REST endpoint. Use the complete URL!
+        E.g.: https://generic.tovera.io/api/rest
+
+config WILLOW_ENDPOINT_REST_AUTH_HEADER
+    depends on WILLOW_USE_ENDPOINT_REST && WILLOW_ENDPOINT_REST_USE_AUTH
+    string "Generic REST endpoint Authorization header (READ HELP)"
+    help
+        Authorization header to send to REST endpoint. Use full header!
+        E.g.: Bearer 3a623b52297fb23844159ad393de2b27
+
+config WILLOW_USE_MULTINET
+    depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_PCM
+    bool "Use local command detection via MultiNet"
+    help
+        Use local command detection via MultiNet
 
 config WILLOW_TIMEZONE
     string "Timezone"

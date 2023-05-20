@@ -9,3 +9,5 @@ target
 willow-dist.bin
 .env
 serve
+.DS_Store
+.vscode
