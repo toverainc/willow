@@ -2,6 +2,7 @@
 name: clang-format
 on:
   - pull_request
+  - push
 jobs:
   clang-format:
     name: clang-format
