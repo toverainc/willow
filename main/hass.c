@@ -151,19 +151,34 @@ cleanup:
     }
 }
 
+static void hass_get_url(char **url, char *path, bool ws)
+{
+    int len_url = 0;
+#if HOMEASSISTANT_TLS
+    char *scheme = ws ? "wss" : "https";
+#else
+    char *scheme = ws ? "ws" : "http";
+#endif
+
+    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + strlen(path);
+    if (path != NULL) {
+        len_url += strlen(path);
+    }
+    *url = malloc(len_url);
+    snprintf(*url, len_url, "%s://%s:%d%s", scheme, CONFIG_HOMEASSISTANT_HOST, CONFIG_HOMEASSISTANT_PORT,
+             path ? path : "");
+
+    ESP_LOGI(TAG, "HASS URL: %s", *url);
+}
+
 static void init_hass_ws_client(void)
 {
     char *auth = NULL;
     char *url = NULL;
     esp_err_t err;
-    int len_auth, len_url, ret;
+    int len_auth, ret;
 
-    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST);
-    url = malloc(len_url);
-    snprintf(url, len_url, "%s://%s:%d", HOMEASSISTANT_TLS ? "wss" : "ws", CONFIG_HOMEASSISTANT_HOST,
-             CONFIG_HOMEASSISTANT_PORT);
-
-    ESP_LOGI(TAG, "WS URL: %s", url);
+    hass_get_url(&url, HASS_URI_WEBSOCKET, true);
 
     const esp_websocket_client_config_t cfg_wc = {
         .buffer_size = 4096,
@@ -211,15 +226,12 @@ static void hass_check_assist_pipeline(void)
     char *body = NULL;
     char *url = NULL;
     esp_err_t ret;
-    int http_status, len_url;
+    int http_status;
 
     esp_http_client_handle_t hdl_hc = init_http_client();
     ret = hass_set_http_auth(hdl_hc);
 
-    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + STRLEN(HASS_URI_COMPONENTS);
-    url = malloc(len_url);
-    snprintf(url, len_url, "%s://%s:%d%s", HOMEASSISTANT_TLS ? "https" : "http", CONFIG_HOMEASSISTANT_HOST,
-             CONFIG_HOMEASSISTANT_PORT, HASS_URI_COMPONENTS);
+    hass_get_url(&url, HASS_URI_COMPONENTS, false);
 
     ret = http_get(hdl_hc, url, &body, &http_status);
 
@@ -252,14 +264,11 @@ static void hass_post(char *data)
     char *json = NULL;
     char *url = NULL;
     esp_err_t ret;
-    int http_status, len_url;
+    int http_status;
 
     esp_http_client_handle_t hdl_hc = init_http_client();
 
-    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + STRLEN(HASS_URI_CONVERSATION_PROCESS);
-    url = malloc(len_url);
-    snprintf(url, len_url, "%s://%s:%d%s", HOMEASSISTANT_TLS ? "https" : "http", CONFIG_HOMEASSISTANT_HOST,
-             CONFIG_HOMEASSISTANT_PORT, HASS_URI_CONVERSATION_PROCESS);
+    hass_get_url(&url, HASS_URI_CONVERSATION_PROCESS, false);
 
     ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
 
