@@ -50,7 +50,11 @@ void rest_send(char *data)
     lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
     lv_label_set_text_static(lbl_ln3, "Command status:");
     lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-    lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Error");
+    if (body != NULL) {
+        lv_label_set_text(lbl_ln4, body);
+    } else {
+        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Error");
+    }
     lvgl_port_unlock();
 
     timer_start(TIMER_GROUP_0, TIMER_0);
