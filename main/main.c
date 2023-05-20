@@ -845,6 +845,9 @@ void app_main(void)
 #ifdef CONFIG_WILLOW_USE_MULTINET
     ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
 #endif
+
+    get_mac_address(); // should be on wifi by now; print the MAC
+
     ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
@@ -852,8 +855,6 @@ void app_main(void)
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
 #endif
-
-    get_mac_address(); // should be on wifi by now; print the MAC
 
     while (true) {
 #ifdef CONFIG_WILLOW_DEBUG_MEM
