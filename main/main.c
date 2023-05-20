@@ -42,11 +42,14 @@
 #include "generated_cmd_multinet.h"
 #endif
 
-#include "endpoint/hass.h"
 #include "shared.h"
 #include "slvgl.h"
 #include "tasks.h"
 #include "timer.h"
+
+#ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
+#include "endpoint/hass.h"
+#endif
 
 #define I2S_PORT I2S_NUM_0
 
@@ -170,7 +173,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             json = malloc(29 + strlen(lookup_cmd_multinet(command_id)));
             snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
                      lookup_cmd_multinet(command_id));
+#ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
             hass_send(json);
+#endif
             free(json);
 
             ESP_LOGI(TAG, "Got local command ID: '%d'\n", command_id);
@@ -304,7 +309,9 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             }
             buf[read_len] = 0;
             ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
+#ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
             hass_send(buf);
+#endif
 
             cJSON *cjson = cJSON_Parse(buf);
             cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
@@ -783,7 +790,9 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
+#ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
     init_hass();
+#endif
     init_buttons();
     init_input_key_service();
     init_lvgl_touch();

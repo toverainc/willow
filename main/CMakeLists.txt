@@ -1,5 +1,4 @@
 set(COMPONENT_SRCS
-	"endpoint/hass.c"
 	"http.c"
 	"lv_img_hand_left.c"
 	"slvgl.c"
@@ -21,6 +20,11 @@ set(COMPONENT_PRIV_REQUIRES
 	input_key_service
 	spiffs
 )
+
+if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
+	set(COMPONENT_SRCS ${COMPONENT_SRCS} "endpoint/hass.c")
+endif()
+
 register_component()
 
 spiffs_create_partition_image(audio ../spiffs/audio FLASH_IN_PROJECT)
