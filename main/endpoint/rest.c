@@ -31,7 +31,7 @@ void rest_send(char *data)
 
     ret = http_post(hdl_hc, url, data, &body, &http_status);
     if (ret == ESP_OK) {
-        if (http_status == 200) {
+        if (http_status >= 200 && http_status <= 299) {
             ok = true;
         }
     } else {
