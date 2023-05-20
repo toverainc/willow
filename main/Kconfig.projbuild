@@ -46,6 +46,11 @@ choice WILLOW_USE_ENDPOINT
             bool "Home Assistant"
             help
                 Send command inferred from speech to Home Assistant
+
+        config WILLOW_USE_ENDPOINT_REST
+            bool "Generic REST endpoint"
+            help
+                Send command inferred from speech to generic REST endpoint
 endchoice
 
 config WILLOW_USE_MULTINET
@@ -80,6 +85,13 @@ config HOMEASSISTANT_TOKEN
     string "HomeAssistant Auth Token"
     help
         Long Lived Auth Token for Home Assistant.
+
+config WILLOW_ENDPOINT_REST_URL
+    depends on WILLOW_USE_ENDPOINT_REST
+    string "Generic REST endpoint URL"
+    help
+        URL for the generic REST endpoint. Use the complete URL!
+        E.g.: https://generic.tovera.io/api/rest
 
 config WILLOW_TIMEZONE
     string "Timezone"
