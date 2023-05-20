@@ -51,6 +51,7 @@ void rest_send(char *data)
     lv_label_set_text_static(lbl_ln3, "Command status:");
     lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
     if (body != NULL) {
+        ESP_LOGI(TAG, "REST response: %s", body);
         lv_label_set_text(lbl_ln4, body);
     } else {
         lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 Error");
