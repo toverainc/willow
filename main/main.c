@@ -42,7 +42,7 @@
 #include "generated_cmd_multinet.h"
 #endif
 
-#include "hass.h"
+#include "endpoint/hass.h"
 #include "shared.h"
 #include "slvgl.h"
 #include "tasks.h"

@@ -10,7 +10,7 @@
 #include "lvgl.h"
 #include "sdkconfig.h"
 
-#include "http.h"
+#include "../http.h"
 #include "shared.h"
 #include "slvgl.h"
 
