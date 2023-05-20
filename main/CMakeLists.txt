@@ -1,5 +1,5 @@
 set(COMPONENT_SRCS
-	"hass.c"
+	"endpoint/hass.c"
 	"http.c"
 	"lv_img_hand_left.c"
 	"slvgl.c"
