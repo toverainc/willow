@@ -92,7 +92,7 @@ Return to main menu and continue.
 
 ### Willow Configuration
 
-Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports WPA/WPA2/WPA3), and your Willow Inference Server URI (best-effort Tovera hosted example provided).
+Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports 2.4 GHz Wi-Fi with WPA/WPA2/WPA3 authentication), and your Willow Inference Server URI (best-effort Tovera hosted example provided).
 
 For Home Assistant you will also need to create a [long lived access token](https://developers.home-assistant.io/docs/auth_api/#:~:text=Long%2Dlived%20access%20tokens%20can,access%20token%20for%20current%20user.) and configure your server address. By default we use ```homeassistant.local``` which should use mDNS to resolve your local Home Assistant instance. Put your long lived access token in the text input area. We recommend testing both your Home Assistant server address and token before flashing.
 
