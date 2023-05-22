@@ -62,3 +62,21 @@ esp_err_t http_post(esp_http_client_handle_t hdl_hc, char *url, char *data, char
 {
     return http_do(hdl_hc, HTTP_METHOD_POST, url, "application/json", data, body, http_status);
 }
+
+esp_err_t http_set_basic_auth(esp_http_client_handle_t hdl_hc, char *username, char *password)
+{
+    esp_err_t ret = ESP_OK;
+    ret = esp_http_client_set_authtype(hdl_hc, HTTP_AUTH_TYPE_BASIC);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to enable HTTP Basic Authentication: %s", esp_err_to_name(ret));
+    }
+    ret = esp_http_client_set_username(hdl_hc, username);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set HTTP username: %s", esp_err_to_name(ret));
+    }
+    ret = esp_http_client_set_password(hdl_hc, password);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set HTTP password: %s", esp_err_to_name(ret));
+    }
+    return ret;
+}
