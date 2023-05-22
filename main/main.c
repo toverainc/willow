@@ -832,12 +832,6 @@ void app_main(void)
         if (ld == NULL) {
             ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
         } else {
-            // static lv_style_t lv_st_montserrat_20;
-            // lv_style_init(&lv_st_montserrat_20);
-            // lv_style_set_text_color(&lv_st_montserrat_20, lv_color_black());
-            // lv_style_set_text_font(&lv_st_montserrat_20, &lv_font_montserrat_14);
-            // lv_style_set_text_opa(&lv_st_montserrat_20, LV_OPA_30);
-
             lvgl_port_lock(0);
             lv_label_set_text(lbl_ln3, wake_help);
             lvgl_port_unlock();
