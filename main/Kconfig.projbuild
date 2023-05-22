@@ -89,6 +89,10 @@ choice WILLOW_ENDPOINT_REST_AUTH
 
         config WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
             bool "Authorization header"
+
+        config WILLOW_ENDPOINT_REST_AUTH_BASIC
+            bool "Basic Authentication"
+            select ESP_HTTP_CLIENT_ENABLE_BASIC_AUTH
 endchoice
 
 config WILLOW_ENDPOINT_REST_URL
@@ -104,6 +108,14 @@ config WILLOW_ENDPOINT_REST_AUTH_HEADER
     help
         Authorization header to send to REST endpoint. Use full header!
         E.g.: Bearer 3a623b52297fb23844159ad393de2b27
+
+config WILLOW_ENDPOINT_REST_AUTH_USERNAME
+    depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
+    string "Username for HTTP Basic Authentication"
+
+config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
+    depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
+    string "Password for HTTP Basic Authentication"
 
 config WILLOW_USE_MULTINET
     depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_PCM
