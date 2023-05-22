@@ -38,7 +38,7 @@ static struct hass_intent_response hir;
 static bool has_assist_pipeline = false;
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
-static void cb_ws_event(void *arg_evh, esp_event_base_t *base_ev, int32_t id_ev, void *ev_data)
+static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
 {
     esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)ev_data;
     switch (id_ev) {
@@ -151,7 +151,7 @@ cleanup:
     }
 }
 
-static void hass_get_url(char **url, char *path, bool ws)
+static void hass_get_url(char **url, const char *path, const bool ws)
 {
     int len_url = 0;
 #if HOMEASSISTANT_TLS
@@ -209,7 +209,7 @@ static void init_hass_ws_client(void)
     }
 }
 
-static esp_err_t hass_set_http_auth(esp_http_client_handle_t hdl_hc)
+static esp_err_t hass_set_http_auth(const esp_http_client_handle_t hdl_hc)
 {
     char *hdr_auth = calloc(sizeof(char), 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
     snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
@@ -257,7 +257,7 @@ static void hass_check_assist_pipeline(void)
     free(url);
 }
 
-static void hass_post(char *data)
+static void hass_post(const char *data)
 {
     bool ok;
     char *body = NULL;
@@ -316,7 +316,7 @@ static void hass_post(char *data)
     free(url);
 }
 
-static void hass_send_ws(char *data)
+static void hass_send_ws(const char *data)
 {
     int ret;
 
@@ -375,7 +375,7 @@ static void hass_send_ws(char *data)
     cJSON_Delete(cjson);
 }
 
-void hass_send(char *data)
+void hass_send(const char *data)
 {
     if (has_assist_pipeline) {
         hass_send_ws(data);
