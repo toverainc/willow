@@ -207,25 +207,30 @@ config WILLOW_STREAM_TIMEOUT
     help
         Stop stream N seconds after wake event to avoid endless stream when VAD END doesn't trigger.
 
-config WILLOW_DEBUG_MEM
-    bool "Debug Willow memory"
-    help
-        Willow will periodically print memory debugging information when set
+    menu "Debugging"
 
-config WILLOW_DEBUG_RUNTIME_STATS
-    bool "Debug Willow runtime stats"
-	select FREERTOS_GENERATE_RUN_TIME_STATS
-	help
-		Willow will periodically print runtime stats when enabled
+    config WILLOW_DEBUG_MEM
+        bool "Debug Willow memory"
+        help
+            Willow will periodically print memory debugging information when set
 
-config WILLOW_DEBUG_TASKS
-    bool "Debug Willow tasks"
-    select FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
-    help
-        Willow will periodically print task list when enabled
+    config WILLOW_DEBUG_RUNTIME_STATS
+        bool "Debug Willow runtime stats"
+        select FREERTOS_GENERATE_RUN_TIME_STATS
+        help
+            Willow will periodically print runtime stats when enabled
 
-config WILLOW_DEBUG_TIMERS
-    bool "Debug Willow timers"
-    help
-        Willow will periodically print timer information
+    config WILLOW_DEBUG_TASKS
+        bool "Debug Willow tasks"
+        select FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
+        help
+            Willow will periodically print task list when enabled
+
+    config WILLOW_DEBUG_TIMERS
+        bool "Debug Willow timers"
+        help
+            Willow will periodically print timer information
+
+    endmenu
+
 endmenu
