@@ -57,7 +57,8 @@
 
 #define I2S_PORT I2S_NUM_0
 
-static bool recording = false;
+bool recording = false;
+
 static bool stream_to_api = false;
 static int total_write = 0;
 
@@ -118,6 +119,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
     switch (are) {
         case AUDIO_REC_VAD_END:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_END");
+            if (esp_timer_is_active(hdl_sess_timer)) {
+                esp_timer_stop(hdl_sess_timer);
+            }
             break;
         case AUDIO_REC_VAD_START:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
@@ -127,6 +131,10 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             msg = MSG_START;
 #endif
             xQueueSend(q_rec, &msg, 0);
+            if (esp_timer_is_active(hdl_sess_timer)) {
+                esp_timer_stop(hdl_sess_timer);
+            }
+            esp_timer_start_once(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000);
             break;
         case AUDIO_REC_COMMAND_DECT:
             // Multinet timeout
@@ -808,6 +816,7 @@ void app_main(void)
     init_buttons();
     init_input_key_service();
     init_lvgl_touch();
+    init_session_timer();
     init_timer();
     init_ap_to_api();
     start_rec();

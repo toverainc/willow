@@ -200,6 +200,13 @@ config WILLOW_RECORD_BUFFER
     help
         Custom record buffer for timing and latency
 
+config WILLOW_STREAM_TIMEOUT
+    int "Maximum stream duration"
+    range 1 30
+    default 5
+    help
+        Stop stream N seconds after wake event to avoid endless stream when VAD END doesn't trigger.
+
 config WILLOW_DEBUG_MEM
     bool "Debug Willow memory"
     help

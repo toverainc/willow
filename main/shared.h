@@ -2,6 +2,8 @@
 
 #define WAKENET_NAME "wn9_alexa"
 
+bool recording;
+
 esp_periph_set_handle_t hdl_pset;
 
 extern QueueHandle_t q_rec;
