@@ -180,7 +180,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
             hass_send(json);
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
-            rest_send(buf);
+            rest_send(json);
 #endif
             free(json);
 
