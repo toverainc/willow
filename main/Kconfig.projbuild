@@ -96,8 +96,15 @@ config WILLOW_ENDPOINT_OPENHAB_TOKEN
     depends on WILLOW_USE_ENDPOINT_OPENHAB
     string "openHAB API token"
 
+config WILLOW_ENDPOINT_REST_URL
+    depends on WILLOW_USE_ENDPOINT_REST
+    string "Generic REST endpoint URL"
+    help
+        URL for the generic REST endpoint. Use the complete URL!
+        E.g.: https://generic/api/rest
 
 choice WILLOW_ENDPOINT_REST_AUTH
+    depends on WILLOW_USE_ENDPOINT_REST
     prompt "Generic REST endpoint auth type"
     default WILLOW_ENDPOINT_REST_AUTH_NONE
 
@@ -111,13 +118,6 @@ choice WILLOW_ENDPOINT_REST_AUTH
             bool "Basic Authentication"
             select ESP_HTTP_CLIENT_ENABLE_BASIC_AUTH
 endchoice
-
-config WILLOW_ENDPOINT_REST_URL
-    depends on WILLOW_USE_ENDPOINT_REST
-    string "Generic REST endpoint URL"
-    help
-        URL for the generic REST endpoint. Use the complete URL!
-        E.g.: https://generic.tovera.io/api/rest
 
 config WILLOW_ENDPOINT_REST_AUTH_HEADER
     depends on WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
