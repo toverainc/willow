@@ -9,6 +9,7 @@ export FLASH_BAUD=2000000 # Optimistic but seems to work for me for now
 export CONSOLE_BAUD=2000000 # Subject to change
 
 export DOCKER_IMAGE="willow:latest"
+export DOCKER_NAME="willow-build"
 export DIST_FILE="serve/willow-dist.bin"
 export SERVE_PORT="10000"
 
@@ -197,7 +198,8 @@ build-docker|docker-build)
 ;;
 
 docker)
-    docker run --rm -it -v "$PWD":/willow -e TERM -p "$SERVE_PORT":"$SERVE_PORT" "$DOCKER_IMAGE" /bin/bash
+    docker run --rm -it -v "$PWD":/willow -e TERM -p "$SERVE_PORT":"$SERVE_PORT" --name "$DOCKER_NAME" \
+        "$DOCKER_IMAGE" /bin/bash
 ;;
 
 flash)
