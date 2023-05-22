@@ -174,7 +174,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             // Catch all for local commands
             command_id = are;
             char *json;
-            json = malloc(29 + strlen(lookup_cmd_multinet(command_id)));
+            json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
             snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
                      lookup_cmd_multinet(command_id));
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
@@ -306,7 +306,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
         case HTTP_STREAM_FINISH_REQUEST:
             ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_FINISH_REQUEST");
             // Allocate memory for response. Should be enough?
-            char *buf = malloc(2048);
+            char *buf = calloc(sizeof(char), 2048);
             assert(buf);
             int read_len = esp_http_client_read(http, buf, 2048);
             if (read_len <= 0) {
