@@ -49,6 +49,8 @@
 
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
 #include "endpoint/hass.h"
+#elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
+#include "endpoint/openhab.h"
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
 #include "endpoint/rest.h"
 #endif
@@ -177,6 +179,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                      lookup_cmd_multinet(command_id));
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
             hass_send(json);
+#elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
+            openhab_send(lookup_cmd_multinet(command_id));
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
             rest_send(json);
 #endif
@@ -315,6 +319,8 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
             hass_send(buf);
+#elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
+            openhab_send(buf);
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
             rest_send(buf);
 #endif
