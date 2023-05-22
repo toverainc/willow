@@ -164,7 +164,7 @@ static void hass_get_url(char **url, char *path, bool ws)
     if (path != NULL) {
         len_url += strlen(path);
     }
-    *url = malloc(len_url);
+    *url = calloc(sizeof(char), len_url);
     snprintf(*url, len_url, "%s://%s:%d%s", scheme, CONFIG_HOMEASSISTANT_HOST, CONFIG_HOMEASSISTANT_PORT,
              path ? path : "");
 
@@ -198,7 +198,7 @@ static void init_hass_ws_client(void)
     }
 
     len_auth = strlen(CONFIG_HOMEASSISTANT_TOKEN) + 34;
-    auth = malloc(len_auth);
+    auth = calloc(sizeof(char), len_auth);
     snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", CONFIG_HOMEASSISTANT_TOKEN);
 
     // we must not send the terminating null byte
@@ -211,7 +211,7 @@ static void init_hass_ws_client(void)
 
 static esp_err_t hass_set_http_auth(esp_http_client_handle_t hdl_hc)
 {
-    char *hdr_auth = malloc(8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
+    char *hdr_auth = calloc(sizeof(char), 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
     snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
     esp_err_t ret = esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     if (ret != ESP_OK) {
