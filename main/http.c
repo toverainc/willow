@@ -58,9 +58,9 @@ esp_err_t http_get(esp_http_client_handle_t hdl_hc, char *url, char **body, int 
     return http_do(hdl_hc, HTTP_METHOD_GET, url, NULL, NULL, body, http_status);
 }
 
-esp_err_t http_post(esp_http_client_handle_t hdl_hc, char *url, char *data, char **body, int *http_status)
+esp_err_t http_post(esp_http_client_handle_t hdl_hc, char *url, char *ctype, char *data, char **body, int *http_status)
 {
-    return http_do(hdl_hc, HTTP_METHOD_POST, url, "application/json", data, body, http_status);
+    return http_do(hdl_hc, HTTP_METHOD_POST, url, ctype, data, body, http_status);
 }
 
 esp_err_t http_set_basic_auth(esp_http_client_handle_t hdl_hc, char *username, char *password)
