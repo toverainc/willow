@@ -47,11 +47,9 @@
 #include "tasks.h"
 #include "timer.h"
 
-#ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
+#if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
 #include "endpoint/hass.h"
-#endif
-
-#ifdef CONFIG_WILLOW_USE_ENDPOINT_REST
+#elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
 #include "endpoint/rest.h"
 #endif
 
