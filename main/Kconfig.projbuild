@@ -80,11 +80,16 @@ config HOMEASSISTANT_TOKEN
     help
         Long Lived Auth Token for Home Assistant.
 
-config WILLOW_ENDPOINT_REST_USE_AUTH
-    depends on WILLOW_USE_ENDPOINT_REST
-    bool "Use Authorization with REST endpoint"
-    help
-        Use Authorization with REST endpoint
+choice WILLOW_ENDPOINT_REST_AUTH
+    prompt "Generic REST endpoint auth type"
+    default WILLOW_ENDPOINT_REST_AUTH_NONE
+
+        config WILLOW_ENDPOINT_REST_AUTH_NONE
+            bool "No authentication"
+
+        config WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
+            bool "Authorization header"
+endchoice
 
 config WILLOW_ENDPOINT_REST_URL
     depends on WILLOW_USE_ENDPOINT_REST
@@ -94,7 +99,7 @@ config WILLOW_ENDPOINT_REST_URL
         E.g.: https://generic.tovera.io/api/rest
 
 config WILLOW_ENDPOINT_REST_AUTH_HEADER
-    depends on WILLOW_USE_ENDPOINT_REST && WILLOW_ENDPOINT_REST_USE_AUTH
+    depends on WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
     string "Generic REST endpoint Authorization header (READ HELP)"
     help
         Authorization header to send to REST endpoint. Use full header!
