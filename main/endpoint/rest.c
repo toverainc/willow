@@ -33,7 +33,7 @@ void rest_send(char *data)
     }
 #endif
 
-    ret = http_post(hdl_hc, url, data, &body, &http_status);
+    ret = http_post(hdl_hc, url, "application/json", data, &body, &http_status);
     if (ret == ESP_OK) {
         if (http_status >= 200 && http_status <= 299) {
             ok = true;

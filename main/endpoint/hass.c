@@ -272,7 +272,7 @@ static void hass_post(char *data)
 
     ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
 
-    ret = http_post(hdl_hc, url, data, &body, &http_status);
+    ret = http_post(hdl_hc, url, "application/json", data, &body, &http_status);
     if (ret != ESP_OK) {
         if (http_status != 200) {
             ok = false;
