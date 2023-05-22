@@ -13,8 +13,8 @@ esp_http_client_handle_t init_http_client(void)
     return esp_http_client_init(&cfg_hc);
 }
 
-static esp_err_t http_do(esp_http_client_handle_t hdl_hc, esp_http_client_method_t method, char *url, char *ctype,
-                         char *data, char **body, int *http_status)
+static esp_err_t http_do(const esp_http_client_handle_t hdl_hc, const esp_http_client_method_t method, const char *url,
+                         const char *ctype, const char *data, char **body, int *http_status)
 {
     esp_err_t ret;
     int n;
@@ -53,17 +53,18 @@ static esp_err_t http_do(esp_http_client_handle_t hdl_hc, esp_http_client_method
     return ret;
 }
 
-esp_err_t http_get(esp_http_client_handle_t hdl_hc, char *url, char **body, int *http_status)
+esp_err_t http_get(const esp_http_client_handle_t hdl_hc, const char *url, char **body, int *http_status)
 {
     return http_do(hdl_hc, HTTP_METHOD_GET, url, NULL, NULL, body, http_status);
 }
 
-esp_err_t http_post(esp_http_client_handle_t hdl_hc, char *url, char *ctype, char *data, char **body, int *http_status)
+esp_err_t http_post(const esp_http_client_handle_t hdl_hc, const char *url, const char *ctype, const char *data,
+                    char **body, int *http_status)
 {
     return http_do(hdl_hc, HTTP_METHOD_POST, url, ctype, data, body, http_status);
 }
 
-esp_err_t http_set_basic_auth(esp_http_client_handle_t hdl_hc, char *username, char *password)
+esp_err_t http_set_basic_auth(const esp_http_client_handle_t hdl_hc, const char *username, const char *password)
 {
     esp_err_t ret = ESP_OK;
     ret = esp_http_client_set_authtype(hdl_hc, HTTP_AUTH_TYPE_BASIC);
