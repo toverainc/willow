@@ -873,6 +873,9 @@ void app_main(void)
         vTaskList(&buf);
         printf("%s\n", buf);
 #endif
+#ifdef CONFIG_WILLOW_DEBUG_TIMERS
+        (esp_timer_dump(stdout));
+#endif
         vTaskDelay(5000 / portTICK_PERIOD_MS);
     }
 }

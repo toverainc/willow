@@ -223,4 +223,9 @@ config WILLOW_DEBUG_TASKS
     select FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
     help
         Willow will periodically print task list when enabled
+
+config WILLOW_DEBUG_TIMERS
+    bool "Debug Willow timers"
+    help
+        Willow will periodically print timer information
 endmenu
