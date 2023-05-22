@@ -30,7 +30,7 @@ static esp_err_t http_do(esp_http_client_handle_t hdl_hc, esp_http_client_method
         return ret;
     }
     if (method == HTTP_METHOD_POST) {
-        ESP_LOGI(TAG, "sending '%s' to '%s'", data, url);
+        ESP_LOGV(TAG, "sending '%s' to '%s'", data, url);
         n = esp_http_client_write(hdl_hc, data, strlen(data));
         if (n < 0) {
             ESP_LOGE(TAG, "failed to POST HTTP data");
