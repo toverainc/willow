@@ -134,6 +134,44 @@ generate_speech_commands() {
     fi
 }
 
+generate_timezones() {
+    echo "Generating timezone data"
+
+    cd /usr/share/zoneinfo/posix
+
+    TZ_KCONFIG_FILE=/willow/main/Kconfig-TZ.projbuild
+    TZ_CHOICES=""
+    TZ_CONFIGS=""
+
+    # grab all timezone files and use dir struct and last line to create explicit kconfig
+    for TZFILE in $(find . -type f -or -type l|sort); do
+        if ( grep TZif2 $TZFILE > /dev/null ); then
+            TZNAME=$(echo $TZFILE | cut -c 3-)
+            POSIX=$(tail -1 $TZFILE)
+            CONFIG="${TZNAME//[^[:alnum:]]/_}"
+            TZ_CHOICE="TZ_CHOICE_${CONFIG^^}"
+
+            TZ_CHOICES="$TZ_CHOICES    config $TZ_CHOICE\n        bool \"$TZNAME\"\n"
+            TZ_CONFIGS="$TZ_CONFIGS    default \"$POSIX\" if $TZ_CHOICE\n"
+        fi
+    done
+
+    # use heredoc for ease
+    cat << TZ_KCONFIG > $TZ_KCONFIG_FILE
+choice TZ_CHOICE
+    prompt "Select Timezone"
+    help
+        Willow device timezone
+$(echo -e "$TZ_CHOICES")
+endchoice
+
+config WILLOW_TIMEZONE
+    string
+$(echo -e "$TZ_CONFIGS")
+TZ_KCONFIG
+
+}
+
 # Just in case
 mkdir -p flags serve
 
@@ -192,12 +230,18 @@ build)
     idf.py build
 ;;
 
+tz)
+    check_container
+    check_deps
+    generate_timezones
+;;
+
 build-docker|docker-build)
     docker build -t "$DOCKER_IMAGE" .
 ;;
 
 docker)
-    docker run --rm -it -v "$PWD":/willow -e TERM -p "$SERVE_PORT":"$SERVE_PORT" "$DOCKER_IMAGE" /bin/bash
+    docker run --name willow_builder --rm -it -v "$PWD":/willow -e TERM -p "$SERVE_PORT":"$SERVE_PORT" "$DOCKER_IMAGE" /bin/bash
 ;;
 
 flash)

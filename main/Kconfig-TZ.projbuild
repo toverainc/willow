@@ -1,0 +1,1808 @@
+choice TZ_CHOICE
+    prompt "Select Timezone"
+    help
+        Willow device timezone
+    config TZ_CHOICE_AFRICA_ABIDJAN
+        bool "Africa/Abidjan"
+    config TZ_CHOICE_AFRICA_ACCRA
+        bool "Africa/Accra"
+    config TZ_CHOICE_AFRICA_ADDIS_ABABA
+        bool "Africa/Addis_Ababa"
+    config TZ_CHOICE_AFRICA_ALGIERS
+        bool "Africa/Algiers"
+    config TZ_CHOICE_AFRICA_ASMARA
+        bool "Africa/Asmara"
+    config TZ_CHOICE_AFRICA_ASMERA
+        bool "Africa/Asmera"
+    config TZ_CHOICE_AFRICA_BAMAKO
+        bool "Africa/Bamako"
+    config TZ_CHOICE_AFRICA_BANGUI
+        bool "Africa/Bangui"
+    config TZ_CHOICE_AFRICA_BANJUL
+        bool "Africa/Banjul"
+    config TZ_CHOICE_AFRICA_BISSAU
+        bool "Africa/Bissau"
+    config TZ_CHOICE_AFRICA_BLANTYRE
+        bool "Africa/Blantyre"
+    config TZ_CHOICE_AFRICA_BRAZZAVILLE
+        bool "Africa/Brazzaville"
+    config TZ_CHOICE_AFRICA_BUJUMBURA
+        bool "Africa/Bujumbura"
+    config TZ_CHOICE_AFRICA_CAIRO
+        bool "Africa/Cairo"
+    config TZ_CHOICE_AFRICA_CASABLANCA
+        bool "Africa/Casablanca"
+    config TZ_CHOICE_AFRICA_CEUTA
+        bool "Africa/Ceuta"
+    config TZ_CHOICE_AFRICA_CONAKRY
+        bool "Africa/Conakry"
+    config TZ_CHOICE_AFRICA_DAKAR
+        bool "Africa/Dakar"
+    config TZ_CHOICE_AFRICA_DAR_ES_SALAAM
+        bool "Africa/Dar_es_Salaam"
+    config TZ_CHOICE_AFRICA_DJIBOUTI
+        bool "Africa/Djibouti"
+    config TZ_CHOICE_AFRICA_DOUALA
+        bool "Africa/Douala"
+    config TZ_CHOICE_AFRICA_EL_AAIUN
+        bool "Africa/El_Aaiun"
+    config TZ_CHOICE_AFRICA_FREETOWN
+        bool "Africa/Freetown"
+    config TZ_CHOICE_AFRICA_GABORONE
+        bool "Africa/Gaborone"
+    config TZ_CHOICE_AFRICA_HARARE
+        bool "Africa/Harare"
+    config TZ_CHOICE_AFRICA_JOHANNESBURG
+        bool "Africa/Johannesburg"
+    config TZ_CHOICE_AFRICA_JUBA
+        bool "Africa/Juba"
+    config TZ_CHOICE_AFRICA_KAMPALA
+        bool "Africa/Kampala"
+    config TZ_CHOICE_AFRICA_KHARTOUM
+        bool "Africa/Khartoum"
+    config TZ_CHOICE_AFRICA_KIGALI
+        bool "Africa/Kigali"
+    config TZ_CHOICE_AFRICA_KINSHASA
+        bool "Africa/Kinshasa"
+    config TZ_CHOICE_AFRICA_LAGOS
+        bool "Africa/Lagos"
+    config TZ_CHOICE_AFRICA_LIBREVILLE
+        bool "Africa/Libreville"
+    config TZ_CHOICE_AFRICA_LOME
+        bool "Africa/Lome"
+    config TZ_CHOICE_AFRICA_LUANDA
+        bool "Africa/Luanda"
+    config TZ_CHOICE_AFRICA_LUBUMBASHI
+        bool "Africa/Lubumbashi"
+    config TZ_CHOICE_AFRICA_LUSAKA
+        bool "Africa/Lusaka"
+    config TZ_CHOICE_AFRICA_MALABO
+        bool "Africa/Malabo"
+    config TZ_CHOICE_AFRICA_MAPUTO
+        bool "Africa/Maputo"
+    config TZ_CHOICE_AFRICA_MASERU
+        bool "Africa/Maseru"
+    config TZ_CHOICE_AFRICA_MBABANE
+        bool "Africa/Mbabane"
+    config TZ_CHOICE_AFRICA_MOGADISHU
+        bool "Africa/Mogadishu"
+    config TZ_CHOICE_AFRICA_MONROVIA
+        bool "Africa/Monrovia"
+    config TZ_CHOICE_AFRICA_NAIROBI
+        bool "Africa/Nairobi"
+    config TZ_CHOICE_AFRICA_NDJAMENA
+        bool "Africa/Ndjamena"
+    config TZ_CHOICE_AFRICA_NIAMEY
+        bool "Africa/Niamey"
+    config TZ_CHOICE_AFRICA_NOUAKCHOTT
+        bool "Africa/Nouakchott"
+    config TZ_CHOICE_AFRICA_OUAGADOUGOU
+        bool "Africa/Ouagadougou"
+    config TZ_CHOICE_AFRICA_PORTO_NOVO
+        bool "Africa/Porto-Novo"
+    config TZ_CHOICE_AFRICA_SAO_TOME
+        bool "Africa/Sao_Tome"
+    config TZ_CHOICE_AFRICA_TIMBUKTU
+        bool "Africa/Timbuktu"
+    config TZ_CHOICE_AFRICA_TRIPOLI
+        bool "Africa/Tripoli"
+    config TZ_CHOICE_AFRICA_TUNIS
+        bool "Africa/Tunis"
+    config TZ_CHOICE_AFRICA_WINDHOEK
+        bool "Africa/Windhoek"
+    config TZ_CHOICE_AMERICA_ADAK
+        bool "America/Adak"
+    config TZ_CHOICE_AMERICA_ANCHORAGE
+        bool "America/Anchorage"
+    config TZ_CHOICE_AMERICA_ANGUILLA
+        bool "America/Anguilla"
+    config TZ_CHOICE_AMERICA_ANTIGUA
+        bool "America/Antigua"
+    config TZ_CHOICE_AMERICA_ARAGUAINA
+        bool "America/Araguaina"
+    config TZ_CHOICE_AMERICA_ARGENTINA_BUENOS_AIRES
+        bool "America/Argentina/Buenos_Aires"
+    config TZ_CHOICE_AMERICA_ARGENTINA_CATAMARCA
+        bool "America/Argentina/Catamarca"
+    config TZ_CHOICE_AMERICA_ARGENTINA_COMODRIVADAVIA
+        bool "America/Argentina/ComodRivadavia"
+    config TZ_CHOICE_AMERICA_ARGENTINA_CORDOBA
+        bool "America/Argentina/Cordoba"
+    config TZ_CHOICE_AMERICA_ARGENTINA_JUJUY
+        bool "America/Argentina/Jujuy"
+    config TZ_CHOICE_AMERICA_ARGENTINA_LA_RIOJA
+        bool "America/Argentina/La_Rioja"
+    config TZ_CHOICE_AMERICA_ARGENTINA_MENDOZA
+        bool "America/Argentina/Mendoza"
+    config TZ_CHOICE_AMERICA_ARGENTINA_RIO_GALLEGOS
+        bool "America/Argentina/Rio_Gallegos"
+    config TZ_CHOICE_AMERICA_ARGENTINA_SALTA
+        bool "America/Argentina/Salta"
+    config TZ_CHOICE_AMERICA_ARGENTINA_SAN_JUAN
+        bool "America/Argentina/San_Juan"
+    config TZ_CHOICE_AMERICA_ARGENTINA_SAN_LUIS
+        bool "America/Argentina/San_Luis"
+    config TZ_CHOICE_AMERICA_ARGENTINA_TUCUMAN
+        bool "America/Argentina/Tucuman"
+    config TZ_CHOICE_AMERICA_ARGENTINA_USHUAIA
+        bool "America/Argentina/Ushuaia"
+    config TZ_CHOICE_AMERICA_ARUBA
+        bool "America/Aruba"
+    config TZ_CHOICE_AMERICA_ASUNCION
+        bool "America/Asuncion"
+    config TZ_CHOICE_AMERICA_ATIKOKAN
+        bool "America/Atikokan"
+    config TZ_CHOICE_AMERICA_ATKA
+        bool "America/Atka"
+    config TZ_CHOICE_AMERICA_BAHIA
+        bool "America/Bahia"
+    config TZ_CHOICE_AMERICA_BAHIA_BANDERAS
+        bool "America/Bahia_Banderas"
+    config TZ_CHOICE_AMERICA_BARBADOS
+        bool "America/Barbados"
+    config TZ_CHOICE_AMERICA_BELEM
+        bool "America/Belem"
+    config TZ_CHOICE_AMERICA_BELIZE
+        bool "America/Belize"
+    config TZ_CHOICE_AMERICA_BLANC_SABLON
+        bool "America/Blanc-Sablon"
+    config TZ_CHOICE_AMERICA_BOA_VISTA
+        bool "America/Boa_Vista"
+    config TZ_CHOICE_AMERICA_BOGOTA
+        bool "America/Bogota"
+    config TZ_CHOICE_AMERICA_BOISE
+        bool "America/Boise"
+    config TZ_CHOICE_AMERICA_BUENOS_AIRES
+        bool "America/Buenos_Aires"
+    config TZ_CHOICE_AMERICA_CAMBRIDGE_BAY
+        bool "America/Cambridge_Bay"
+    config TZ_CHOICE_AMERICA_CAMPO_GRANDE
+        bool "America/Campo_Grande"
+    config TZ_CHOICE_AMERICA_CANCUN
+        bool "America/Cancun"
+    config TZ_CHOICE_AMERICA_CARACAS
+        bool "America/Caracas"
+    config TZ_CHOICE_AMERICA_CATAMARCA
+        bool "America/Catamarca"
+    config TZ_CHOICE_AMERICA_CAYENNE
+        bool "America/Cayenne"
+    config TZ_CHOICE_AMERICA_CAYMAN
+        bool "America/Cayman"
+    config TZ_CHOICE_AMERICA_CHICAGO
+        bool "America/Chicago"
+    config TZ_CHOICE_AMERICA_CHIHUAHUA
+        bool "America/Chihuahua"
+    config TZ_CHOICE_AMERICA_CIUDAD_JUAREZ
+        bool "America/Ciudad_Juarez"
+    config TZ_CHOICE_AMERICA_CORAL_HARBOUR
+        bool "America/Coral_Harbour"
+    config TZ_CHOICE_AMERICA_CORDOBA
+        bool "America/Cordoba"
+    config TZ_CHOICE_AMERICA_COSTA_RICA
+        bool "America/Costa_Rica"
+    config TZ_CHOICE_AMERICA_CRESTON
+        bool "America/Creston"
+    config TZ_CHOICE_AMERICA_CUIABA
+        bool "America/Cuiaba"
+    config TZ_CHOICE_AMERICA_CURACAO
+        bool "America/Curacao"
+    config TZ_CHOICE_AMERICA_DANMARKSHAVN
+        bool "America/Danmarkshavn"
+    config TZ_CHOICE_AMERICA_DAWSON
+        bool "America/Dawson"
+    config TZ_CHOICE_AMERICA_DAWSON_CREEK
+        bool "America/Dawson_Creek"
+    config TZ_CHOICE_AMERICA_DENVER
+        bool "America/Denver"
+    config TZ_CHOICE_AMERICA_DETROIT
+        bool "America/Detroit"
+    config TZ_CHOICE_AMERICA_DOMINICA
+        bool "America/Dominica"
+    config TZ_CHOICE_AMERICA_EDMONTON
+        bool "America/Edmonton"
+    config TZ_CHOICE_AMERICA_EIRUNEPE
+        bool "America/Eirunepe"
+    config TZ_CHOICE_AMERICA_EL_SALVADOR
+        bool "America/El_Salvador"
+    config TZ_CHOICE_AMERICA_ENSENADA
+        bool "America/Ensenada"
+    config TZ_CHOICE_AMERICA_FORT_NELSON
+        bool "America/Fort_Nelson"
+    config TZ_CHOICE_AMERICA_FORT_WAYNE
+        bool "America/Fort_Wayne"
+    config TZ_CHOICE_AMERICA_FORTALEZA
+        bool "America/Fortaleza"
+    config TZ_CHOICE_AMERICA_GLACE_BAY
+        bool "America/Glace_Bay"
+    config TZ_CHOICE_AMERICA_GOOSE_BAY
+        bool "America/Goose_Bay"
+    config TZ_CHOICE_AMERICA_GRAND_TURK
+        bool "America/Grand_Turk"
+    config TZ_CHOICE_AMERICA_GRENADA
+        bool "America/Grenada"
+    config TZ_CHOICE_AMERICA_GUADELOUPE
+        bool "America/Guadeloupe"
+    config TZ_CHOICE_AMERICA_GUATEMALA
+        bool "America/Guatemala"
+    config TZ_CHOICE_AMERICA_GUAYAQUIL
+        bool "America/Guayaquil"
+    config TZ_CHOICE_AMERICA_GUYANA
+        bool "America/Guyana"
+    config TZ_CHOICE_AMERICA_HALIFAX
+        bool "America/Halifax"
+    config TZ_CHOICE_AMERICA_HAVANA
+        bool "America/Havana"
+    config TZ_CHOICE_AMERICA_HERMOSILLO
+        bool "America/Hermosillo"
+    config TZ_CHOICE_AMERICA_INDIANA_INDIANAPOLIS
+        bool "America/Indiana/Indianapolis"
+    config TZ_CHOICE_AMERICA_INDIANA_KNOX
+        bool "America/Indiana/Knox"
+    config TZ_CHOICE_AMERICA_INDIANA_MARENGO
+        bool "America/Indiana/Marengo"
+    config TZ_CHOICE_AMERICA_INDIANA_PETERSBURG
+        bool "America/Indiana/Petersburg"
+    config TZ_CHOICE_AMERICA_INDIANA_TELL_CITY
+        bool "America/Indiana/Tell_City"
+    config TZ_CHOICE_AMERICA_INDIANA_VEVAY
+        bool "America/Indiana/Vevay"
+    config TZ_CHOICE_AMERICA_INDIANA_VINCENNES
+        bool "America/Indiana/Vincennes"
+    config TZ_CHOICE_AMERICA_INDIANA_WINAMAC
+        bool "America/Indiana/Winamac"
+    config TZ_CHOICE_AMERICA_INDIANAPOLIS
+        bool "America/Indianapolis"
+    config TZ_CHOICE_AMERICA_INUVIK
+        bool "America/Inuvik"
+    config TZ_CHOICE_AMERICA_IQALUIT
+        bool "America/Iqaluit"
+    config TZ_CHOICE_AMERICA_JAMAICA
+        bool "America/Jamaica"
+    config TZ_CHOICE_AMERICA_JUJUY
+        bool "America/Jujuy"
+    config TZ_CHOICE_AMERICA_JUNEAU
+        bool "America/Juneau"
+    config TZ_CHOICE_AMERICA_KENTUCKY_LOUISVILLE
+        bool "America/Kentucky/Louisville"
+    config TZ_CHOICE_AMERICA_KENTUCKY_MONTICELLO
+        bool "America/Kentucky/Monticello"
+    config TZ_CHOICE_AMERICA_KNOX_IN
+        bool "America/Knox_IN"
+    config TZ_CHOICE_AMERICA_KRALENDIJK
+        bool "America/Kralendijk"
+    config TZ_CHOICE_AMERICA_LA_PAZ
+        bool "America/La_Paz"
+    config TZ_CHOICE_AMERICA_LIMA
+        bool "America/Lima"
+    config TZ_CHOICE_AMERICA_LOS_ANGELES
+        bool "America/Los_Angeles"
+    config TZ_CHOICE_AMERICA_LOUISVILLE
+        bool "America/Louisville"
+    config TZ_CHOICE_AMERICA_LOWER_PRINCES
+        bool "America/Lower_Princes"
+    config TZ_CHOICE_AMERICA_MACEIO
+        bool "America/Maceio"
+    config TZ_CHOICE_AMERICA_MANAGUA
+        bool "America/Managua"
+    config TZ_CHOICE_AMERICA_MANAUS
+        bool "America/Manaus"
+    config TZ_CHOICE_AMERICA_MARIGOT
+        bool "America/Marigot"
+    config TZ_CHOICE_AMERICA_MARTINIQUE
+        bool "America/Martinique"
+    config TZ_CHOICE_AMERICA_MATAMOROS
+        bool "America/Matamoros"
+    config TZ_CHOICE_AMERICA_MAZATLAN
+        bool "America/Mazatlan"
+    config TZ_CHOICE_AMERICA_MENDOZA
+        bool "America/Mendoza"
+    config TZ_CHOICE_AMERICA_MENOMINEE
+        bool "America/Menominee"
+    config TZ_CHOICE_AMERICA_MERIDA
+        bool "America/Merida"
+    config TZ_CHOICE_AMERICA_METLAKATLA
+        bool "America/Metlakatla"
+    config TZ_CHOICE_AMERICA_MEXICO_CITY
+        bool "America/Mexico_City"
+    config TZ_CHOICE_AMERICA_MIQUELON
+        bool "America/Miquelon"
+    config TZ_CHOICE_AMERICA_MONCTON
+        bool "America/Moncton"
+    config TZ_CHOICE_AMERICA_MONTERREY
+        bool "America/Monterrey"
+    config TZ_CHOICE_AMERICA_MONTEVIDEO
+        bool "America/Montevideo"
+    config TZ_CHOICE_AMERICA_MONTREAL
+        bool "America/Montreal"
+    config TZ_CHOICE_AMERICA_MONTSERRAT
+        bool "America/Montserrat"
+    config TZ_CHOICE_AMERICA_NASSAU
+        bool "America/Nassau"
+    config TZ_CHOICE_AMERICA_NEW_YORK
+        bool "America/New_York"
+    config TZ_CHOICE_AMERICA_NIPIGON
+        bool "America/Nipigon"
+    config TZ_CHOICE_AMERICA_NOME
+        bool "America/Nome"
+    config TZ_CHOICE_AMERICA_NORONHA
+        bool "America/Noronha"
+    config TZ_CHOICE_AMERICA_NORTH_DAKOTA_BEULAH
+        bool "America/North_Dakota/Beulah"
+    config TZ_CHOICE_AMERICA_NORTH_DAKOTA_CENTER
+        bool "America/North_Dakota/Center"
+    config TZ_CHOICE_AMERICA_NORTH_DAKOTA_NEW_SALEM
+        bool "America/North_Dakota/New_Salem"
+    config TZ_CHOICE_AMERICA_OJINAGA
+        bool "America/Ojinaga"
+    config TZ_CHOICE_AMERICA_PANAMA
+        bool "America/Panama"
+    config TZ_CHOICE_AMERICA_PANGNIRTUNG
+        bool "America/Pangnirtung"
+    config TZ_CHOICE_AMERICA_PARAMARIBO
+        bool "America/Paramaribo"
+    config TZ_CHOICE_AMERICA_PHOENIX
+        bool "America/Phoenix"
+    config TZ_CHOICE_AMERICA_PORT_AU_PRINCE
+        bool "America/Port-au-Prince"
+    config TZ_CHOICE_AMERICA_PORT_OF_SPAIN
+        bool "America/Port_of_Spain"
+    config TZ_CHOICE_AMERICA_PORTO_ACRE
+        bool "America/Porto_Acre"
+    config TZ_CHOICE_AMERICA_PORTO_VELHO
+        bool "America/Porto_Velho"
+    config TZ_CHOICE_AMERICA_PUERTO_RICO
+        bool "America/Puerto_Rico"
+    config TZ_CHOICE_AMERICA_PUNTA_ARENAS
+        bool "America/Punta_Arenas"
+    config TZ_CHOICE_AMERICA_RAINY_RIVER
+        bool "America/Rainy_River"
+    config TZ_CHOICE_AMERICA_RANKIN_INLET
+        bool "America/Rankin_Inlet"
+    config TZ_CHOICE_AMERICA_RECIFE
+        bool "America/Recife"
+    config TZ_CHOICE_AMERICA_REGINA
+        bool "America/Regina"
+    config TZ_CHOICE_AMERICA_RESOLUTE
+        bool "America/Resolute"
+    config TZ_CHOICE_AMERICA_RIO_BRANCO
+        bool "America/Rio_Branco"
+    config TZ_CHOICE_AMERICA_ROSARIO
+        bool "America/Rosario"
+    config TZ_CHOICE_AMERICA_SANTA_ISABEL
+        bool "America/Santa_Isabel"
+    config TZ_CHOICE_AMERICA_SANTAREM
+        bool "America/Santarem"
+    config TZ_CHOICE_AMERICA_SANTO_DOMINGO
+        bool "America/Santo_Domingo"
+    config TZ_CHOICE_AMERICA_SAO_PAULO
+        bool "America/Sao_Paulo"
+    config TZ_CHOICE_AMERICA_SCORESBYSUND
+        bool "America/Scoresbysund"
+    config TZ_CHOICE_AMERICA_SHIPROCK
+        bool "America/Shiprock"
+    config TZ_CHOICE_AMERICA_SITKA
+        bool "America/Sitka"
+    config TZ_CHOICE_AMERICA_ST_BARTHELEMY
+        bool "America/St_Barthelemy"
+    config TZ_CHOICE_AMERICA_ST_JOHNS
+        bool "America/St_Johns"
+    config TZ_CHOICE_AMERICA_ST_KITTS
+        bool "America/St_Kitts"
+    config TZ_CHOICE_AMERICA_ST_LUCIA
+        bool "America/St_Lucia"
+    config TZ_CHOICE_AMERICA_ST_THOMAS
+        bool "America/St_Thomas"
+    config TZ_CHOICE_AMERICA_ST_VINCENT
+        bool "America/St_Vincent"
+    config TZ_CHOICE_AMERICA_SWIFT_CURRENT
+        bool "America/Swift_Current"
+    config TZ_CHOICE_AMERICA_TEGUCIGALPA
+        bool "America/Tegucigalpa"
+    config TZ_CHOICE_AMERICA_THULE
+        bool "America/Thule"
+    config TZ_CHOICE_AMERICA_THUNDER_BAY
+        bool "America/Thunder_Bay"
+    config TZ_CHOICE_AMERICA_TIJUANA
+        bool "America/Tijuana"
+    config TZ_CHOICE_AMERICA_TORONTO
+        bool "America/Toronto"
+    config TZ_CHOICE_AMERICA_TORTOLA
+        bool "America/Tortola"
+    config TZ_CHOICE_AMERICA_VANCOUVER
+        bool "America/Vancouver"
+    config TZ_CHOICE_AMERICA_VIRGIN
+        bool "America/Virgin"
+    config TZ_CHOICE_AMERICA_WHITEHORSE
+        bool "America/Whitehorse"
+    config TZ_CHOICE_AMERICA_WINNIPEG
+        bool "America/Winnipeg"
+    config TZ_CHOICE_AMERICA_YAKUTAT
+        bool "America/Yakutat"
+    config TZ_CHOICE_AMERICA_YELLOWKNIFE
+        bool "America/Yellowknife"
+    config TZ_CHOICE_ANTARCTICA_CASEY
+        bool "Antarctica/Casey"
+    config TZ_CHOICE_ANTARCTICA_DAVIS
+        bool "Antarctica/Davis"
+    config TZ_CHOICE_ANTARCTICA_DUMONTDURVILLE
+        bool "Antarctica/DumontDUrville"
+    config TZ_CHOICE_ANTARCTICA_MACQUARIE
+        bool "Antarctica/Macquarie"
+    config TZ_CHOICE_ANTARCTICA_MAWSON
+        bool "Antarctica/Mawson"
+    config TZ_CHOICE_ANTARCTICA_MCMURDO
+        bool "Antarctica/McMurdo"
+    config TZ_CHOICE_ANTARCTICA_PALMER
+        bool "Antarctica/Palmer"
+    config TZ_CHOICE_ANTARCTICA_ROTHERA
+        bool "Antarctica/Rothera"
+    config TZ_CHOICE_ANTARCTICA_SOUTH_POLE
+        bool "Antarctica/South_Pole"
+    config TZ_CHOICE_ANTARCTICA_SYOWA
+        bool "Antarctica/Syowa"
+    config TZ_CHOICE_ANTARCTICA_TROLL
+        bool "Antarctica/Troll"
+    config TZ_CHOICE_ANTARCTICA_VOSTOK
+        bool "Antarctica/Vostok"
+    config TZ_CHOICE_ARCTIC_LONGYEARBYEN
+        bool "Arctic/Longyearbyen"
+    config TZ_CHOICE_ASIA_ADEN
+        bool "Asia/Aden"
+    config TZ_CHOICE_ASIA_ALMATY
+        bool "Asia/Almaty"
+    config TZ_CHOICE_ASIA_AMMAN
+        bool "Asia/Amman"
+    config TZ_CHOICE_ASIA_ANADYR
+        bool "Asia/Anadyr"
+    config TZ_CHOICE_ASIA_AQTAU
+        bool "Asia/Aqtau"
+    config TZ_CHOICE_ASIA_AQTOBE
+        bool "Asia/Aqtobe"
+    config TZ_CHOICE_ASIA_ASHGABAT
+        bool "Asia/Ashgabat"
+    config TZ_CHOICE_ASIA_ASHKHABAD
+        bool "Asia/Ashkhabad"
+    config TZ_CHOICE_ASIA_ATYRAU
+        bool "Asia/Atyrau"
+    config TZ_CHOICE_ASIA_BAGHDAD
+        bool "Asia/Baghdad"
+    config TZ_CHOICE_ASIA_BAHRAIN
+        bool "Asia/Bahrain"
+    config TZ_CHOICE_ASIA_BAKU
+        bool "Asia/Baku"
+    config TZ_CHOICE_ASIA_BANGKOK
+        bool "Asia/Bangkok"
+    config TZ_CHOICE_ASIA_BARNAUL
+        bool "Asia/Barnaul"
+    config TZ_CHOICE_ASIA_BEIRUT
+        bool "Asia/Beirut"
+    config TZ_CHOICE_ASIA_BISHKEK
+        bool "Asia/Bishkek"
+    config TZ_CHOICE_ASIA_BRUNEI
+        bool "Asia/Brunei"
+    config TZ_CHOICE_ASIA_CALCUTTA
+        bool "Asia/Calcutta"
+    config TZ_CHOICE_ASIA_CHITA
+        bool "Asia/Chita"
+    config TZ_CHOICE_ASIA_CHOIBALSAN
+        bool "Asia/Choibalsan"
+    config TZ_CHOICE_ASIA_CHONGQING
+        bool "Asia/Chongqing"
+    config TZ_CHOICE_ASIA_CHUNGKING
+        bool "Asia/Chungking"
+    config TZ_CHOICE_ASIA_COLOMBO
+        bool "Asia/Colombo"
+    config TZ_CHOICE_ASIA_DACCA
+        bool "Asia/Dacca"
+    config TZ_CHOICE_ASIA_DAMASCUS
+        bool "Asia/Damascus"
+    config TZ_CHOICE_ASIA_DHAKA
+        bool "Asia/Dhaka"
+    config TZ_CHOICE_ASIA_DILI
+        bool "Asia/Dili"
+    config TZ_CHOICE_ASIA_DUBAI
+        bool "Asia/Dubai"
+    config TZ_CHOICE_ASIA_DUSHANBE
+        bool "Asia/Dushanbe"
+    config TZ_CHOICE_ASIA_FAMAGUSTA
+        bool "Asia/Famagusta"
+    config TZ_CHOICE_ASIA_HANOI
+        bool "Asia/Hanoi"
+    config TZ_CHOICE_ASIA_HARBIN
+        bool "Asia/Harbin"
+    config TZ_CHOICE_ASIA_HO_CHI_MINH
+        bool "Asia/Ho_Chi_Minh"
+    config TZ_CHOICE_ASIA_HONG_KONG
+        bool "Asia/Hong_Kong"
+    config TZ_CHOICE_ASIA_HOVD
+        bool "Asia/Hovd"
+    config TZ_CHOICE_ASIA_IRKUTSK
+        bool "Asia/Irkutsk"
+    config TZ_CHOICE_ASIA_ISTANBUL
+        bool "Asia/Istanbul"
+    config TZ_CHOICE_ASIA_JAKARTA
+        bool "Asia/Jakarta"
+    config TZ_CHOICE_ASIA_JAYAPURA
+        bool "Asia/Jayapura"
+    config TZ_CHOICE_ASIA_KABUL
+        bool "Asia/Kabul"
+    config TZ_CHOICE_ASIA_KAMCHATKA
+        bool "Asia/Kamchatka"
+    config TZ_CHOICE_ASIA_KARACHI
+        bool "Asia/Karachi"
+    config TZ_CHOICE_ASIA_KASHGAR
+        bool "Asia/Kashgar"
+    config TZ_CHOICE_ASIA_KATHMANDU
+        bool "Asia/Kathmandu"
+    config TZ_CHOICE_ASIA_KATMANDU
+        bool "Asia/Katmandu"
+    config TZ_CHOICE_ASIA_KHANDYGA
+        bool "Asia/Khandyga"
+    config TZ_CHOICE_ASIA_KOLKATA
+        bool "Asia/Kolkata"
+    config TZ_CHOICE_ASIA_KRASNOYARSK
+        bool "Asia/Krasnoyarsk"
+    config TZ_CHOICE_ASIA_KUALA_LUMPUR
+        bool "Asia/Kuala_Lumpur"
+    config TZ_CHOICE_ASIA_KUCHING
+        bool "Asia/Kuching"
+    config TZ_CHOICE_ASIA_KUWAIT
+        bool "Asia/Kuwait"
+    config TZ_CHOICE_ASIA_MACAO
+        bool "Asia/Macao"
+    config TZ_CHOICE_ASIA_MACAU
+        bool "Asia/Macau"
+    config TZ_CHOICE_ASIA_MAGADAN
+        bool "Asia/Magadan"
+    config TZ_CHOICE_ASIA_MAKASSAR
+        bool "Asia/Makassar"
+    config TZ_CHOICE_ASIA_MANILA
+        bool "Asia/Manila"
+    config TZ_CHOICE_ASIA_MUSCAT
+        bool "Asia/Muscat"
+    config TZ_CHOICE_ASIA_NICOSIA
+        bool "Asia/Nicosia"
+    config TZ_CHOICE_ASIA_NOVOKUZNETSK
+        bool "Asia/Novokuznetsk"
+    config TZ_CHOICE_ASIA_NOVOSIBIRSK
+        bool "Asia/Novosibirsk"
+    config TZ_CHOICE_ASIA_OMSK
+        bool "Asia/Omsk"
+    config TZ_CHOICE_ASIA_ORAL
+        bool "Asia/Oral"
+    config TZ_CHOICE_ASIA_PHNOM_PENH
+        bool "Asia/Phnom_Penh"
+    config TZ_CHOICE_ASIA_PONTIANAK
+        bool "Asia/Pontianak"
+    config TZ_CHOICE_ASIA_PYONGYANG
+        bool "Asia/Pyongyang"
+    config TZ_CHOICE_ASIA_QATAR
+        bool "Asia/Qatar"
+    config TZ_CHOICE_ASIA_QOSTANAY
+        bool "Asia/Qostanay"
+    config TZ_CHOICE_ASIA_QYZYLORDA
+        bool "Asia/Qyzylorda"
+    config TZ_CHOICE_ASIA_RANGOON
+        bool "Asia/Rangoon"
+    config TZ_CHOICE_ASIA_RIYADH
+        bool "Asia/Riyadh"
+    config TZ_CHOICE_ASIA_SAIGON
+        bool "Asia/Saigon"
+    config TZ_CHOICE_ASIA_SAKHALIN
+        bool "Asia/Sakhalin"
+    config TZ_CHOICE_ASIA_SAMARKAND
+        bool "Asia/Samarkand"
+    config TZ_CHOICE_ASIA_SEOUL
+        bool "Asia/Seoul"
+    config TZ_CHOICE_ASIA_SHANGHAI
+        bool "Asia/Shanghai"
+    config TZ_CHOICE_ASIA_SINGAPORE
+        bool "Asia/Singapore"
+    config TZ_CHOICE_ASIA_SREDNEKOLYMSK
+        bool "Asia/Srednekolymsk"
+    config TZ_CHOICE_ASIA_TAIPEI
+        bool "Asia/Taipei"
+    config TZ_CHOICE_ASIA_TASHKENT
+        bool "Asia/Tashkent"
+    config TZ_CHOICE_ASIA_TBILISI
+        bool "Asia/Tbilisi"
+    config TZ_CHOICE_ASIA_TEHRAN
+        bool "Asia/Tehran"
+    config TZ_CHOICE_ASIA_THIMBU
+        bool "Asia/Thimbu"
+    config TZ_CHOICE_ASIA_THIMPHU
+        bool "Asia/Thimphu"
+    config TZ_CHOICE_ASIA_TOKYO
+        bool "Asia/Tokyo"
+    config TZ_CHOICE_ASIA_TOMSK
+        bool "Asia/Tomsk"
+    config TZ_CHOICE_ASIA_UJUNG_PANDANG
+        bool "Asia/Ujung_Pandang"
+    config TZ_CHOICE_ASIA_ULAANBAATAR
+        bool "Asia/Ulaanbaatar"
+    config TZ_CHOICE_ASIA_ULAN_BATOR
+        bool "Asia/Ulan_Bator"
+    config TZ_CHOICE_ASIA_URUMQI
+        bool "Asia/Urumqi"
+    config TZ_CHOICE_ASIA_UST_NERA
+        bool "Asia/Ust-Nera"
+    config TZ_CHOICE_ASIA_VIENTIANE
+        bool "Asia/Vientiane"
+    config TZ_CHOICE_ASIA_VLADIVOSTOK
+        bool "Asia/Vladivostok"
+    config TZ_CHOICE_ASIA_YAKUTSK
+        bool "Asia/Yakutsk"
+    config TZ_CHOICE_ASIA_YANGON
+        bool "Asia/Yangon"
+    config TZ_CHOICE_ASIA_YEKATERINBURG
+        bool "Asia/Yekaterinburg"
+    config TZ_CHOICE_ASIA_YEREVAN
+        bool "Asia/Yerevan"
+    config TZ_CHOICE_ATLANTIC_AZORES
+        bool "Atlantic/Azores"
+    config TZ_CHOICE_ATLANTIC_BERMUDA
+        bool "Atlantic/Bermuda"
+    config TZ_CHOICE_ATLANTIC_CANARY
+        bool "Atlantic/Canary"
+    config TZ_CHOICE_ATLANTIC_CAPE_VERDE
+        bool "Atlantic/Cape_Verde"
+    config TZ_CHOICE_ATLANTIC_FAEROE
+        bool "Atlantic/Faeroe"
+    config TZ_CHOICE_ATLANTIC_FAROE
+        bool "Atlantic/Faroe"
+    config TZ_CHOICE_ATLANTIC_JAN_MAYEN
+        bool "Atlantic/Jan_Mayen"
+    config TZ_CHOICE_ATLANTIC_MADEIRA
+        bool "Atlantic/Madeira"
+    config TZ_CHOICE_ATLANTIC_REYKJAVIK
+        bool "Atlantic/Reykjavik"
+    config TZ_CHOICE_ATLANTIC_SOUTH_GEORGIA
+        bool "Atlantic/South_Georgia"
+    config TZ_CHOICE_ATLANTIC_ST_HELENA
+        bool "Atlantic/St_Helena"
+    config TZ_CHOICE_ATLANTIC_STANLEY
+        bool "Atlantic/Stanley"
+    config TZ_CHOICE_AUSTRALIA_ACT
+        bool "Australia/ACT"
+    config TZ_CHOICE_AUSTRALIA_ADELAIDE
+        bool "Australia/Adelaide"
+    config TZ_CHOICE_AUSTRALIA_BRISBANE
+        bool "Australia/Brisbane"
+    config TZ_CHOICE_AUSTRALIA_BROKEN_HILL
+        bool "Australia/Broken_Hill"
+    config TZ_CHOICE_AUSTRALIA_CANBERRA
+        bool "Australia/Canberra"
+    config TZ_CHOICE_AUSTRALIA_CURRIE
+        bool "Australia/Currie"
+    config TZ_CHOICE_AUSTRALIA_DARWIN
+        bool "Australia/Darwin"
+    config TZ_CHOICE_AUSTRALIA_EUCLA
+        bool "Australia/Eucla"
+    config TZ_CHOICE_AUSTRALIA_HOBART
+        bool "Australia/Hobart"
+    config TZ_CHOICE_AUSTRALIA_LHI
+        bool "Australia/LHI"
+    config TZ_CHOICE_AUSTRALIA_LINDEMAN
+        bool "Australia/Lindeman"
+    config TZ_CHOICE_AUSTRALIA_LORD_HOWE
+        bool "Australia/Lord_Howe"
+    config TZ_CHOICE_AUSTRALIA_MELBOURNE
+        bool "Australia/Melbourne"
+    config TZ_CHOICE_AUSTRALIA_NSW
+        bool "Australia/NSW"
+    config TZ_CHOICE_AUSTRALIA_NORTH
+        bool "Australia/North"
+    config TZ_CHOICE_AUSTRALIA_PERTH
+        bool "Australia/Perth"
+    config TZ_CHOICE_AUSTRALIA_QUEENSLAND
+        bool "Australia/Queensland"
+    config TZ_CHOICE_AUSTRALIA_SOUTH
+        bool "Australia/South"
+    config TZ_CHOICE_AUSTRALIA_SYDNEY
+        bool "Australia/Sydney"
+    config TZ_CHOICE_AUSTRALIA_TASMANIA
+        bool "Australia/Tasmania"
+    config TZ_CHOICE_AUSTRALIA_VICTORIA
+        bool "Australia/Victoria"
+    config TZ_CHOICE_AUSTRALIA_WEST
+        bool "Australia/West"
+    config TZ_CHOICE_AUSTRALIA_YANCOWINNA
+        bool "Australia/Yancowinna"
+    config TZ_CHOICE_BRAZIL_ACRE
+        bool "Brazil/Acre"
+    config TZ_CHOICE_BRAZIL_DENORONHA
+        bool "Brazil/DeNoronha"
+    config TZ_CHOICE_BRAZIL_EAST
+        bool "Brazil/East"
+    config TZ_CHOICE_BRAZIL_WEST
+        bool "Brazil/West"
+    config TZ_CHOICE_CET
+        bool "CET"
+    config TZ_CHOICE_CST6CDT
+        bool "CST6CDT"
+    config TZ_CHOICE_CANADA_ATLANTIC
+        bool "Canada/Atlantic"
+    config TZ_CHOICE_CANADA_CENTRAL
+        bool "Canada/Central"
+    config TZ_CHOICE_CANADA_EASTERN
+        bool "Canada/Eastern"
+    config TZ_CHOICE_CANADA_MOUNTAIN
+        bool "Canada/Mountain"
+    config TZ_CHOICE_CANADA_NEWFOUNDLAND
+        bool "Canada/Newfoundland"
+    config TZ_CHOICE_CANADA_PACIFIC
+        bool "Canada/Pacific"
+    config TZ_CHOICE_CANADA_SASKATCHEWAN
+        bool "Canada/Saskatchewan"
+    config TZ_CHOICE_CANADA_YUKON
+        bool "Canada/Yukon"
+    config TZ_CHOICE_CUBA
+        bool "Cuba"
+    config TZ_CHOICE_EET
+        bool "EET"
+    config TZ_CHOICE_EST
+        bool "EST"
+    config TZ_CHOICE_EST5EDT
+        bool "EST5EDT"
+    config TZ_CHOICE_EGYPT
+        bool "Egypt"
+    config TZ_CHOICE_EIRE
+        bool "Eire"
+    config TZ_CHOICE_ETC_GMT
+        bool "Etc/GMT"
+    config TZ_CHOICE_ETC_GMT_0
+        bool "Etc/GMT+0"
+    config TZ_CHOICE_ETC_GMT_1
+        bool "Etc/GMT+1"
+    config TZ_CHOICE_ETC_GMT_10
+        bool "Etc/GMT+10"
+    config TZ_CHOICE_ETC_GMT_11
+        bool "Etc/GMT+11"
+    config TZ_CHOICE_ETC_GMT_12
+        bool "Etc/GMT+12"
+    config TZ_CHOICE_ETC_GMT_2
+        bool "Etc/GMT+2"
+    config TZ_CHOICE_ETC_GMT_3
+        bool "Etc/GMT+3"
+    config TZ_CHOICE_ETC_GMT_4
+        bool "Etc/GMT+4"
+    config TZ_CHOICE_ETC_GMT_5
+        bool "Etc/GMT+5"
+    config TZ_CHOICE_ETC_GMT_6
+        bool "Etc/GMT+6"
+    config TZ_CHOICE_ETC_GMT_7
+        bool "Etc/GMT+7"
+    config TZ_CHOICE_ETC_GMT_8
+        bool "Etc/GMT+8"
+    config TZ_CHOICE_ETC_GMT_9
+        bool "Etc/GMT+9"
+    config TZ_CHOICE_ETC_GMT_0
+        bool "Etc/GMT-0"
+    config TZ_CHOICE_ETC_GMT_1
+        bool "Etc/GMT-1"
+    config TZ_CHOICE_ETC_GMT_10
+        bool "Etc/GMT-10"
+    config TZ_CHOICE_ETC_GMT_11
+        bool "Etc/GMT-11"
+    config TZ_CHOICE_ETC_GMT_12
+        bool "Etc/GMT-12"
+    config TZ_CHOICE_ETC_GMT_13
+        bool "Etc/GMT-13"
+    config TZ_CHOICE_ETC_GMT_14
+        bool "Etc/GMT-14"
+    config TZ_CHOICE_ETC_GMT_2
+        bool "Etc/GMT-2"
+    config TZ_CHOICE_ETC_GMT_3
+        bool "Etc/GMT-3"
+    config TZ_CHOICE_ETC_GMT_4
+        bool "Etc/GMT-4"
+    config TZ_CHOICE_ETC_GMT_5
+        bool "Etc/GMT-5"
+    config TZ_CHOICE_ETC_GMT_6
+        bool "Etc/GMT-6"
+    config TZ_CHOICE_ETC_GMT_7
+        bool "Etc/GMT-7"
+    config TZ_CHOICE_ETC_GMT_8
+        bool "Etc/GMT-8"
+    config TZ_CHOICE_ETC_GMT_9
+        bool "Etc/GMT-9"
+    config TZ_CHOICE_ETC_GMT0
+        bool "Etc/GMT0"
+    config TZ_CHOICE_ETC_GREENWICH
+        bool "Etc/Greenwich"
+    config TZ_CHOICE_ETC_UCT
+        bool "Etc/UCT"
+    config TZ_CHOICE_ETC_UTC
+        bool "Etc/UTC"
+    config TZ_CHOICE_ETC_UNIVERSAL
+        bool "Etc/Universal"
+    config TZ_CHOICE_ETC_ZULU
+        bool "Etc/Zulu"
+    config TZ_CHOICE_EUROPE_AMSTERDAM
+        bool "Europe/Amsterdam"
+    config TZ_CHOICE_EUROPE_ANDORRA
+        bool "Europe/Andorra"
+    config TZ_CHOICE_EUROPE_ASTRAKHAN
+        bool "Europe/Astrakhan"
+    config TZ_CHOICE_EUROPE_ATHENS
+        bool "Europe/Athens"
+    config TZ_CHOICE_EUROPE_BELFAST
+        bool "Europe/Belfast"
+    config TZ_CHOICE_EUROPE_BELGRADE
+        bool "Europe/Belgrade"
+    config TZ_CHOICE_EUROPE_BERLIN
+        bool "Europe/Berlin"
+    config TZ_CHOICE_EUROPE_BRATISLAVA
+        bool "Europe/Bratislava"
+    config TZ_CHOICE_EUROPE_BRUSSELS
+        bool "Europe/Brussels"
+    config TZ_CHOICE_EUROPE_BUCHAREST
+        bool "Europe/Bucharest"
+    config TZ_CHOICE_EUROPE_BUDAPEST
+        bool "Europe/Budapest"
+    config TZ_CHOICE_EUROPE_BUSINGEN
+        bool "Europe/Busingen"
+    config TZ_CHOICE_EUROPE_CHISINAU
+        bool "Europe/Chisinau"
+    config TZ_CHOICE_EUROPE_COPENHAGEN
+        bool "Europe/Copenhagen"
+    config TZ_CHOICE_EUROPE_DUBLIN
+        bool "Europe/Dublin"
+    config TZ_CHOICE_EUROPE_GIBRALTAR
+        bool "Europe/Gibraltar"
+    config TZ_CHOICE_EUROPE_GUERNSEY
+        bool "Europe/Guernsey"
+    config TZ_CHOICE_EUROPE_HELSINKI
+        bool "Europe/Helsinki"
+    config TZ_CHOICE_EUROPE_ISLE_OF_MAN
+        bool "Europe/Isle_of_Man"
+    config TZ_CHOICE_EUROPE_ISTANBUL
+        bool "Europe/Istanbul"
+    config TZ_CHOICE_EUROPE_JERSEY
+        bool "Europe/Jersey"
+    config TZ_CHOICE_EUROPE_KALININGRAD
+        bool "Europe/Kaliningrad"
+    config TZ_CHOICE_EUROPE_KIEV
+        bool "Europe/Kiev"
+    config TZ_CHOICE_EUROPE_KIROV
+        bool "Europe/Kirov"
+    config TZ_CHOICE_EUROPE_KYIV
+        bool "Europe/Kyiv"
+    config TZ_CHOICE_EUROPE_LISBON
+        bool "Europe/Lisbon"
+    config TZ_CHOICE_EUROPE_LJUBLJANA
+        bool "Europe/Ljubljana"
+    config TZ_CHOICE_EUROPE_LONDON
+        bool "Europe/London"
+    config TZ_CHOICE_EUROPE_LUXEMBOURG
+        bool "Europe/Luxembourg"
+    config TZ_CHOICE_EUROPE_MADRID
+        bool "Europe/Madrid"
+    config TZ_CHOICE_EUROPE_MALTA
+        bool "Europe/Malta"
+    config TZ_CHOICE_EUROPE_MARIEHAMN
+        bool "Europe/Mariehamn"
+    config TZ_CHOICE_EUROPE_MINSK
+        bool "Europe/Minsk"
+    config TZ_CHOICE_EUROPE_MONACO
+        bool "Europe/Monaco"
+    config TZ_CHOICE_EUROPE_MOSCOW
+        bool "Europe/Moscow"
+    config TZ_CHOICE_EUROPE_NICOSIA
+        bool "Europe/Nicosia"
+    config TZ_CHOICE_EUROPE_OSLO
+        bool "Europe/Oslo"
+    config TZ_CHOICE_EUROPE_PARIS
+        bool "Europe/Paris"
+    config TZ_CHOICE_EUROPE_PODGORICA
+        bool "Europe/Podgorica"
+    config TZ_CHOICE_EUROPE_PRAGUE
+        bool "Europe/Prague"
+    config TZ_CHOICE_EUROPE_RIGA
+        bool "Europe/Riga"
+    config TZ_CHOICE_EUROPE_ROME
+        bool "Europe/Rome"
+    config TZ_CHOICE_EUROPE_SAMARA
+        bool "Europe/Samara"
+    config TZ_CHOICE_EUROPE_SAN_MARINO
+        bool "Europe/San_Marino"
+    config TZ_CHOICE_EUROPE_SARAJEVO
+        bool "Europe/Sarajevo"
+    config TZ_CHOICE_EUROPE_SARATOV
+        bool "Europe/Saratov"
+    config TZ_CHOICE_EUROPE_SIMFEROPOL
+        bool "Europe/Simferopol"
+    config TZ_CHOICE_EUROPE_SKOPJE
+        bool "Europe/Skopje"
+    config TZ_CHOICE_EUROPE_SOFIA
+        bool "Europe/Sofia"
+    config TZ_CHOICE_EUROPE_STOCKHOLM
+        bool "Europe/Stockholm"
+    config TZ_CHOICE_EUROPE_TALLINN
+        bool "Europe/Tallinn"
+    config TZ_CHOICE_EUROPE_TIRANE
+        bool "Europe/Tirane"
+    config TZ_CHOICE_EUROPE_TIRASPOL
+        bool "Europe/Tiraspol"
+    config TZ_CHOICE_EUROPE_ULYANOVSK
+        bool "Europe/Ulyanovsk"
+    config TZ_CHOICE_EUROPE_UZHGOROD
+        bool "Europe/Uzhgorod"
+    config TZ_CHOICE_EUROPE_VADUZ
+        bool "Europe/Vaduz"
+    config TZ_CHOICE_EUROPE_VATICAN
+        bool "Europe/Vatican"
+    config TZ_CHOICE_EUROPE_VIENNA
+        bool "Europe/Vienna"
+    config TZ_CHOICE_EUROPE_VILNIUS
+        bool "Europe/Vilnius"
+    config TZ_CHOICE_EUROPE_VOLGOGRAD
+        bool "Europe/Volgograd"
+    config TZ_CHOICE_EUROPE_WARSAW
+        bool "Europe/Warsaw"
+    config TZ_CHOICE_EUROPE_ZAGREB
+        bool "Europe/Zagreb"
+    config TZ_CHOICE_EUROPE_ZAPOROZHYE
+        bool "Europe/Zaporozhye"
+    config TZ_CHOICE_EUROPE_ZURICH
+        bool "Europe/Zurich"
+    config TZ_CHOICE_FACTORY
+        bool "Factory"
+    config TZ_CHOICE_GB
+        bool "GB"
+    config TZ_CHOICE_GB_EIRE
+        bool "GB-Eire"
+    config TZ_CHOICE_GMT
+        bool "GMT"
+    config TZ_CHOICE_GMT_0
+        bool "GMT+0"
+    config TZ_CHOICE_GMT_0
+        bool "GMT-0"
+    config TZ_CHOICE_GMT0
+        bool "GMT0"
+    config TZ_CHOICE_GREENWICH
+        bool "Greenwich"
+    config TZ_CHOICE_HST
+        bool "HST"
+    config TZ_CHOICE_HONGKONG
+        bool "Hongkong"
+    config TZ_CHOICE_ICELAND
+        bool "Iceland"
+    config TZ_CHOICE_INDIAN_ANTANANARIVO
+        bool "Indian/Antananarivo"
+    config TZ_CHOICE_INDIAN_CHAGOS
+        bool "Indian/Chagos"
+    config TZ_CHOICE_INDIAN_CHRISTMAS
+        bool "Indian/Christmas"
+    config TZ_CHOICE_INDIAN_COCOS
+        bool "Indian/Cocos"
+    config TZ_CHOICE_INDIAN_COMORO
+        bool "Indian/Comoro"
+    config TZ_CHOICE_INDIAN_KERGUELEN
+        bool "Indian/Kerguelen"
+    config TZ_CHOICE_INDIAN_MAHE
+        bool "Indian/Mahe"
+    config TZ_CHOICE_INDIAN_MALDIVES
+        bool "Indian/Maldives"
+    config TZ_CHOICE_INDIAN_MAURITIUS
+        bool "Indian/Mauritius"
+    config TZ_CHOICE_INDIAN_MAYOTTE
+        bool "Indian/Mayotte"
+    config TZ_CHOICE_INDIAN_REUNION
+        bool "Indian/Reunion"
+    config TZ_CHOICE_IRAN
+        bool "Iran"
+    config TZ_CHOICE_JAMAICA
+        bool "Jamaica"
+    config TZ_CHOICE_JAPAN
+        bool "Japan"
+    config TZ_CHOICE_KWAJALEIN
+        bool "Kwajalein"
+    config TZ_CHOICE_LIBYA
+        bool "Libya"
+    config TZ_CHOICE_MET
+        bool "MET"
+    config TZ_CHOICE_MST
+        bool "MST"
+    config TZ_CHOICE_MST7MDT
+        bool "MST7MDT"
+    config TZ_CHOICE_MEXICO_BAJANORTE
+        bool "Mexico/BajaNorte"
+    config TZ_CHOICE_MEXICO_BAJASUR
+        bool "Mexico/BajaSur"
+    config TZ_CHOICE_MEXICO_GENERAL
+        bool "Mexico/General"
+    config TZ_CHOICE_NZ
+        bool "NZ"
+    config TZ_CHOICE_NZ_CHAT
+        bool "NZ-CHAT"
+    config TZ_CHOICE_NAVAJO
+        bool "Navajo"
+    config TZ_CHOICE_PRC
+        bool "PRC"
+    config TZ_CHOICE_PST8PDT
+        bool "PST8PDT"
+    config TZ_CHOICE_PACIFIC_APIA
+        bool "Pacific/Apia"
+    config TZ_CHOICE_PACIFIC_AUCKLAND
+        bool "Pacific/Auckland"
+    config TZ_CHOICE_PACIFIC_BOUGAINVILLE
+        bool "Pacific/Bougainville"
+    config TZ_CHOICE_PACIFIC_CHATHAM
+        bool "Pacific/Chatham"
+    config TZ_CHOICE_PACIFIC_CHUUK
+        bool "Pacific/Chuuk"
+    config TZ_CHOICE_PACIFIC_EFATE
+        bool "Pacific/Efate"
+    config TZ_CHOICE_PACIFIC_ENDERBURY
+        bool "Pacific/Enderbury"
+    config TZ_CHOICE_PACIFIC_FAKAOFO
+        bool "Pacific/Fakaofo"
+    config TZ_CHOICE_PACIFIC_FIJI
+        bool "Pacific/Fiji"
+    config TZ_CHOICE_PACIFIC_FUNAFUTI
+        bool "Pacific/Funafuti"
+    config TZ_CHOICE_PACIFIC_GALAPAGOS
+        bool "Pacific/Galapagos"
+    config TZ_CHOICE_PACIFIC_GAMBIER
+        bool "Pacific/Gambier"
+    config TZ_CHOICE_PACIFIC_GUADALCANAL
+        bool "Pacific/Guadalcanal"
+    config TZ_CHOICE_PACIFIC_GUAM
+        bool "Pacific/Guam"
+    config TZ_CHOICE_PACIFIC_HONOLULU
+        bool "Pacific/Honolulu"
+    config TZ_CHOICE_PACIFIC_JOHNSTON
+        bool "Pacific/Johnston"
+    config TZ_CHOICE_PACIFIC_KANTON
+        bool "Pacific/Kanton"
+    config TZ_CHOICE_PACIFIC_KIRITIMATI
+        bool "Pacific/Kiritimati"
+    config TZ_CHOICE_PACIFIC_KOSRAE
+        bool "Pacific/Kosrae"
+    config TZ_CHOICE_PACIFIC_KWAJALEIN
+        bool "Pacific/Kwajalein"
+    config TZ_CHOICE_PACIFIC_MAJURO
+        bool "Pacific/Majuro"
+    config TZ_CHOICE_PACIFIC_MARQUESAS
+        bool "Pacific/Marquesas"
+    config TZ_CHOICE_PACIFIC_MIDWAY
+        bool "Pacific/Midway"
+    config TZ_CHOICE_PACIFIC_NAURU
+        bool "Pacific/Nauru"
+    config TZ_CHOICE_PACIFIC_NIUE
+        bool "Pacific/Niue"
+    config TZ_CHOICE_PACIFIC_NORFOLK
+        bool "Pacific/Norfolk"
+    config TZ_CHOICE_PACIFIC_NOUMEA
+        bool "Pacific/Noumea"
+    config TZ_CHOICE_PACIFIC_PAGO_PAGO
+        bool "Pacific/Pago_Pago"
+    config TZ_CHOICE_PACIFIC_PALAU
+        bool "Pacific/Palau"
+    config TZ_CHOICE_PACIFIC_PITCAIRN
+        bool "Pacific/Pitcairn"
+    config TZ_CHOICE_PACIFIC_POHNPEI
+        bool "Pacific/Pohnpei"
+    config TZ_CHOICE_PACIFIC_PONAPE
+        bool "Pacific/Ponape"
+    config TZ_CHOICE_PACIFIC_PORT_MORESBY
+        bool "Pacific/Port_Moresby"
+    config TZ_CHOICE_PACIFIC_RAROTONGA
+        bool "Pacific/Rarotonga"
+    config TZ_CHOICE_PACIFIC_SAIPAN
+        bool "Pacific/Saipan"
+    config TZ_CHOICE_PACIFIC_SAMOA
+        bool "Pacific/Samoa"
+    config TZ_CHOICE_PACIFIC_TAHITI
+        bool "Pacific/Tahiti"
+    config TZ_CHOICE_PACIFIC_TARAWA
+        bool "Pacific/Tarawa"
+    config TZ_CHOICE_PACIFIC_TONGATAPU
+        bool "Pacific/Tongatapu"
+    config TZ_CHOICE_PACIFIC_TRUK
+        bool "Pacific/Truk"
+    config TZ_CHOICE_PACIFIC_WAKE
+        bool "Pacific/Wake"
+    config TZ_CHOICE_PACIFIC_WALLIS
+        bool "Pacific/Wallis"
+    config TZ_CHOICE_PACIFIC_YAP
+        bool "Pacific/Yap"
+    config TZ_CHOICE_POLAND
+        bool "Poland"
+    config TZ_CHOICE_PORTUGAL
+        bool "Portugal"
+    config TZ_CHOICE_ROC
+        bool "ROC"
+    config TZ_CHOICE_ROK
+        bool "ROK"
+    config TZ_CHOICE_SINGAPORE
+        bool "Singapore"
+    config TZ_CHOICE_SYSTEMV_AST4
+        bool "SystemV/AST4"
+    config TZ_CHOICE_SYSTEMV_AST4ADT
+        bool "SystemV/AST4ADT"
+    config TZ_CHOICE_SYSTEMV_CST6
+        bool "SystemV/CST6"
+    config TZ_CHOICE_SYSTEMV_CST6CDT
+        bool "SystemV/CST6CDT"
+    config TZ_CHOICE_SYSTEMV_EST5
+        bool "SystemV/EST5"
+    config TZ_CHOICE_SYSTEMV_EST5EDT
+        bool "SystemV/EST5EDT"
+    config TZ_CHOICE_SYSTEMV_HST10
+        bool "SystemV/HST10"
+    config TZ_CHOICE_SYSTEMV_MST7
+        bool "SystemV/MST7"
+    config TZ_CHOICE_SYSTEMV_MST7MDT
+        bool "SystemV/MST7MDT"
+    config TZ_CHOICE_SYSTEMV_PST8
+        bool "SystemV/PST8"
+    config TZ_CHOICE_SYSTEMV_PST8PDT
+        bool "SystemV/PST8PDT"
+    config TZ_CHOICE_SYSTEMV_YST9
+        bool "SystemV/YST9"
+    config TZ_CHOICE_SYSTEMV_YST9YDT
+        bool "SystemV/YST9YDT"
+    config TZ_CHOICE_TURKEY
+        bool "Turkey"
+    config TZ_CHOICE_UCT
+        bool "UCT"
+    config TZ_CHOICE_US_ALASKA
+        bool "US/Alaska"
+    config TZ_CHOICE_US_ALEUTIAN
+        bool "US/Aleutian"
+    config TZ_CHOICE_US_ARIZONA
+        bool "US/Arizona"
+    config TZ_CHOICE_US_CENTRAL
+        bool "US/Central"
+    config TZ_CHOICE_US_EAST_INDIANA
+        bool "US/East-Indiana"
+    config TZ_CHOICE_US_EASTERN
+        bool "US/Eastern"
+    config TZ_CHOICE_US_HAWAII
+        bool "US/Hawaii"
+    config TZ_CHOICE_US_INDIANA_STARKE
+        bool "US/Indiana-Starke"
+    config TZ_CHOICE_US_MICHIGAN
+        bool "US/Michigan"
+    config TZ_CHOICE_US_MOUNTAIN
+        bool "US/Mountain"
+    config TZ_CHOICE_US_PACIFIC
+        bool "US/Pacific"
+    config TZ_CHOICE_US_SAMOA
+        bool "US/Samoa"
+    config TZ_CHOICE_UTC
+        bool "UTC"
+    config TZ_CHOICE_UNIVERSAL
+        bool "Universal"
+    config TZ_CHOICE_W_SU
+        bool "W-SU"
+    config TZ_CHOICE_WET
+        bool "WET"
+    config TZ_CHOICE_ZULU
+        bool "Zulu"
+endchoice
+
+config WILLOW_TIMEZONE
+    string
+    default "GMT0" if TZ_CHOICE_AFRICA_ABIDJAN
+    default "GMT0" if TZ_CHOICE_AFRICA_ACCRA
+    default "EAT-3" if TZ_CHOICE_AFRICA_ADDIS_ABABA
+    default "CET-1" if TZ_CHOICE_AFRICA_ALGIERS
+    default "EAT-3" if TZ_CHOICE_AFRICA_ASMARA
+    default "EAT-3" if TZ_CHOICE_AFRICA_ASMERA
+    default "GMT0" if TZ_CHOICE_AFRICA_BAMAKO
+    default "WAT-1" if TZ_CHOICE_AFRICA_BANGUI
+    default "GMT0" if TZ_CHOICE_AFRICA_BANJUL
+    default "GMT0" if TZ_CHOICE_AFRICA_BISSAU
+    default "CAT-2" if TZ_CHOICE_AFRICA_BLANTYRE
+    default "WAT-1" if TZ_CHOICE_AFRICA_BRAZZAVILLE
+    default "CAT-2" if TZ_CHOICE_AFRICA_BUJUMBURA
+    default "EET-2EEST,M4.5.5/0,M10.5.4/24" if TZ_CHOICE_AFRICA_CAIRO
+    default "<+01>-1" if TZ_CHOICE_AFRICA_CASABLANCA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_AFRICA_CEUTA
+    default "GMT0" if TZ_CHOICE_AFRICA_CONAKRY
+    default "GMT0" if TZ_CHOICE_AFRICA_DAKAR
+    default "EAT-3" if TZ_CHOICE_AFRICA_DAR_ES_SALAAM
+    default "EAT-3" if TZ_CHOICE_AFRICA_DJIBOUTI
+    default "WAT-1" if TZ_CHOICE_AFRICA_DOUALA
+    default "<+01>-1" if TZ_CHOICE_AFRICA_EL_AAIUN
+    default "GMT0" if TZ_CHOICE_AFRICA_FREETOWN
+    default "CAT-2" if TZ_CHOICE_AFRICA_GABORONE
+    default "CAT-2" if TZ_CHOICE_AFRICA_HARARE
+    default "SAST-2" if TZ_CHOICE_AFRICA_JOHANNESBURG
+    default "CAT-2" if TZ_CHOICE_AFRICA_JUBA
+    default "EAT-3" if TZ_CHOICE_AFRICA_KAMPALA
+    default "CAT-2" if TZ_CHOICE_AFRICA_KHARTOUM
+    default "CAT-2" if TZ_CHOICE_AFRICA_KIGALI
+    default "WAT-1" if TZ_CHOICE_AFRICA_KINSHASA
+    default "WAT-1" if TZ_CHOICE_AFRICA_LAGOS
+    default "WAT-1" if TZ_CHOICE_AFRICA_LIBREVILLE
+    default "GMT0" if TZ_CHOICE_AFRICA_LOME
+    default "WAT-1" if TZ_CHOICE_AFRICA_LUANDA
+    default "CAT-2" if TZ_CHOICE_AFRICA_LUBUMBASHI
+    default "CAT-2" if TZ_CHOICE_AFRICA_LUSAKA
+    default "WAT-1" if TZ_CHOICE_AFRICA_MALABO
+    default "CAT-2" if TZ_CHOICE_AFRICA_MAPUTO
+    default "SAST-2" if TZ_CHOICE_AFRICA_MASERU
+    default "SAST-2" if TZ_CHOICE_AFRICA_MBABANE
+    default "EAT-3" if TZ_CHOICE_AFRICA_MOGADISHU
+    default "GMT0" if TZ_CHOICE_AFRICA_MONROVIA
+    default "EAT-3" if TZ_CHOICE_AFRICA_NAIROBI
+    default "WAT-1" if TZ_CHOICE_AFRICA_NDJAMENA
+    default "WAT-1" if TZ_CHOICE_AFRICA_NIAMEY
+    default "GMT0" if TZ_CHOICE_AFRICA_NOUAKCHOTT
+    default "GMT0" if TZ_CHOICE_AFRICA_OUAGADOUGOU
+    default "WAT-1" if TZ_CHOICE_AFRICA_PORTO_NOVO
+    default "GMT0" if TZ_CHOICE_AFRICA_SAO_TOME
+    default "GMT0" if TZ_CHOICE_AFRICA_TIMBUKTU
+    default "EET-2" if TZ_CHOICE_AFRICA_TRIPOLI
+    default "CET-1" if TZ_CHOICE_AFRICA_TUNIS
+    default "CAT-2" if TZ_CHOICE_AFRICA_WINDHOEK
+    default "HST10HDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_ADAK
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_ANCHORAGE
+    default "AST4" if TZ_CHOICE_AMERICA_ANGUILLA
+    default "AST4" if TZ_CHOICE_AMERICA_ANTIGUA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARAGUAINA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_BUENOS_AIRES
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_CATAMARCA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_COMODRIVADAVIA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_CORDOBA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_JUJUY
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_LA_RIOJA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_MENDOZA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_RIO_GALLEGOS
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_SALTA
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_SAN_JUAN
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_SAN_LUIS
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_TUCUMAN
+    default "<-03>3" if TZ_CHOICE_AMERICA_ARGENTINA_USHUAIA
+    default "AST4" if TZ_CHOICE_AMERICA_ARUBA
+    default "<-04>4<-03>,M10.1.0/0,M3.4.0/0" if TZ_CHOICE_AMERICA_ASUNCION
+    default "EST5" if TZ_CHOICE_AMERICA_ATIKOKAN
+    default "HST10HDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_ATKA
+    default "<-03>3" if TZ_CHOICE_AMERICA_BAHIA
+    default "CST6" if TZ_CHOICE_AMERICA_BAHIA_BANDERAS
+    default "AST4" if TZ_CHOICE_AMERICA_BARBADOS
+    default "<-03>3" if TZ_CHOICE_AMERICA_BELEM
+    default "CST6" if TZ_CHOICE_AMERICA_BELIZE
+    default "AST4" if TZ_CHOICE_AMERICA_BLANC_SABLON
+    default "<-04>4" if TZ_CHOICE_AMERICA_BOA_VISTA
+    default "<-05>5" if TZ_CHOICE_AMERICA_BOGOTA
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_BOISE
+    default "<-03>3" if TZ_CHOICE_AMERICA_BUENOS_AIRES
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_CAMBRIDGE_BAY
+    default "<-04>4" if TZ_CHOICE_AMERICA_CAMPO_GRANDE
+    default "EST5" if TZ_CHOICE_AMERICA_CANCUN
+    default "<-04>4" if TZ_CHOICE_AMERICA_CARACAS
+    default "<-03>3" if TZ_CHOICE_AMERICA_CATAMARCA
+    default "<-03>3" if TZ_CHOICE_AMERICA_CAYENNE
+    default "EST5" if TZ_CHOICE_AMERICA_CAYMAN
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_CHICAGO
+    default "CST6" if TZ_CHOICE_AMERICA_CHIHUAHUA
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_CIUDAD_JUAREZ
+    default "EST5" if TZ_CHOICE_AMERICA_CORAL_HARBOUR
+    default "<-03>3" if TZ_CHOICE_AMERICA_CORDOBA
+    default "CST6" if TZ_CHOICE_AMERICA_COSTA_RICA
+    default "MST7" if TZ_CHOICE_AMERICA_CRESTON
+    default "<-04>4" if TZ_CHOICE_AMERICA_CUIABA
+    default "AST4" if TZ_CHOICE_AMERICA_CURACAO
+    default "GMT0" if TZ_CHOICE_AMERICA_DANMARKSHAVN
+    default "MST7" if TZ_CHOICE_AMERICA_DAWSON
+    default "MST7" if TZ_CHOICE_AMERICA_DAWSON_CREEK
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_DENVER
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_DETROIT
+    default "AST4" if TZ_CHOICE_AMERICA_DOMINICA
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_EDMONTON
+    default "<-05>5" if TZ_CHOICE_AMERICA_EIRUNEPE
+    default "CST6" if TZ_CHOICE_AMERICA_EL_SALVADOR
+    default "PST8" if TZ_CHOICE_AMERICA_ENSENADA
+    default "MST7" if TZ_CHOICE_AMERICA_FORT_NELSON
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_FORT_WAYNE
+    default "<-03>3" if TZ_CHOICE_AMERICA_FORTALEZA
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_GLACE_BAY
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_GOOSE_BAY
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_GRAND_TURK
+    default "AST4" if TZ_CHOICE_AMERICA_GRENADA
+    default "AST4" if TZ_CHOICE_AMERICA_GUADELOUPE
+    default "CST6" if TZ_CHOICE_AMERICA_GUATEMALA
+    default "<-05>5" if TZ_CHOICE_AMERICA_GUAYAQUIL
+    default "<-04>4" if TZ_CHOICE_AMERICA_GUYANA
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_HALIFAX
+    default "CST5CDT,M3.2.0/0,M11.1.0/1" if TZ_CHOICE_AMERICA_HAVANA
+    default "MST7" if TZ_CHOICE_AMERICA_HERMOSILLO
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_INDIANAPOLIS
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_KNOX
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_MARENGO
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_PETERSBURG
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_TELL_CITY
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_VEVAY
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_VINCENNES
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANA_WINAMAC
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INDIANAPOLIS
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_INUVIK
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_IQALUIT
+    default "EST5" if TZ_CHOICE_AMERICA_JAMAICA
+    default "<-03>3" if TZ_CHOICE_AMERICA_JUJUY
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_JUNEAU
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_KENTUCKY_LOUISVILLE
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_KENTUCKY_MONTICELLO
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_KNOX_IN
+    default "AST4" if TZ_CHOICE_AMERICA_KRALENDIJK
+    default "<-04>4" if TZ_CHOICE_AMERICA_LA_PAZ
+    default "<-05>5" if TZ_CHOICE_AMERICA_LIMA
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_LOS_ANGELES
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_LOUISVILLE
+    default "AST4" if TZ_CHOICE_AMERICA_LOWER_PRINCES
+    default "<-03>3" if TZ_CHOICE_AMERICA_MACEIO
+    default "CST6" if TZ_CHOICE_AMERICA_MANAGUA
+    default "<-04>4" if TZ_CHOICE_AMERICA_MANAUS
+    default "AST4" if TZ_CHOICE_AMERICA_MARIGOT
+    default "AST4" if TZ_CHOICE_AMERICA_MARTINIQUE
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_MATAMOROS
+    default "MST7" if TZ_CHOICE_AMERICA_MAZATLAN
+    default "<-03>3" if TZ_CHOICE_AMERICA_MENDOZA
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_MENOMINEE
+    default "CST6" if TZ_CHOICE_AMERICA_MERIDA
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_METLAKATLA
+    default "CST6" if TZ_CHOICE_AMERICA_MEXICO_CITY
+    default "<-03>3<-02>,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_MIQUELON
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_MONCTON
+    default "CST6" if TZ_CHOICE_AMERICA_MONTERREY
+    default "<-03>3" if TZ_CHOICE_AMERICA_MONTEVIDEO
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_MONTREAL
+    default "AST4" if TZ_CHOICE_AMERICA_MONTSERRAT
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NASSAU
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NEW_YORK
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NIPIGON
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NOME
+    default "<-02>2" if TZ_CHOICE_AMERICA_NORONHA
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NORTH_DAKOTA_BEULAH
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NORTH_DAKOTA_CENTER
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_NORTH_DAKOTA_NEW_SALEM
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_OJINAGA
+    default "EST5" if TZ_CHOICE_AMERICA_PANAMA
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_PANGNIRTUNG
+    default "<-03>3" if TZ_CHOICE_AMERICA_PARAMARIBO
+    default "MST7" if TZ_CHOICE_AMERICA_PHOENIX
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_PORT_AU_PRINCE
+    default "AST4" if TZ_CHOICE_AMERICA_PORT_OF_SPAIN
+    default "<-05>5" if TZ_CHOICE_AMERICA_PORTO_ACRE
+    default "<-04>4" if TZ_CHOICE_AMERICA_PORTO_VELHO
+    default "AST4" if TZ_CHOICE_AMERICA_PUERTO_RICO
+    default "<-03>3" if TZ_CHOICE_AMERICA_PUNTA_ARENAS
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_RAINY_RIVER
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_RANKIN_INLET
+    default "<-03>3" if TZ_CHOICE_AMERICA_RECIFE
+    default "CST6" if TZ_CHOICE_AMERICA_REGINA
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_RESOLUTE
+    default "<-05>5" if TZ_CHOICE_AMERICA_RIO_BRANCO
+    default "<-03>3" if TZ_CHOICE_AMERICA_ROSARIO
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_SANTA_ISABEL
+    default "<-03>3" if TZ_CHOICE_AMERICA_SANTAREM
+    default "AST4" if TZ_CHOICE_AMERICA_SANTO_DOMINGO
+    default "<-03>3" if TZ_CHOICE_AMERICA_SAO_PAULO
+    default "<-01>1<+00>,M3.5.0/0,M10.5.0/1" if TZ_CHOICE_AMERICA_SCORESBYSUND
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_SHIPROCK
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_SITKA
+    default "AST4" if TZ_CHOICE_AMERICA_ST_BARTHELEMY
+    default "NST3:30NDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_ST_JOHNS
+    default "AST4" if TZ_CHOICE_AMERICA_ST_KITTS
+    default "AST4" if TZ_CHOICE_AMERICA_ST_LUCIA
+    default "AST4" if TZ_CHOICE_AMERICA_ST_THOMAS
+    default "AST4" if TZ_CHOICE_AMERICA_ST_VINCENT
+    default "CST6" if TZ_CHOICE_AMERICA_SWIFT_CURRENT
+    default "CST6" if TZ_CHOICE_AMERICA_TEGUCIGALPA
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_THULE
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_THUNDER_BAY
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_TIJUANA
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_TORONTO
+    default "AST4" if TZ_CHOICE_AMERICA_TORTOLA
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_VANCOUVER
+    default "AST4" if TZ_CHOICE_AMERICA_VIRGIN
+    default "MST7" if TZ_CHOICE_AMERICA_WHITEHORSE
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_WINNIPEG
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_YAKUTAT
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_AMERICA_YELLOWKNIFE
+    default "<+11>-11" if TZ_CHOICE_ANTARCTICA_CASEY
+    default "<+07>-7" if TZ_CHOICE_ANTARCTICA_DAVIS
+    default "<+10>-10" if TZ_CHOICE_ANTARCTICA_DUMONTDURVILLE
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_ANTARCTICA_MACQUARIE
+    default "<+05>-5" if TZ_CHOICE_ANTARCTICA_MAWSON
+    default "NZST-12NZDT,M9.5.0,M4.1.0/3" if TZ_CHOICE_ANTARCTICA_MCMURDO
+    default "<-03>3" if TZ_CHOICE_ANTARCTICA_PALMER
+    default "<-03>3" if TZ_CHOICE_ANTARCTICA_ROTHERA
+    default "NZST-12NZDT,M9.5.0,M4.1.0/3" if TZ_CHOICE_ANTARCTICA_SOUTH_POLE
+    default "<+03>-3" if TZ_CHOICE_ANTARCTICA_SYOWA
+    default "<+00>0<+02>-2,M3.5.0/1,M10.5.0/3" if TZ_CHOICE_ANTARCTICA_TROLL
+    default "<+06>-6" if TZ_CHOICE_ANTARCTICA_VOSTOK
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_ARCTIC_LONGYEARBYEN
+    default "<+03>-3" if TZ_CHOICE_ASIA_ADEN
+    default "<+06>-6" if TZ_CHOICE_ASIA_ALMATY
+    default "<+03>-3" if TZ_CHOICE_ASIA_AMMAN
+    default "<+12>-12" if TZ_CHOICE_ASIA_ANADYR
+    default "<+05>-5" if TZ_CHOICE_ASIA_AQTAU
+    default "<+05>-5" if TZ_CHOICE_ASIA_AQTOBE
+    default "<+05>-5" if TZ_CHOICE_ASIA_ASHGABAT
+    default "<+05>-5" if TZ_CHOICE_ASIA_ASHKHABAD
+    default "<+05>-5" if TZ_CHOICE_ASIA_ATYRAU
+    default "<+03>-3" if TZ_CHOICE_ASIA_BAGHDAD
+    default "<+03>-3" if TZ_CHOICE_ASIA_BAHRAIN
+    default "<+04>-4" if TZ_CHOICE_ASIA_BAKU
+    default "<+07>-7" if TZ_CHOICE_ASIA_BANGKOK
+    default "<+07>-7" if TZ_CHOICE_ASIA_BARNAUL
+    default "EET-2EEST,M3.5.0/0,M10.5.0/0" if TZ_CHOICE_ASIA_BEIRUT
+    default "<+06>-6" if TZ_CHOICE_ASIA_BISHKEK
+    default "<+08>-8" if TZ_CHOICE_ASIA_BRUNEI
+    default "IST-5:30" if TZ_CHOICE_ASIA_CALCUTTA
+    default "<+09>-9" if TZ_CHOICE_ASIA_CHITA
+    default "<+08>-8" if TZ_CHOICE_ASIA_CHOIBALSAN
+    default "CST-8" if TZ_CHOICE_ASIA_CHONGQING
+    default "CST-8" if TZ_CHOICE_ASIA_CHUNGKING
+    default "<+0530>-5:30" if TZ_CHOICE_ASIA_COLOMBO
+    default "<+06>-6" if TZ_CHOICE_ASIA_DACCA
+    default "<+03>-3" if TZ_CHOICE_ASIA_DAMASCUS
+    default "<+06>-6" if TZ_CHOICE_ASIA_DHAKA
+    default "<+09>-9" if TZ_CHOICE_ASIA_DILI
+    default "<+04>-4" if TZ_CHOICE_ASIA_DUBAI
+    default "<+05>-5" if TZ_CHOICE_ASIA_DUSHANBE
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_ASIA_FAMAGUSTA
+    default "<+07>-7" if TZ_CHOICE_ASIA_HANOI
+    default "CST-8" if TZ_CHOICE_ASIA_HARBIN
+    default "<+07>-7" if TZ_CHOICE_ASIA_HO_CHI_MINH
+    default "HKT-8" if TZ_CHOICE_ASIA_HONG_KONG
+    default "<+07>-7" if TZ_CHOICE_ASIA_HOVD
+    default "<+08>-8" if TZ_CHOICE_ASIA_IRKUTSK
+    default "<+03>-3" if TZ_CHOICE_ASIA_ISTANBUL
+    default "WIB-7" if TZ_CHOICE_ASIA_JAKARTA
+    default "WIT-9" if TZ_CHOICE_ASIA_JAYAPURA
+    default "<+0430>-4:30" if TZ_CHOICE_ASIA_KABUL
+    default "<+12>-12" if TZ_CHOICE_ASIA_KAMCHATKA
+    default "PKT-5" if TZ_CHOICE_ASIA_KARACHI
+    default "CST-8" if TZ_CHOICE_ASIA_KASHGAR
+    default "<+0545>-5:45" if TZ_CHOICE_ASIA_KATHMANDU
+    default "<+0545>-5:45" if TZ_CHOICE_ASIA_KATMANDU
+    default "<+09>-9" if TZ_CHOICE_ASIA_KHANDYGA
+    default "IST-5:30" if TZ_CHOICE_ASIA_KOLKATA
+    default "<+07>-7" if TZ_CHOICE_ASIA_KRASNOYARSK
+    default "<+08>-8" if TZ_CHOICE_ASIA_KUALA_LUMPUR
+    default "<+08>-8" if TZ_CHOICE_ASIA_KUCHING
+    default "<+03>-3" if TZ_CHOICE_ASIA_KUWAIT
+    default "CST-8" if TZ_CHOICE_ASIA_MACAO
+    default "CST-8" if TZ_CHOICE_ASIA_MACAU
+    default "<+11>-11" if TZ_CHOICE_ASIA_MAGADAN
+    default "WITA-8" if TZ_CHOICE_ASIA_MAKASSAR
+    default "PST-8" if TZ_CHOICE_ASIA_MANILA
+    default "<+04>-4" if TZ_CHOICE_ASIA_MUSCAT
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_ASIA_NICOSIA
+    default "<+07>-7" if TZ_CHOICE_ASIA_NOVOKUZNETSK
+    default "<+07>-7" if TZ_CHOICE_ASIA_NOVOSIBIRSK
+    default "<+06>-6" if TZ_CHOICE_ASIA_OMSK
+    default "<+05>-5" if TZ_CHOICE_ASIA_ORAL
+    default "<+07>-7" if TZ_CHOICE_ASIA_PHNOM_PENH
+    default "WIB-7" if TZ_CHOICE_ASIA_PONTIANAK
+    default "KST-9" if TZ_CHOICE_ASIA_PYONGYANG
+    default "<+03>-3" if TZ_CHOICE_ASIA_QATAR
+    default "<+06>-6" if TZ_CHOICE_ASIA_QOSTANAY
+    default "<+05>-5" if TZ_CHOICE_ASIA_QYZYLORDA
+    default "<+0630>-6:30" if TZ_CHOICE_ASIA_RANGOON
+    default "<+03>-3" if TZ_CHOICE_ASIA_RIYADH
+    default "<+07>-7" if TZ_CHOICE_ASIA_SAIGON
+    default "<+11>-11" if TZ_CHOICE_ASIA_SAKHALIN
+    default "<+05>-5" if TZ_CHOICE_ASIA_SAMARKAND
+    default "KST-9" if TZ_CHOICE_ASIA_SEOUL
+    default "CST-8" if TZ_CHOICE_ASIA_SHANGHAI
+    default "<+08>-8" if TZ_CHOICE_ASIA_SINGAPORE
+    default "<+11>-11" if TZ_CHOICE_ASIA_SREDNEKOLYMSK
+    default "CST-8" if TZ_CHOICE_ASIA_TAIPEI
+    default "<+05>-5" if TZ_CHOICE_ASIA_TASHKENT
+    default "<+04>-4" if TZ_CHOICE_ASIA_TBILISI
+    default "<+0330>-3:30" if TZ_CHOICE_ASIA_TEHRAN
+    default "<+06>-6" if TZ_CHOICE_ASIA_THIMBU
+    default "<+06>-6" if TZ_CHOICE_ASIA_THIMPHU
+    default "JST-9" if TZ_CHOICE_ASIA_TOKYO
+    default "<+07>-7" if TZ_CHOICE_ASIA_TOMSK
+    default "WITA-8" if TZ_CHOICE_ASIA_UJUNG_PANDANG
+    default "<+08>-8" if TZ_CHOICE_ASIA_ULAANBAATAR
+    default "<+08>-8" if TZ_CHOICE_ASIA_ULAN_BATOR
+    default "<+06>-6" if TZ_CHOICE_ASIA_URUMQI
+    default "<+10>-10" if TZ_CHOICE_ASIA_UST_NERA
+    default "<+07>-7" if TZ_CHOICE_ASIA_VIENTIANE
+    default "<+10>-10" if TZ_CHOICE_ASIA_VLADIVOSTOK
+    default "<+09>-9" if TZ_CHOICE_ASIA_YAKUTSK
+    default "<+0630>-6:30" if TZ_CHOICE_ASIA_YANGON
+    default "<+05>-5" if TZ_CHOICE_ASIA_YEKATERINBURG
+    default "<+04>-4" if TZ_CHOICE_ASIA_YEREVAN
+    default "<-01>1<+00>,M3.5.0/0,M10.5.0/1" if TZ_CHOICE_ATLANTIC_AZORES
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_ATLANTIC_BERMUDA
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_ATLANTIC_CANARY
+    default "<-01>1" if TZ_CHOICE_ATLANTIC_CAPE_VERDE
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_ATLANTIC_FAEROE
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_ATLANTIC_FAROE
+    default "<-01>1" if TZ_CHOICE_ATLANTIC_JAN_MAYEN
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_ATLANTIC_MADEIRA
+    default "GMT0" if TZ_CHOICE_ATLANTIC_REYKJAVIK
+    default "<-02>2" if TZ_CHOICE_ATLANTIC_SOUTH_GEORGIA
+    default "GMT0" if TZ_CHOICE_ATLANTIC_ST_HELENA
+    default "<-03>3" if TZ_CHOICE_ATLANTIC_STANLEY
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_ACT
+    default "ACST-9:30ACDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_ADELAIDE
+    default "AEST-10" if TZ_CHOICE_AUSTRALIA_BRISBANE
+    default "ACST-9:30ACDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_BROKEN_HILL
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_CANBERRA
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_CURRIE
+    default "ACST-9:30" if TZ_CHOICE_AUSTRALIA_DARWIN
+    default "<+0845>-8:45" if TZ_CHOICE_AUSTRALIA_EUCLA
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_HOBART
+    default "<+1030>-10:30<+11>-11,M10.1.0,M4.1.0" if TZ_CHOICE_AUSTRALIA_LHI
+    default "AEST-10" if TZ_CHOICE_AUSTRALIA_LINDEMAN
+    default "<+1030>-10:30<+11>-11,M10.1.0,M4.1.0" if TZ_CHOICE_AUSTRALIA_LORD_HOWE
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_MELBOURNE
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_NSW
+    default "ACST-9:30" if TZ_CHOICE_AUSTRALIA_NORTH
+    default "AWST-8" if TZ_CHOICE_AUSTRALIA_PERTH
+    default "AEST-10" if TZ_CHOICE_AUSTRALIA_QUEENSLAND
+    default "ACST-9:30ACDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_SOUTH
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_SYDNEY
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_TASMANIA
+    default "AEST-10AEDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_VICTORIA
+    default "AWST-8" if TZ_CHOICE_AUSTRALIA_WEST
+    default "ACST-9:30ACDT,M10.1.0,M4.1.0/3" if TZ_CHOICE_AUSTRALIA_YANCOWINNA
+    default "<-05>5" if TZ_CHOICE_BRAZIL_ACRE
+    default "<-02>2" if TZ_CHOICE_BRAZIL_DENORONHA
+    default "<-03>3" if TZ_CHOICE_BRAZIL_EAST
+    default "<-04>4" if TZ_CHOICE_BRAZIL_WEST
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_CET
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_CST6CDT
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_CANADA_ATLANTIC
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_CANADA_CENTRAL
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_CANADA_EASTERN
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_CANADA_MOUNTAIN
+    default "NST3:30NDT,M3.2.0,M11.1.0" if TZ_CHOICE_CANADA_NEWFOUNDLAND
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_CANADA_PACIFIC
+    default "CST6" if TZ_CHOICE_CANADA_SASKATCHEWAN
+    default "MST7" if TZ_CHOICE_CANADA_YUKON
+    default "CST5CDT,M3.2.0/0,M11.1.0/1" if TZ_CHOICE_CUBA
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EET
+    default "EST5" if TZ_CHOICE_EST
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_EST5EDT
+    default "EET-2EEST,M4.5.5/0,M10.5.4/24" if TZ_CHOICE_EGYPT
+    default "IST-1GMT0,M10.5.0,M3.5.0/1" if TZ_CHOICE_EIRE
+    default "GMT0" if TZ_CHOICE_ETC_GMT
+    default "GMT0" if TZ_CHOICE_ETC_GMT_0
+    default "<-01>1" if TZ_CHOICE_ETC_GMT_1
+    default "<-10>10" if TZ_CHOICE_ETC_GMT_10
+    default "<-11>11" if TZ_CHOICE_ETC_GMT_11
+    default "<-12>12" if TZ_CHOICE_ETC_GMT_12
+    default "<-02>2" if TZ_CHOICE_ETC_GMT_2
+    default "<-03>3" if TZ_CHOICE_ETC_GMT_3
+    default "<-04>4" if TZ_CHOICE_ETC_GMT_4
+    default "<-05>5" if TZ_CHOICE_ETC_GMT_5
+    default "<-06>6" if TZ_CHOICE_ETC_GMT_6
+    default "<-07>7" if TZ_CHOICE_ETC_GMT_7
+    default "<-08>8" if TZ_CHOICE_ETC_GMT_8
+    default "<-09>9" if TZ_CHOICE_ETC_GMT_9
+    default "GMT0" if TZ_CHOICE_ETC_GMT_0
+    default "<+01>-1" if TZ_CHOICE_ETC_GMT_1
+    default "<+10>-10" if TZ_CHOICE_ETC_GMT_10
+    default "<+11>-11" if TZ_CHOICE_ETC_GMT_11
+    default "<+12>-12" if TZ_CHOICE_ETC_GMT_12
+    default "<+13>-13" if TZ_CHOICE_ETC_GMT_13
+    default "<+14>-14" if TZ_CHOICE_ETC_GMT_14
+    default "<+02>-2" if TZ_CHOICE_ETC_GMT_2
+    default "<+03>-3" if TZ_CHOICE_ETC_GMT_3
+    default "<+04>-4" if TZ_CHOICE_ETC_GMT_4
+    default "<+05>-5" if TZ_CHOICE_ETC_GMT_5
+    default "<+06>-6" if TZ_CHOICE_ETC_GMT_6
+    default "<+07>-7" if TZ_CHOICE_ETC_GMT_7
+    default "<+08>-8" if TZ_CHOICE_ETC_GMT_8
+    default "<+09>-9" if TZ_CHOICE_ETC_GMT_9
+    default "GMT0" if TZ_CHOICE_ETC_GMT0
+    default "GMT0" if TZ_CHOICE_ETC_GREENWICH
+    default "UTC0" if TZ_CHOICE_ETC_UCT
+    default "UTC0" if TZ_CHOICE_ETC_UTC
+    default "UTC0" if TZ_CHOICE_ETC_UNIVERSAL
+    default "UTC0" if TZ_CHOICE_ETC_ZULU
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_AMSTERDAM
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_ANDORRA
+    default "<+04>-4" if TZ_CHOICE_EUROPE_ASTRAKHAN
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_ATHENS
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_EUROPE_BELFAST
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_BELGRADE
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_BERLIN
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_BRATISLAVA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_BRUSSELS
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_BUCHAREST
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_BUDAPEST
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_BUSINGEN
+    default "EET-2EEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_CHISINAU
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_COPENHAGEN
+    default "IST-1GMT0,M10.5.0,M3.5.0/1" if TZ_CHOICE_EUROPE_DUBLIN
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_GIBRALTAR
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_EUROPE_GUERNSEY
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_HELSINKI
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_EUROPE_ISLE_OF_MAN
+    default "<+03>-3" if TZ_CHOICE_EUROPE_ISTANBUL
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_EUROPE_JERSEY
+    default "EET-2" if TZ_CHOICE_EUROPE_KALININGRAD
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_KIEV
+    default "MSK-3" if TZ_CHOICE_EUROPE_KIROV
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_KYIV
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_EUROPE_LISBON
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_LJUBLJANA
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_EUROPE_LONDON
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_LUXEMBOURG
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_MADRID
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_MALTA
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_MARIEHAMN
+    default "<+03>-3" if TZ_CHOICE_EUROPE_MINSK
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_MONACO
+    default "MSK-3" if TZ_CHOICE_EUROPE_MOSCOW
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_NICOSIA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_OSLO
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_PARIS
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_PODGORICA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_PRAGUE
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_RIGA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_ROME
+    default "<+04>-4" if TZ_CHOICE_EUROPE_SAMARA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_SAN_MARINO
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_SARAJEVO
+    default "<+04>-4" if TZ_CHOICE_EUROPE_SARATOV
+    default "MSK-3" if TZ_CHOICE_EUROPE_SIMFEROPOL
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_SKOPJE
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_SOFIA
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_STOCKHOLM
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_TALLINN
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_TIRANE
+    default "MSK-3" if TZ_CHOICE_EUROPE_TIRASPOL
+    default "<+04>-4" if TZ_CHOICE_EUROPE_ULYANOVSK
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_UZHGOROD
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_VADUZ
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_VATICAN
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_VIENNA
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_VILNIUS
+    default "MSK-3" if TZ_CHOICE_EUROPE_VOLGOGRAD
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_WARSAW
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_ZAGREB
+    default "EET-2EEST,M3.5.0/3,M10.5.0/4" if TZ_CHOICE_EUROPE_ZAPOROZHYE
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_EUROPE_ZURICH
+    default "<-00>0" if TZ_CHOICE_FACTORY
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_GB
+    default "GMT0BST,M3.5.0/1,M10.5.0" if TZ_CHOICE_GB_EIRE
+    default "GMT0" if TZ_CHOICE_GMT
+    default "GMT0" if TZ_CHOICE_GMT_0
+    default "GMT0" if TZ_CHOICE_GMT_0
+    default "GMT0" if TZ_CHOICE_GMT0
+    default "GMT0" if TZ_CHOICE_GREENWICH
+    default "HST10" if TZ_CHOICE_HST
+    default "HKT-8" if TZ_CHOICE_HONGKONG
+    default "GMT0" if TZ_CHOICE_ICELAND
+    default "EAT-3" if TZ_CHOICE_INDIAN_ANTANANARIVO
+    default "<+06>-6" if TZ_CHOICE_INDIAN_CHAGOS
+    default "<+07>-7" if TZ_CHOICE_INDIAN_CHRISTMAS
+    default "<+0630>-6:30" if TZ_CHOICE_INDIAN_COCOS
+    default "EAT-3" if TZ_CHOICE_INDIAN_COMORO
+    default "<+05>-5" if TZ_CHOICE_INDIAN_KERGUELEN
+    default "<+04>-4" if TZ_CHOICE_INDIAN_MAHE
+    default "<+05>-5" if TZ_CHOICE_INDIAN_MALDIVES
+    default "<+04>-4" if TZ_CHOICE_INDIAN_MAURITIUS
+    default "EAT-3" if TZ_CHOICE_INDIAN_MAYOTTE
+    default "<+04>-4" if TZ_CHOICE_INDIAN_REUNION
+    default "<+0330>-3:30" if TZ_CHOICE_IRAN
+    default "EST5" if TZ_CHOICE_JAMAICA
+    default "JST-9" if TZ_CHOICE_JAPAN
+    default "<+12>-12" if TZ_CHOICE_KWAJALEIN
+    default "EET-2" if TZ_CHOICE_LIBYA
+    default "MET-1MEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_MET
+    default "MST7" if TZ_CHOICE_MST
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_MST7MDT
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_MEXICO_BAJANORTE
+    default "MST7" if TZ_CHOICE_MEXICO_BAJASUR
+    default "CST6" if TZ_CHOICE_MEXICO_GENERAL
+    default "NZST-12NZDT,M9.5.0,M4.1.0/3" if TZ_CHOICE_NZ
+    default "<+1245>-12:45<+1345>,M9.5.0/2:45,M4.1.0/3:45" if TZ_CHOICE_NZ_CHAT
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_NAVAJO
+    default "CST-8" if TZ_CHOICE_PRC
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_PST8PDT
+    default "<+13>-13" if TZ_CHOICE_PACIFIC_APIA
+    default "NZST-12NZDT,M9.5.0,M4.1.0/3" if TZ_CHOICE_PACIFIC_AUCKLAND
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_BOUGAINVILLE
+    default "<+1245>-12:45<+1345>,M9.5.0/2:45,M4.1.0/3:45" if TZ_CHOICE_PACIFIC_CHATHAM
+    default "<+10>-10" if TZ_CHOICE_PACIFIC_CHUUK
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_EFATE
+    default "<-00>0" if TZ_CHOICE_PACIFIC_ENDERBURY
+    default "<+13>-13" if TZ_CHOICE_PACIFIC_FAKAOFO
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_FIJI
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_FUNAFUTI
+    default "<-06>6" if TZ_CHOICE_PACIFIC_GALAPAGOS
+    default "<-09>9" if TZ_CHOICE_PACIFIC_GAMBIER
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_GUADALCANAL
+    default "ChST-10" if TZ_CHOICE_PACIFIC_GUAM
+    default "HST10" if TZ_CHOICE_PACIFIC_HONOLULU
+    default "HST10" if TZ_CHOICE_PACIFIC_JOHNSTON
+    default "<+13>-13" if TZ_CHOICE_PACIFIC_KANTON
+    default "<+14>-14" if TZ_CHOICE_PACIFIC_KIRITIMATI
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_KOSRAE
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_KWAJALEIN
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_MAJURO
+    default "<-0930>9:30" if TZ_CHOICE_PACIFIC_MARQUESAS
+    default "SST11" if TZ_CHOICE_PACIFIC_MIDWAY
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_NAURU
+    default "<-11>11" if TZ_CHOICE_PACIFIC_NIUE
+    default "<+11>-11<+12>,M10.1.0,M4.1.0/3" if TZ_CHOICE_PACIFIC_NORFOLK
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_NOUMEA
+    default "SST11" if TZ_CHOICE_PACIFIC_PAGO_PAGO
+    default "<+09>-9" if TZ_CHOICE_PACIFIC_PALAU
+    default "<-08>8" if TZ_CHOICE_PACIFIC_PITCAIRN
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_POHNPEI
+    default "<+11>-11" if TZ_CHOICE_PACIFIC_PONAPE
+    default "<+10>-10" if TZ_CHOICE_PACIFIC_PORT_MORESBY
+    default "<-10>10" if TZ_CHOICE_PACIFIC_RAROTONGA
+    default "ChST-10" if TZ_CHOICE_PACIFIC_SAIPAN
+    default "SST11" if TZ_CHOICE_PACIFIC_SAMOA
+    default "<-10>10" if TZ_CHOICE_PACIFIC_TAHITI
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_TARAWA
+    default "<+13>-13" if TZ_CHOICE_PACIFIC_TONGATAPU
+    default "<+10>-10" if TZ_CHOICE_PACIFIC_TRUK
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_WAKE
+    default "<+12>-12" if TZ_CHOICE_PACIFIC_WALLIS
+    default "<+10>-10" if TZ_CHOICE_PACIFIC_YAP
+    default "CET-1CEST,M3.5.0,M10.5.0/3" if TZ_CHOICE_POLAND
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_PORTUGAL
+    default "CST-8" if TZ_CHOICE_ROC
+    default "KST-9" if TZ_CHOICE_ROK
+    default "<+08>-8" if TZ_CHOICE_SINGAPORE
+    default "AST4" if TZ_CHOICE_SYSTEMV_AST4
+    default "AST4ADT,M3.2.0,M11.1.0" if TZ_CHOICE_SYSTEMV_AST4ADT
+    default "CST6" if TZ_CHOICE_SYSTEMV_CST6
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_SYSTEMV_CST6CDT
+    default "EST5" if TZ_CHOICE_SYSTEMV_EST5
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_SYSTEMV_EST5EDT
+    default "HST10" if TZ_CHOICE_SYSTEMV_HST10
+    default "MST7" if TZ_CHOICE_SYSTEMV_MST7
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_SYSTEMV_MST7MDT
+    default "<-08>8" if TZ_CHOICE_SYSTEMV_PST8
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_SYSTEMV_PST8PDT
+    default "<-09>9" if TZ_CHOICE_SYSTEMV_YST9
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_SYSTEMV_YST9YDT
+    default "<+03>-3" if TZ_CHOICE_TURKEY
+    default "UTC0" if TZ_CHOICE_UCT
+    default "AKST9AKDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_ALASKA
+    default "HST10HDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_ALEUTIAN
+    default "MST7" if TZ_CHOICE_US_ARIZONA
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_CENTRAL
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_EAST_INDIANA
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_EASTERN
+    default "HST10" if TZ_CHOICE_US_HAWAII
+    default "CST6CDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_INDIANA_STARKE
+    default "EST5EDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_MICHIGAN
+    default "MST7MDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_MOUNTAIN
+    default "PST8PDT,M3.2.0,M11.1.0" if TZ_CHOICE_US_PACIFIC
+    default "SST11" if TZ_CHOICE_US_SAMOA
+    default "UTC0" if TZ_CHOICE_UTC
+    default "UTC0" if TZ_CHOICE_UNIVERSAL
+    default "MSK-3" if TZ_CHOICE_W_SU
+    default "WET0WEST,M3.5.0/1,M10.5.0" if TZ_CHOICE_WET
+    default "UTC0" if TZ_CHOICE_ZULU

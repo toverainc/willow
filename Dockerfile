@@ -15,6 +15,7 @@ RUN apt-get -qq update && \
 	python3-venv \
 	sudo \
 	tio \
+	tzdata \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Podman

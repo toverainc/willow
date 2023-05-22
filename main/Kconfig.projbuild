@@ -106,11 +106,7 @@ config WILLOW_USE_MULTINET
     help
         Use local command detection via MultiNet
 
-config WILLOW_TIMEZONE
-    string "Timezone"
-    default "UTC+5"
-    help
-        Willow device timezone
+source "/willow/main/Kconfig-TZ.projbuild"
 
 config WILLOW_VOLUME
     int "Speaker volume"
