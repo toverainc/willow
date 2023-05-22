@@ -273,7 +273,7 @@ static void hass_post(char *data)
     ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
 
     ret = http_post(hdl_hc, url, "application/json", data, &body, &http_status);
-    if (ret != ESP_OK) {
+    if (ret == ESP_OK) {
         if (http_status != 200) {
             ok = false;
             audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
