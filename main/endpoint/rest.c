@@ -20,7 +20,7 @@ void rest_send(char *data)
 
     esp_http_client_handle_t hdl_hc = init_http_client();
 
-#ifdef WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
+#ifdef CONFIG_WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
     ret = esp_http_client_set_header(hdl_hc, "Authorization", CONFIG_WILLOW_ENDPOINT_REST_AUTH_HEADER);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to set authorization header: %s", esp_err_to_name(ret));
