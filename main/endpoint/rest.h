@@ -1,1 +1,1 @@
-void rest_send(char *data);
+void rest_send(const char *data);
