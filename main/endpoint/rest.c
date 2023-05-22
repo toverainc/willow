@@ -10,7 +10,7 @@
 #include "shared.h"
 #include "slvgl.h"
 
-void rest_send(char *data)
+void rest_send(const char *data)
 {
     bool ok = false;
     char *body = NULL;
