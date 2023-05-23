@@ -1,6 +1,6 @@
 # The Willow Inference Server has been released!
 
-Willow users can now self-host the [Willow Inference Server](https://github.com/toverainc/willow-inference-server) for lightning-fast language inference tasks with Willow and other applications including STT, TTS, LLM, and more!
+Willow users can now self-host the [Willow Inference Server](https://github.com/toverainc/willow-inference-server) for lightning-fast language inference tasks with Willow and other applications (even WebRTC) including STT, TTS, LLM, and more!
 
 # Hello Willow Users!
 
