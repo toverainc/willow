@@ -95,7 +95,10 @@ for type in entity_types:
             friendly_name = friendly_name.upper()
             # ESP_MN_MAX_PHRASE_LEN=63
             # "TURN OFF " = 9
-            if len(friendly_name) > 63 - 9:
+            # "400 " = 4
+            # hitting W (79508) AFE_SR: ERROR! rb_out slow!!! with a command of 62 characters
+            # possibly ESP_MN_MAX_PHRASE_LEN includes ID and space - let's play safe
+            if len(friendly_name) > 63 - 9 - 4:
                 print(f"Turn off command for {friendly_name} will be longer than ESP_MN_MAX_PHRASE_LEN, dropping this entity")
                 continue
             # Add device
