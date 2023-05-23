@@ -4,7 +4,7 @@ Many users across various forums, social media, etc are starting to receive thei
 
 # Willow - A Practical, Open Source, Privacy-Focused Platform for Voice Assistants and other Applications
 
-Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project primarily targetting the [ESP BOX](https://github.com/espressif/esp-box) hardware from Espressif. Our goal is to provide Amazon Echo/Google Home competitive performance, accuracy, cost, and functionality with [Home Assistant](https://www.home-assistant.io/) and other platforms - 100% open source and completely self-hosted by the user with "ready for the kitchen counter" low cost commercially available hardware.
+Willow is an [ESP IDF](https://github.com/espressif/esp-idf) based project primarily targetting the [ESP BOX](https://github.com/espressif/esp-box) hardware from Espressif. Our goal is to provide Amazon Echo/Google Home competitive performance, accuracy, cost, and functionality with [Home Assistant](https://www.home-assistant.io/), [openHAB](https://www.openhab.org/), and other platforms - 100% open source and completely self-hosted by the user with "ready for the kitchen counter" low cost commercially available hardware.
 
 <img src="https://github.com/espressif/esp-box/blob/master/docs/_static/esp32_s3_box.png" width="400px" />
 
@@ -28,7 +28,7 @@ Current supported features include:
 
 - Wake Word Engine. Say "Hi ESP" or "Alexa" (user selectable) and start talking!
 - Voice Activity Detection. When you stop talking it will stop listening and take action.
-- Support for Home Assistant! Simply configure Willow with your Home Assistant server address and access token. Backwards compatible with multiple releases.
+- Support for Home Assistant, openHAB, and generic REST APIs! Simply configure Willow with your Home Assistant, openHAB, or REST server address and access token.
 - Support for other platforms. As long as your configured endpoint can take an HTTP POST you can do anything with the speech output!
 - Great far-field performance. We've tested wake and speech recognition from roughly 25 feet away in challenging environments with good results.
 - Great audio quality - Willow provides features such as automatic gain control, acoustic echo cancellation, noise supression, blind source separation, etc.
@@ -94,9 +94,17 @@ Return to main menu and continue.
 
 Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports 2.4 GHz Wi-Fi with WPA/WPA2/WPA3 authentication), and your Willow Inference Server URI (best-effort Tovera hosted example provided).
 
+#### Home Assistant
+
 For Home Assistant you will also need to create a [long lived access token](https://developers.home-assistant.io/docs/auth_api/#:~:text=Long%2Dlived%20access%20tokens%20can,access%20token%20for%20current%20user.) and configure your server address. By default we use ```homeassistant.local``` which should use mDNS to resolve your local Home Assistant instance. Put your long lived access token in the text input area. We recommend testing both your Home Assistant server address and token before flashing.
 
 If your Home Assistant instance requires TLS make sure to select it.
+
+#### openHAB
+openHAB also requires an [API token](https://www.openhab.org/docs/configuration/apitokens.html). Enter the URI of your openHAB instance without any paths. As usual both HTTP and HTTPS are supported. Willow will send text output to the default HLI interpreter you have configured on openHAB (we've done the most testing with HAbot and the built-in interpreter). Like Home Assistant we recommend testing both your server address and access token before flashing.
+
+#### Generic REST Interface
+Willow supports sending of detected speech to any REST API endpoint via POST. You can define the URL of your API endpoint (HTTP or HTTPS) and select from no authentication, HTTP Basic, or provide a raw Authentication: header for Bearer and other mechanisms.
 
 There are also various other configuration options for speaker volume, display brightness, NTP, etc.
 
@@ -174,9 +182,9 @@ You should see some help text on the display to use your configured wake word. T
 - "(Your wake word) Turn on bedroom lights"
 - "(Your wake word) Turn off kitchen lights"
 
-The available commands and specific names, etc will depend on your Home Assistant configuration.
+The available commands and specific names, etc will depend on your Home Assistant or openHAB configuration.
 
-You can also provide free-form speech to get an idea of the accuracy and speed provided by our inference server implementation. The commands will fail unless you've defined them in Home Assistant but the display will show the speech recognition results to get your imagination going.
+You can also provide free-form speech to get an idea of the accuracy and speed provided by our inference server implementation. The commands will fail unless you've defined them in Home Assistant or openHAB but the display will show the speech recognition results to get your imagination going.
 
 You can now repeat the erase and flash process for as many devices as you want!
 
@@ -257,7 +265,7 @@ These enhancements alone should dramatically improve responsiveness.
 The Whisper Inference Server (open source release soon) will run CPU only but the performance on CPU is not comparable to heavily optimized implementations like [whisper.cpp](https://github.com/ggerganov/whisper.cpp). For an Alexa/Echo competitive voice interface we currently believe that our approach with CUDA or local Multinet (up to 400 commands) is the best approach. However, we also understand that isn't practical or preferred for many users. Between on device Multinet command recognition and further development on CPU-only Whisper implementations, ROCm, etc we will get there. That said, if you can make the audio streaming API work you can use any speech to text and text to speech implementation you want!
 
 ### TTS Output
-Given the capabilities of Whisper speech commands like "What is the weather in Sofia, Bulgaria?" are transcribed but need to match a command (like a Home Assistant intent) on the destination. Our inference server implementation has a text to speech engine and Home Assistant has a variety of options as well. In the event the final response to a given command results in audio output we can play that via the speakers in the ESP BOX (not yet supported).
+Given the capabilities of Whisper speech commands like "What is the weather in Sofia, Bulgaria?" are transcribed but need to match a command (like a Home Assistant intent or openHAB Action Template Interpreter) on the destination. Our inference server implementation has a text to speech engine we will be utilizing. In the event the final response to a given command results in audio output we can play that via the speakers in the ESP BOX (not yet supported).
 
 ### Higher Quality Audio Output
 The ESP BOX supports bluetooth. In applications where higher quality audio is desired (music streaming, etc) we can support pairing to bluetooth speaker devices. Who knows? Eventually we may even design our own device with better internal speakers...
@@ -275,7 +283,7 @@ We currently beep once for success and twice for failure. It's not the most anno
 Docker, building, configuring, flashing, etc is a pain. There are several approaches we plan to take to avoid this and ease the barrier to entry for users to get started.
 
 ### Dynamic Configuration
-With something like a Willow Home Assistant component and websocket support we can enable all kinds of interesting dynamic configuration updates and tighter overall configurations.
+With something like a Willow Home Assistant or openHAB component and websocket support we can enable all kinds of interesting dynamic configuration updates and tighter overall configurations.
 
 ### Over the Air Firmware Updates
 ESP IDF and ESP BOX has robust support for over the air firmware (OTA) updates. Down the road we will support them.
