@@ -135,7 +135,7 @@ config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
     string "Password for HTTP Basic Authentication"
 
 config WILLOW_USE_MULTINET
-    depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_PCM
+    depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_PCM && WILLOW_USE_ENDPOINT_HOMEASSISTANT
     bool "Use local command detection via MultiNet"
     help
         Use local command detection via MultiNet
