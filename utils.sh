@@ -41,15 +41,21 @@ if [ -r .env ]; then
 fi
 
 check_port() {
-if [ ! $PORT ]; then
-    echo "You need to define the PORT environment variable to do serial stuff - exiting"
-    exit 1
-fi
+    if [ ! $PORT ]; then
+        echo "You need to define the PORT environment variable to do serial stuff - exiting"
+        exit 1
+    fi
 
-if [ ! -c $PORT ]; then
-    echo "Cannot find configured port $PORT - exiting"
-    exit 1
-fi
+    if [ ! -c $PORT ]; then
+        echo "Cannot find configured port $PORT - exiting"
+        exit 1
+    fi
+
+    if [ ! -w "$PORT" ]; then
+        echo "You don't have permission to write to $PORT - exiting"
+        echo "You need to either run this command with sudo or add yourself to the dialout group"
+        exit 1
+    fi
 }
 
 check_esptool() {
@@ -240,6 +246,7 @@ flash-dist|dist-flash)
         echo "You need to run dist first"
         exit 1
     fi
+    check_port
     check_esptool
     check_flag "erase-flash"
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
@@ -249,6 +256,7 @@ flash-dist|dist-flash)
 
 erase-flash)
     check_host
+    check_port
     check_esptool
     esptool.py --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
