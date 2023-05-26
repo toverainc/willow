@@ -105,7 +105,7 @@ For Home Assistant you will also need to create a [long lived access token](http
 If your Home Assistant instance requires TLS make sure to select it.
 
 #### openHAB
-openHAB also requires an [API token](https://www.openhab.org/docs/configuration/apitokens.html). Enter the URI of your openHAB instance without any paths. As usual both HTTP and HTTPS are supported. Willow will send text output to the default HLI interpreter you have configured on openHAB (we've done the most testing with HAbot and the built-in interpreter). Like Home Assistant we recommend testing both your server address and access token before flashing.
+openHAB also requires an [API token](https://www.openhab.org/docs/configuration/apitokens.html). Enter the URI of your openHAB instance without any paths (INCLUDING TRAILING SLASH). As usual both HTTP and HTTPS are supported. Willow will send text output to the default HLI interpreter you have configured on openHAB (we've done the most testing with HAbot and the built-in interpreter). Like Home Assistant we recommend testing both your server address and access token before flashing.
 
 #### Generic REST Interface
 Willow supports sending of detected speech to any REST API endpoint via POST. You can define the URL of your API endpoint (HTTP or HTTPS) and select from no authentication, HTTP Basic, or provide a raw Authentication: header for Bearer and other mechanisms.
