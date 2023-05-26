@@ -53,7 +53,8 @@ fi
 }
 
 check_esptool() {
-    if [ ! -d venv ]; then
+    if [ ! -x venv/bin/esptool.py ]; then
+        rm -rf venv
         echo "Creating venv for esptool"
         python3 -m venv venv
         source venv/bin/activate
