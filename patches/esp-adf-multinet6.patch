@@ -1,5 +1,5 @@
 diff --git a/components/audio_recorder/recorder_sr.c b/components/audio_recorder/recorder_sr.c
-index f8a449b..8aa4cca 100644
+index f8a449b..f65a2c0 100644
 --- deps/esp-adf/components/audio_recorder/recorder_sr.c
 +++ deps/esp-adf/components/audio_recorder/recorder_sr.c
 @@ -185,8 +185,14 @@ static esp_err_t recorder_mn_detect(recorder_sr_t *recorder_sr, int16_t *buffer,
@@ -55,3 +55,12 @@ index f8a449b..8aa4cca 100644
      }
  #endif
      recorder_sr->events = xEventGroupCreate();
+@@ -592,7 +601,7 @@ esp_err_t recorder_sr_reset_speech_cmd(recorder_sr_handle_t handle, char *comman
+ 
+     esp_mn_commands_clear();
+ 
+-    uint8_t cmd_id = 0;
++    uint16_t cmd_id = 0;
+     char *cmd_str = NULL;
+     char *phrase = NULL;
+     strcpy(buf, command_str);
