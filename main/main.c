@@ -455,7 +455,19 @@ static void start_rec()
         .voice_communication_agc_gain = 15,
         .vad_mode = VAD_MODE_3,
         .wakenet_model_name = NULL,
+#if defined(CONFIG_WILLOW_WAKE_DET_MODE_2CH_90)
         .wakenet_mode = DET_MODE_2CH_90,
+#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_2CH_95)
+        .wakenet_mode = DET_MODE_2CH_95,
+#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_90)
+        .wakenet_mode = DET_MODE_90,
+#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_95)
+        .wakenet_mode = DET_MODE_95,
+#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_3CH_90)
+        .wakenet_mode = DET_MODE_3CH_90,
+#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_3CH_95)
+        .wakenet_mode = DET_MODE_3CH_95,
+#endif
         .afe_mode = SR_MODE_HIGH_PERF,
         .afe_perferred_core = 1,
         .afe_perferred_priority = 5,
