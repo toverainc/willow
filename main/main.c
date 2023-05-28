@@ -280,7 +280,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
                 return ESP_FAIL;
             }
             total_write += msg->buffer_len;
-            //ESP_LOGI(TAG, "WIS HTTP client total bytes written: %d", total_write);
+            // ESP_LOGI(TAG, "WIS HTTP client total bytes written: %d", total_write);
             return msg->buffer_len;
 
         case HTTP_STREAM_POST_REQUEST:
