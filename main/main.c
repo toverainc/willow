@@ -245,7 +245,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 
     switch (msg->event_id) {
         case HTTP_STREAM_PRE_REQUEST:
-            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_PRE_REQUEST, length=%d", msg->buffer_len);
+            ESP_LOGI(TAG, "WIS HTTP client starting stream, waiting for end of speech");
             esp_http_client_set_method(http, HTTP_METHOD_POST);
             char dat[10] = {0};
             snprintf(dat, sizeof(dat), "%d", 16000);
@@ -269,7 +269,6 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             return ESP_OK;
 
         case HTTP_STREAM_ON_REQUEST:
-            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_ON_REQUEST, length=%d", msg->buffer_len);
             wlen = sprintf(len_buf, "%x\r\n", msg->buffer_len);
             if (esp_http_client_write(http, len_buf, wlen) <= 0) {
                 return ESP_FAIL;
@@ -281,18 +280,18 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
                 return ESP_FAIL;
             }
             total_write += msg->buffer_len;
-            printf("\033[A\33[2K\rTotal bytes written: %d\n", total_write);
+            //ESP_LOGI(TAG, "WIS HTTP client total bytes written: %d", total_write);
             return msg->buffer_len;
 
         case HTTP_STREAM_POST_REQUEST:
-            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_POST_REQUEST, write end chunked marker");
+            ESP_LOGI(TAG, "WIS HTTP client HTTP_STREAM_POST_REQUEST, write end chunked marker");
             if (esp_http_client_write(http, "0\r\n\r\n", 5) <= 0) {
                 return ESP_FAIL;
             }
             return ESP_OK;
 
         case HTTP_STREAM_FINISH_REQUEST:
-            ESP_LOGI(TAG, "[ + ] HTTP client HTTP_STREAM_FINISH_REQUEST");
+            ESP_LOGI(TAG, "WIS HTTP client HTTP_STREAM_FINISH_REQUEST");
             // Allocate memory for response. Should be enough?
             char *buf = calloc(sizeof(char), 2048);
             assert(buf);
@@ -302,7 +301,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
                 return ESP_FAIL;
             }
             buf[read_len] = 0;
-            ESP_LOGI(TAG, "Got HTTP Response = %s", (char *)buf);
+            ESP_LOGI(TAG, "WIS HTTP Response = %s", (char *)buf);
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
             hass_send(buf);
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
@@ -823,9 +822,11 @@ static void get_mac_address()
 
 void app_main(void)
 {
-    esp_log_level_set("*", ESP_LOG_INFO);
-    esp_log_level_set("AUDIO_ELEMENT", ESP_LOG_VERBOSE);
+    esp_log_level_set("*", ESP_LOG_ERROR);
+    esp_log_level_set("PERIPH_WIFI", ESP_LOG_WARN);
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
+
+    ESP_LOGI(TAG, "Starting up! Please wait...");
 
     esp_err_t ret;
 
@@ -964,7 +965,7 @@ void app_main(void)
 
     get_mac_address(); // should be on wifi by now; print the MAC
 
-    ESP_LOGI(TAG, "Startup complete. Waiting for wake word.");
+    ESP_LOGI(TAG, "Startup complete! Waiting for wake word.");
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
 
