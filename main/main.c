@@ -73,44 +73,18 @@ static audio_rec_handle_t hdl_ar = NULL;
 QueueHandle_t q_rec;
 esp_lcd_panel_handle_t hdl_lcd;
 
-// clang-format off
-const int32_t tone[] = {
-    0x00007fff, 0x00007fff,
-    0x00000000, 0x00000000,
-    0x80008000, 0x80008000,
-    0x00000000, 0x00000000,
-};
-// clang-format on
-
-static void play_tone(void)
+void play_audio_err(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-
-    size_t bytes_written;
-    int64_t start_time = esp_timer_get_time();
-
-    while ((esp_timer_get_time() - start_time) < 200000) {
-        int ret = i2s_write(0, tone, sizeof(tone), &bytes_written, portMAX_DELAY);
-        if (ret != ESP_OK) {
-            ESP_LOGE(TAG, "i2s write failed");
-        }
-    }
-
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/wake.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
-void play_tone_ok(void *data)
+void play_audio_ok(void)
 {
-    play_tone();
-    vTaskDelete(NULL);
-}
-
-void play_tone_err(void *data)
-{
-    play_tone();
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-    play_tone();
-    vTaskDelete(NULL);
+    gpio_set_level(get_pa_enable_gpio(), 1);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/echo_en_ok.flac", 0);
+    gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
@@ -143,7 +117,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
         case AUDIO_REC_COMMAND_DECT:
             // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
-            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+            play_audio_err();
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 

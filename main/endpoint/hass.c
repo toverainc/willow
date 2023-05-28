@@ -134,9 +134,9 @@ end:
                 lvgl_port_unlock();
 
                 if (hir.ok) {
-                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
+                    play_audio_ok();
                 } else {
-                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+                    play_audio_err();
                 }
 
                 timer_start(TIMER_GROUP_0, TIMER_0);
@@ -276,7 +276,7 @@ static void hass_post(const char *data)
     if (ret == ESP_OK) {
         if (http_status != 200) {
             ok = false;
-            audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+            play_audio_err();
         }
         cJSON *cjson = cJSON_Parse(body);
         cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
@@ -286,10 +286,10 @@ static void hass_post(const char *data)
                 ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                 if (!strcmp(response_type->valuestring, "error")) {
                     ok = false;
-                    audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+                    play_audio_err();
                 } else {
                     ok = true;
-                    audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
+                    play_audio_ok();
                 }
             }
         }

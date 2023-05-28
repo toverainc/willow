@@ -43,9 +43,9 @@ void rest_send(const char *data)
     }
 
     if (ok) {
-        audio_thread_create(NULL, "play_tone_ok", play_tone_ok, NULL, 4 * 1024, 10, true, 1);
+        play_audio_ok();
     } else {
-        audio_thread_create(NULL, "play_tone_err", play_tone_err, NULL, 4 * 1024, 10, true, 1);
+        play_audio_err();
     }
 
     lvgl_port_lock(0);
