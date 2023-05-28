@@ -25,6 +25,7 @@
 #include "model_path.h"
 #include "nvs_flash.h"
 #include "periph_button.h"
+#include "periph_spiffs.h"
 #include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_encoder.h"
@@ -57,7 +58,8 @@
 #include "endpoint/rest.h"
 #endif
 
-#define I2S_PORT I2S_NUM_0
+#define I2S_PORT        I2S_NUM_0
+#define PARTLABEL_AUDIO "audio"
 
 bool recording = false;
 
@@ -812,6 +814,30 @@ static void init_esp_audio(audio_board_handle_t hdl)
     ESP_LOGI(TAG, "audio player initialized");
 }
 
+static esp_err_t init_spiffs_audio(void)
+{
+    esp_err_t ret = ESP_OK;
+    periph_spiffs_cfg_t pcfg_spiffs = {
+        .format_if_mount_failed = false,
+        .max_files = 5,
+        .partition_label = PARTLABEL_AUDIO,
+        .root = "/spiffs/audio",
+    };
+    esp_periph_handle_t phdl_spiffs = periph_spiffs_init(&pcfg_spiffs);
+    ret = esp_periph_start(hdl_pset, phdl_spiffs);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to start spiffs peripheral: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    while (!periph_spiffs_is_mounted(phdl_spiffs)) {
+        ESP_LOGI(TAG, "periph_spiffs_is_mounted");
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+
+    return ret;
+}
+
 #define MAC_ADDR_SIZE 6
 uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 static void get_mac_address()
@@ -830,7 +856,6 @@ void app_main(void)
     esp_err_t ret;
 
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
-    pcfg.extern_stack = true;
     hdl_pset = esp_periph_set_init(&pcfg);
 
     init_display();
@@ -928,6 +953,7 @@ void app_main(void)
     init_timer();
     init_ap_to_api();
     init_esp_audio(hdl_audio_board);
+    init_spiffs_audio();
     start_rec();
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
