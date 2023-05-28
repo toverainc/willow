@@ -34,6 +34,9 @@ if [ -f /.dockerenv ]; then
     export container="docker"
 fi
 
+# Get Willow version
+export WILLOW_VERSION=$(git rev-parse --short HEAD)
+
 # Test for local environment file and use any overrides
 if [ -r .env ]; then
     echo "Using configuration overrides from .env file"

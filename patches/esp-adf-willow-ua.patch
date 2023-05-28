@@ -1,0 +1,12 @@
+diff --git a/components/audio_stream/http_stream.c b/components/audio_stream/http_stream.c
+index 71d5e8b..7ece221 100644
+--- deps/esp-adf/components/audio_stream/http_stream.c
++++ deps/esp-adf/components/audio_stream/http_stream.c
+@@ -456,6 +456,7 @@ _stream_open_begin:
+     if (http->client == NULL) {
+         esp_http_client_config_t http_cfg = {
+             .url = uri,
++            .user_agent = WILLOW_USER_AGENT,
+             .event_handler = _http_event_handle,
+             .user_data = self,
+             .timeout_ms = 30 * 1000,
