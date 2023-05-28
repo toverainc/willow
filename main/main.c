@@ -17,6 +17,7 @@
 #include "esp_sntp.h"
 #include "esp_wifi.h"
 #include "filter_resample.h"
+#include "flac_decoder.h"
 #include "http_stream.h"
 #include "i2s_stream.h"
 #include "input_key_service.h"
@@ -29,6 +30,7 @@
 #include "recorder_encoder.h"
 #include "recorder_sr.h"
 #include "sdkconfig.h"
+#include "spiffs_stream.h"
 
 #ifdef CONFIG_WILLOW_USE_AMRWB
 #include "amrwb_encoder.h"
@@ -737,6 +739,79 @@ static esp_err_t init_input_key_service()
     return periph_service_set_callback(hld_psvc_iks, cb_iks, NULL);
 }
 
+static void init_esp_audio(audio_board_handle_t hdl)
+{
+    audio_err_t ret = ESP_OK;
+    esp_audio_cfg_t cfg_ea = {
+        .cb_ctx = NULL,
+        .cb_func = NULL,
+        .component_select = ESP_AUDIO_COMPONENT_SELECT_DEFAULT,
+        .evt_que = NULL,
+        .in_stream_buf_size = 10 * 1024,
+        .out_stream_buf_size = 4 * 1024,
+        .prefer_type = ESP_AUDIO_PREFER_MEM,
+        .resample_rate = 16000,
+        .task_prio = 6,
+        .task_stack = 4 * 1024,
+        .vol_get = (audio_volume_get)audio_hal_get_volume,
+        .vol_handle = hdl->audio_hal,
+        .vol_set = (audio_volume_set)audio_hal_set_volume,
+    };
+
+    hdl_ea = esp_audio_create(&cfg_ea);
+
+    spiffs_stream_cfg_t cfg_ss = SPIFFS_STREAM_CFG_DEFAULT();
+    cfg_ss.type = AUDIO_STREAM_READER;
+
+    ret = esp_audio_input_stream_add(hdl_ea, spiffs_stream_init(&cfg_ss));
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to add input stream to ESP Audio");
+    }
+
+    flac_decoder_cfg_t cfg_wd = DEFAULT_FLAC_DECODER_CONFIG();
+
+    ret = esp_audio_codec_lib_add(hdl_ea, AUDIO_CODEC_TYPE_DECODER, flac_decoder_init(&cfg_wd));
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to add FLAC decoder to ESP Audio");
+    }
+
+    i2s_stream_cfg_t cfg_is = {
+        .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
+        .i2s_config = {
+            .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+            .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+            .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+            .dma_buf_count = 3,
+            .dma_buf_len = 300,
+            .fixed_mclk = 0,
+            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM,
+            .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX),
+            .sample_rate = 16000,
+            .tx_desc_auto_clear = true,
+            .use_apll = false, // not supported on ESP32-S3-BOX
+        },
+        .i2s_port = CODEC_ADC_I2S_PORT,
+        .multi_out_num = 0,
+        .need_expand = false,
+        .out_rb_size = 8 * 1024, // default is 8 * 1024
+        .stack_in_ext = false,
+        .task_core = I2S_STREAM_TASK_CORE,
+        .task_prio = I2S_STREAM_TASK_PRIO,
+        .task_stack = I2S_STREAM_TASK_STACK,
+        .type = AUDIO_STREAM_WRITER,
+        .uninstall_drv = true,
+        .use_alc = false,
+        .volume = 0,
+    };
+
+    ret = esp_audio_output_stream_add(hdl_ea, i2s_stream_init(&cfg_is));
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to add output stream to ESP Audio");
+    }
+    esp_audio_vol_set(hdl_ea, CONFIG_WILLOW_VOLUME);
+    ESP_LOGI(TAG, "audio player initialized");
+}
+
 #define MAC_ADDR_SIZE 6
 uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 static void get_mac_address()
@@ -852,6 +927,7 @@ void app_main(void)
     init_session_timer();
     init_timer();
     init_ap_to_api();
+    init_esp_audio(hdl_audio_board);
     start_rec();
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
