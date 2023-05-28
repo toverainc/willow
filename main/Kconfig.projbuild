@@ -199,6 +199,7 @@ config WILLOW_RECORD_BUFFER
     default 12
     help
         Custom record buffer for timing and latency
+        Users with a local WIS instance may want to try setting lower (10 or so)
 
 config WILLOW_STREAM_TIMEOUT
     int "Maximum stream duration"
