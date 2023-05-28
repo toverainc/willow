@@ -845,7 +845,7 @@ void app_main(void)
         char *wake_help = "Say 'Hi ESP' to start!";
 #elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
         char *wake_help = "Say 'Alexa' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined (CONFIG_SR_WN_WN9_HILEXIN)
+#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN)
         char *wake_help = "Say 'Hi Lexin' to start!";
 #else
         char *wake_help = "Ready!";
