@@ -1,7 +1,5 @@
 #include "esp_peripherals.h"
 
-#define WAKENET_NAME "wn9_alexa"
-
 bool recording;
 
 esp_periph_set_handle_t hdl_pset;

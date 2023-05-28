@@ -20,6 +20,31 @@ config SERVER_URI
     help
         URI For your WIS instance. Supports HTTP and HTTPS.
 
+choice WILLOW_WAKE_WORD
+    # This is a typo in esp-sr
+    depends on SR_WN_LOAD_MULIT_WORD
+    prompt "Willow Wake Word"
+    default WILLOW_WAKE_WORD_HIESP
+
+    config WILLOW_WAKE_WORD_HIESP
+        depends on SR_WN_WN9_HIESP_MULTI
+        bool "Hi ESP"
+        help
+            Say Hi ESP to wake Willow
+
+    config WILLOW_WAKE_WORD_ALEXA
+        depends on SR_WN_WN9_ALEXA_MULTI
+        bool "Alexa"
+        help
+            Say Alexa to wake Willow
+
+    config WILLOW_WAKE_WORD_HILEXIN
+        depends on SR_WN_WN9_HILEXIN_MULTI
+        bool "Hi Lexin"
+        help
+            Say Hi Lexin to wake Willow
+endchoice
+
 choice WILLOW_USE_CODEC
     prompt "Audio codec to use"
     default WILLOW_USE_PCM

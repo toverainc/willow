@@ -1,5 +1,5 @@
 diff --git a/components/audio_recorder/recorder_sr.c b/components/audio_recorder/recorder_sr.c
-index f8a449b..f65a2c0 100644
+index f8a449b..7f4f5f7 100644
 --- deps/esp-adf/components/audio_recorder/recorder_sr.c
 +++ deps/esp-adf/components/audio_recorder/recorder_sr.c
 @@ -185,8 +185,14 @@ static esp_err_t recorder_mn_detect(recorder_sr_t *recorder_sr, int16_t *buffer,
@@ -30,7 +30,7 @@ index f8a449b..f65a2c0 100644
          }
      }
      return ESP_OK;
-@@ -453,9 +462,9 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
+@@ -453,9 +462,8 @@ static esp_err_t recorder_sr_mn_enable(void *handle, bool enable)
      if (recorder_sr->mn_enable && !recorder_sr->mn_handle) {
          char *mn_name = esp_srmodel_filter(recorder_sr->models, ESP_MN_PREFIX, recorder_sr->mn_language);
          multinet = esp_mn_handle_from_name(mn_name);
@@ -38,11 +38,33 @@ index f8a449b..f65a2c0 100644
 +        recorder_sr->mn_handle = multinet->create(mn_name, 2000);
          AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, return ESP_FAIL);
 -        esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
-+        //esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
      }
      return ESP_OK;
  #else
-@@ -547,10 +556,10 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
+@@ -531,8 +539,21 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
+     memcpy(recorder_sr->input_order, cfg->input_order, DAT_CH_MAX);
+ 
+     recorder_sr->models = esp_srmodel_init(recorder_sr->partition_label);
+-    char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, NULL);
++// Belts and suspenders
++#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) && defined(CONFIG_SR_WN_WN9_HIESP_MULTI)
++        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, "hiesp");
++#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) && defined(CONFIG_SR_WN_WN9_ALEXA_MULTI)
++        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, "alexa");
++#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) && defined(CONFIG_SR_WN_WN9_HILEXIN_MULTI)
++        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, "hilexin");
++#else
++    #ifdef CONFIG_WILLOW_WAKE_WORD
++        ESP_LOGW(TAG, "Wakenet model not defined or unknown - using random");
++    #endif
++        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, NULL);
++#endif
+     AUDIO_NULL_CHECK(TAG, wn_name, goto _failed);
++    ESP_LOGI(TAG, "Selected wakenet model is '%s'", wn_name);
+     cfg->afe_cfg.wakenet_model_name = wn_name;
+     recorder_sr->afe_handle = esp_afe->create_from_config(&cfg->afe_cfg);
+     AUDIO_NULL_CHECK(TAG, recorder_sr->afe_handle, goto _failed);
+@@ -547,10 +568,9 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
          char *mn_name = esp_srmodel_filter(recorder_sr->models, ESP_MN_PREFIX, recorder_sr->mn_language);
          AUDIO_NULL_CHECK(TAG, mn_name, goto _failed);
          multinet = esp_mn_handle_from_name(mn_name);
@@ -51,11 +73,10 @@ index f8a449b..f65a2c0 100644
          AUDIO_NULL_CHECK(TAG, recorder_sr->mn_handle, goto _failed);
          recorder_sr->mn_enable = true;
 -        esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
-+        //esp_mn_commands_update_from_sdkconfig((esp_mn_iface_t *)multinet, recorder_sr->mn_handle);
      }
  #endif
      recorder_sr->events = xEventGroupCreate();
-@@ -592,7 +601,7 @@ esp_err_t recorder_sr_reset_speech_cmd(recorder_sr_handle_t handle, char *comman
+@@ -592,7 +612,7 @@ esp_err_t recorder_sr_reset_speech_cmd(recorder_sr_handle_t handle, char *comman
  
      esp_mn_commands_clear();
  

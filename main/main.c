@@ -556,7 +556,6 @@ static void start_rec()
     ESP_LOGI(TAG, "Using recorder encoder");
     cfg_ar.encoder_handle = recorder_encoder_create(&recorder_encoder_cfg, &cfg_ar.encoder_iface);
 #endif
-    cfg_srr.afe_cfg.wakenet_model_name = WAKENET_NAME;
     hdl_ar = audio_recorder_create(&cfg_ar);
 }
 
@@ -842,10 +841,12 @@ void app_main(void)
     esp_netif_t *hdl_netif = esp_netif_next(NULL);
 
     if (hdl_netif != NULL) {
-#if defined(CONFIG_SR_WN_WN9_HIESP)
+#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
         char *wake_help = "Say 'Hi ESP' to start!";
-#elif defined(CONFIG_SR_WN_WN9_ALEXA)
+#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
         char *wake_help = "Say 'Alexa' to start!";
+#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined (CONFIG_SR_WN_WN9_HILEXIN)
+        char *wake_help = "Say 'Hi Lexin' to start!";
 #else
         char *wake_help = "Ready!";
 #endif
