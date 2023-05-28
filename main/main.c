@@ -780,7 +780,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
     i2s_stream_cfg_t cfg_is = {
         .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
         .i2s_config = {
-            .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+            .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
             .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
             .communication_format = I2S_COMM_FORMAT_STAND_I2S,
             .dma_buf_count = 3,
@@ -794,7 +794,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
         },
         .i2s_port = CODEC_ADC_I2S_PORT,
         .multi_out_num = 0,
-        .need_expand = false,
+        .need_expand = true,
         .out_rb_size = 8 * 1024, // default is 8 * 1024
         .stack_in_ext = false,
         .task_core = I2S_STREAM_TASK_CORE,
