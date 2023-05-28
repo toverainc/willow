@@ -85,6 +85,14 @@ check_tio() {
     fi
 }
 
+check_clang_format() {
+    if ! command -v clang-format-15 &> /dev/null
+    then
+        echo "clang-format-15 could not be found in path - you need to install it"
+        exit 1
+    fi
+}
+
 fix_term() {
     clear
     reset
@@ -332,6 +340,10 @@ serve)
     python3 -m http.server "$SERVE_PORT"
 ;;
 
+clang-format)
+    check_clang_format
+    clang-format-15 -i main/{,endpoint}/*.{c,h}
+;;
 
 *)
     echo "Uknown argument - passing directly to idf.py"
