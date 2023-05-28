@@ -16,5 +16,5 @@ typedef enum {
     MSG_START_LOCAL,
 } q_msg;
 
-void play_tone_err(void *data);
-void play_tone_ok(void *data);
+void play_audio_err(void);
+void play_audio_ok(void);
