@@ -127,7 +127,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_WAKEUP_START:
-            ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START\n");
+            ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
             if (recording) {
                 msg = MSG_STOP;
                 xQueueSend(q_rec, &msg, 0);
@@ -172,7 +172,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 #endif
             free(json);
 
-            ESP_LOGI(TAG, "Got local command ID: '%d'\n", command_id);
+            ESP_LOGI(TAG, "Got local command ID: '%d'", command_id);
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
@@ -182,7 +182,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lvgl_port_unlock();
             timer_start(TIMER_GROUP_0, TIMER_0);
 #else
-            ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'\n", are);
+            ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are);
 #endif
             break;
     }
@@ -581,7 +581,7 @@ static void at_read(void *data)
                     audio_pipeline_run(hdl_ap_to_api);
                     stream_to_api = true;
                     // this confirms that the URI is still set correctly
-                    printf("audio_pipeline_run(hdl_ap_to_api) - uri: '%s'\n", audio_element_get_uri(hdl_ae_hs));
+                    ESP_LOGI(TAG, "Using WIS URI '%s'", audio_element_get_uri(hdl_ae_hs));
                     __attribute__((fallthrough));
                 case MSG_START_LOCAL:
                     recording = true;
