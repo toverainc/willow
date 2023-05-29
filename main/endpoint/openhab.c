@@ -58,7 +58,7 @@ end:
     lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
     lv_label_set_text_static(lbl_ln3, "Command status:");
     lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-    if (sizeof(body) > 4) {
+    if (strlen(body) > 1) {
         ESP_LOGI(TAG, "REST response: %s", body);
         lv_label_set_text(lbl_ln4, body);
     } else {
