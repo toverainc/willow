@@ -96,7 +96,7 @@ Return to main menu and continue.
 
 ### Willow Configuration
 
-Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports 2.4 GHz Wi-Fi with WPA/WPA2/WPA3 authentication), and your Willow Inference Server URI (best-effort Tovera hosted example provided).
+Navigate to "Willow Configuration" to fill in your Wi-Fi SSID, Wi-Fi password (supports 2.4 GHz Wi-Fi with WPA/WPA2/WPA3 authentication), and your Willow Inference Server URI (best-effort Tovera hosted example provided). You can also select your wake word and several other options.
 
 #### Home Assistant
 
@@ -111,8 +111,6 @@ openHAB also requires an [API token](https://www.openhab.org/docs/configuration/
 Willow supports sending of detected speech to any REST API endpoint via POST. You can define the URL of your API endpoint (HTTP or HTTPS) and select from no authentication, HTTP Basic, or provide a raw Authentication: header for Bearer and other mechanisms.
 
 There are also various other configuration options for speaker volume, display brightness, NTP, etc.
-
-If you want to change the wake word from the default "Hi ESP" you can navigate from the main menu to ```ESP Speech Recognition --> Select wake words --->``` and select Alexa or whichever. NOTE: If changing the wake word *ALWAYS* use the ```wn9``` variants.
 
 Once you've provided those press 'q'. When prompted to save, do that.
 
