@@ -24,7 +24,7 @@ choice WILLOW_SPEECH_REC_MODE
             Use WIS for free-flow speech recognition
 
     config WILLOW_USE_MULTINET
-        depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_ENDPOINT_HOMEASSISTANT
+        depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT
         bool "On device command detection via MultiNet"
         help
             Use on device command detection via MultiNet
