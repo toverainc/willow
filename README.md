@@ -279,7 +279,7 @@ The ESP BOX has a multi-point capacitive touchscreen and support for many GUI el
 The ESP BOX has buttons and who doesn't like configuring buttons to do things?!
 
 ### Audio on device
-We currently beep once for success and twice for failure. It's not the most annoying beep in the world but it's not exactly pleasant either. We're going to include some pleasant chimes for success and failure as well as some basic status reporting like "Could not connect to server", etc.
+We have built in success and error tones but we would like to include audio for basic error and status conditions on the device. This will depend on our default text to speech engine selection so we can ensure we provide a consistent voice user interface and experience.
 
 ###  Easy Start
 Docker, building, configuring, flashing, etc is a pain. There are several approaches we plan to take to avoid this and ease the barrier to entry for users to get started.
