@@ -76,14 +76,14 @@ esp_lcd_panel_handle_t hdl_lcd;
 void play_audio_err(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/wake.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/error.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
 void play_audio_ok(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/echo_en_ok.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/success.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
