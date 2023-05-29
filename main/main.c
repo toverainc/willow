@@ -337,6 +337,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
     return ESP_OK;
 }
 
+#ifdef CONFIG_WILLOW_USE_WIS
 static esp_err_t init_ap_to_api()
 {
     ESP_LOGD(TAG, "init_ap_to_api()");
@@ -368,6 +369,7 @@ static esp_err_t init_ap_to_api()
 
     return ESP_OK;
 }
+#endif
 
 static esp_err_t init_sntp()
 {
@@ -931,7 +933,9 @@ void app_main(void)
     init_lvgl_touch();
     init_session_timer();
     init_timer();
+#ifdef CONFIG_WILLOW_USE_WIS
     init_ap_to_api();
+#endif
     init_esp_audio(hdl_audio_board);
     init_spiffs_audio();
     start_rec();

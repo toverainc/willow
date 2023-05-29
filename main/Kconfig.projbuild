@@ -212,7 +212,7 @@ config WILLOW_NTP_HOST
             Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck...
 
         config WILLOW_RECORD_BUFFER
-            depends on !WILLOW_USE_MULTINET
+            depends on WILLOW_USE_WIS
             int "Record buffer"
             range 1 16
             default 12
@@ -221,6 +221,7 @@ config WILLOW_NTP_HOST
                 Users with a local WIS instance may want to try setting lower (10 or so)
 
         config WILLOW_STREAM_TIMEOUT
+            depends on WILLOW_USE_WIS
             int "Maximum speech duration"
             range 1 30
             default 5
