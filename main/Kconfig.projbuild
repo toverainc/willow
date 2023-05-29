@@ -275,6 +275,11 @@ config WILLOW_NTP_HOST
 
     menu "Debugging"
 
+    config WILLOW_DEBUG_LOG
+        bool "Willow Debug Logging"
+        help
+            Sets all log levels to debug
+
     config WILLOW_DEBUG_MEM
         bool "Debug Willow memory"
         help
