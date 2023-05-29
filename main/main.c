@@ -822,13 +822,8 @@ static void get_mac_address()
 
 void app_main(void)
 {
-#ifdef CONFIG_WILLOW_DEBUG_LOG
-    esp_log_level_set("*", ESP_LOG_DEBUG);
-#else
-    esp_log_level_set("PERIPH_WIFI", ESP_LOG_WARN);
     esp_log_level_set("*", ESP_LOG_ERROR);
-#endif
-
+    esp_log_level_set("PERIPH_WIFI", ESP_LOG_WARN);
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
 
     ESP_LOGI(TAG, "Starting up! Please wait...");
