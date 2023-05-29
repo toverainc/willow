@@ -745,9 +745,11 @@ static void init_esp_audio(audio_board_handle_t hdl)
         ESP_LOGE(TAG, "failed to add input stream to ESP Audio");
     }
 
-    flac_decoder_cfg_t cfg_wd = DEFAULT_FLAC_DECODER_CONFIG();
+    flac_decoder_cfg_t cfg_fd = DEFAULT_FLAC_DECODER_CONFIG();
+    cfg_fd.stack_in_ext = true;
+    cfg_fd.task_core =1;
 
-    ret = esp_audio_codec_lib_add(hdl_ea, AUDIO_CODEC_TYPE_DECODER, flac_decoder_init(&cfg_wd));
+    ret = esp_audio_codec_lib_add(hdl_ea, AUDIO_CODEC_TYPE_DECODER, flac_decoder_init(&cfg_fd));
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to add FLAC decoder to ESP Audio");
     }
