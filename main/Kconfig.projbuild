@@ -14,7 +14,24 @@ config WIFI_PASSWORD
 
 		Can be left blank if the network is open.
 
+choice WILLOW_SPEECH_REC_MODE
+    prompt "Willow Speech Recognition Mode"
+    default WILLOW_USE_WIS
+
+    config WILLOW_USE_WIS
+        bool "Willow Inference Server"
+        help
+            Use WIS for free-flow speech recognition
+
+    config WILLOW_USE_MULTINET
+        depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_ENDPOINT_HOMEASSISTANT
+        bool "On device command detection via MultiNet"
+        help
+            Use on device command detection via MultiNet
+endchoice
+
 config SERVER_URI
+    depends on WILLOW_USE_WIS
     string "Willow Inference Server URI"
     default "https://infer.tovera.io/api/willow"
     help
@@ -43,25 +60,6 @@ choice WILLOW_WAKE_WORD
         bool "Hi Lexin"
         help
             Say Hi Lexin to wake Willow
-endchoice
-
-choice WILLOW_USE_CODEC
-    prompt "Audio codec to use"
-    default WILLOW_USE_PCM
-        config WILLOW_USE_PCM
-            bool "Raw PCM frames"
-            help
-                High bandwidth but very fast
-
-        config WILLOW_USE_AMRWB
-            bool "AMR-WB (incompatible with local recognition)"
-            help
-                AMR-WB is a very low bitrate codec
-
-        config WILLOW_USE_WAV
-            bool "WAV (incompatible with local recognition)"
-            help
-                Industry standard WAV file
 endchoice
 
 choice WILLOW_USE_ENDPOINT
@@ -159,12 +157,6 @@ config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
     depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
     string "Password for HTTP Basic Authentication"
 
-config WILLOW_USE_MULTINET
-    depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT && WILLOW_USE_PCM && WILLOW_USE_ENDPOINT_HOMEASSISTANT
-    bool "Use local command detection via MultiNet"
-    help
-        Use local command detection via MultiNet
-
 config WILLOW_TIMEZONE
     string "Timezone"
     default "UTC+5"
@@ -207,33 +199,86 @@ config WILLOW_NTP_HOST
     help
         NTP host for obtaining system time
 
-config WILLOW_VAD_TIMEOUT
-    int "VAD Timeout"
-    range 1 1000
-    default 300
-    help
-        VAD (Voice Activity Detection) timeout in ms
-        How long to wait after end of speech to trigger end of VAD
-        Improves response times but can also clip speech if you don't talk fast enough
-        Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck...
+    menu "Advanced settings"
 
-config WILLOW_RECORD_BUFFER
-    depends on !WILLOW_USE_MULTINET
-    int "Record buffer"
-    range 1 16
-    default 12
-    help
-        Custom record buffer for timing and latency
-        Users with a local WIS instance may want to try setting lower (10 or so)
+        config WILLOW_VAD_TIMEOUT
+        int "VAD Timeout"
+        range 1 1000
+        default 300
+        help
+            VAD (Voice Activity Detection) timeout in ms
+            How long to wait after end of speech to trigger end of VAD
+            Improves response times but can also clip speech if you don't talk fast enough
+            Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck...
 
-config WILLOW_STREAM_TIMEOUT
-    int "Maximum stream duration"
-    range 1 30
-    default 5
-    help
-        Stop stream N seconds after wake event to avoid endless stream when VAD END doesn't trigger.
+        config WILLOW_RECORD_BUFFER
+            depends on !WILLOW_USE_MULTINET
+            int "Record buffer"
+            range 1 16
+            default 12
+            help
+                Custom record buffer for timing and latency
+                Users with a local WIS instance may want to try setting lower (10 or so)
+
+        config WILLOW_STREAM_TIMEOUT
+            int "Maximum speech duration"
+            range 1 30
+            default 5
+            help
+                Stop speech recognition after N seconds after wake event to avoid endless stream when VAD END doesn't trigger.
+
+        choice WILLOW_USE_CODEC
+            prompt "Audio codec to use for speech recognition"
+            default WILLOW_USE_PCM
+
+            config WILLOW_USE_PCM
+                bool "PCM"
+                help
+                    High bandwidth but very fast
+
+            config WILLOW_USE_AMRWB
+                depends on WILLOW_USE_WIS
+                bool "AMR-WB"
+                help
+                    AMR-WB is a very low bitrate codec
+
+            config WILLOW_USE_WAV
+                depends on WILLOW_USE_WIS
+                bool "WAV"
+                help
+                    Industry standard WAV file
+        endchoice
+
+        choice WILLOW_WAKE_MODE
+            prompt "Wake Word Recognition Operating Mode"
+            default WILLOW_WAKE_DET_MODE_2CH_90
+
+                config WILLOW_WAKE_DET_MODE_90
+                    bool "DET_MODE_90"
+
+                config WILLOW_WAKE_DET_MODE_95
+                    bool "DET_MODE_95"
+
+                config WILLOW_WAKE_DET_MODE_2CH_90
+                    bool "DET_MODE_2CH_90"
+
+                config WILLOW_WAKE_DET_MODE_2CH_95
+                    bool "DET_MODE_2CH_95"
+
+                config WILLOW_WAKE_DET_MODE_3CH_90
+                    bool "DET_MODE_3CH_90"
+
+                config WILLOW_WAKE_DET_MODE_3CH_95
+                    bool "DET_MODE_3CH_95"
+        endchoice
+    endmenu
 
     menu "Debugging"
+
+    config WILLOW_DEBUG_LOG
+        bool "Debug Willow logging"
+        help
+            Set all log levels to debug
 
     config WILLOW_DEBUG_MEM
         bool "Debug Willow memory"
@@ -257,31 +302,6 @@ config WILLOW_STREAM_TIMEOUT
         help
             Willow will periodically print timer information
 
-    endmenu
-
-    menu "Advanced settings"
-        choice WILLOW_WAKE_MODE
-            prompt "Wake Word Recognition Operating Mode"
-            default WILLOW_WAKE_DET_MODE_2CH_90
-
-                config WILLOW_WAKE_DET_MODE_90
-                    bool "DET_MODE_90"
-
-                config WILLOW_WAKE_DET_MODE_95
-                    bool "DET_MODE_95"
-
-                config WILLOW_WAKE_DET_MODE_2CH_90
-                    bool "DET_MODE_2CH_90"
-
-                config WILLOW_WAKE_DET_MODE_2CH_95
-                    bool "DET_MODE_2CH_95"
-
-                config WILLOW_WAKE_DET_MODE_3CH_90
-                    bool "DET_MODE_3CH_90"
-
-                config WILLOW_WAKE_DET_MODE_3CH_95
-                    bool "DET_MODE_3CH_95"
-        endchoice
     endmenu
 
 endmenu
