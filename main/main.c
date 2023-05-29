@@ -109,10 +109,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             msg = MSG_START;
 #endif
             xQueueSend(q_rec, &msg, 0);
-            if (esp_timer_is_active(hdl_sess_timer)) {
-                esp_timer_stop(hdl_sess_timer);
-            }
-            esp_timer_start_once(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000);
             break;
         case AUDIO_REC_COMMAND_DECT:
             // Multinet timeout
@@ -149,6 +145,10 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_label_set_text_static(lbl_ln3, "Say local command...");
 #else
             lv_label_set_text_static(lbl_ln3, "Say command...");
+            if (esp_timer_is_active(hdl_sess_timer)) {
+                esp_timer_stop(hdl_sess_timer);
+            }
+            esp_timer_start_once(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000);
 #endif
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
