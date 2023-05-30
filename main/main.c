@@ -741,6 +741,13 @@ static void init_esp_audio(audio_board_handle_t hdl)
 
     hdl_ea = esp_audio_create(&cfg_ea);
 
+    http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
+
+    ret = esp_audio_input_stream_add(hdl_ea, http_stream_init(&cfg_hs));
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to add HTTP input stream to ESP Audio");
+    }
+
     spiffs_stream_cfg_t cfg_ss = SPIFFS_STREAM_CFG_DEFAULT();
     cfg_ss.type = AUDIO_STREAM_READER;
 
