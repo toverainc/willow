@@ -21,6 +21,10 @@ set(COMPONENT_PRIV_REQUIRES
 	spiffs
 )
 
+if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
+	message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
+endif()
+
 if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
 	set(COMPONENT_SRCS ${COMPONENT_SRCS} "endpoint/hass.c")
 elseif(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
