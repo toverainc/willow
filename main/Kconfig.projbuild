@@ -41,6 +41,7 @@ choice
     bool "Audio response using local files - default chimes"
 
     config WILLOW_AUDIO_RESPONSE_WIS_TTS
+    depends on WILLOW_USE_WIS
     bool "Audio response using WIS TTS - English only for now"
 endchoice
 
