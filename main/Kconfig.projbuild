@@ -157,6 +157,17 @@ config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
     depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
     string "Password for HTTP Basic Authentication"
 
+choice
+    prompt "Audio response type"
+    default WILLOW_AUDIO_RESPONSE_FS
+
+    config WILLOW_AUDIO_RESPONSE_NONE
+    bool "No audio response"
+
+    config WILLOW_AUDIO_RESPONSE_FS
+    bool "Audio response using local files"
+endchoice
+
 config WILLOW_TIMEZONE
     string "Timezone"
     default "UTC+5"

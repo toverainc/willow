@@ -10,11 +10,15 @@ extern QueueHandle_t q_rec;
 
 static const char *TAG = "WILLOW";
 
+struct willow_audio_response {
+    void (*fn_err)(void);
+    void (*fn_ok)(void);
+};
+
+struct willow_audio_response war;
+
 typedef enum {
     MSG_STOP,
     MSG_START,
     MSG_START_LOCAL,
 } q_msg;
-
-void play_audio_err(void);
-void play_audio_ok(void);
