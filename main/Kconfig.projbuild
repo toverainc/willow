@@ -37,6 +37,14 @@ config SERVER_URI
     help
         URI For your WIS instance. Supports HTTP and HTTPS.
 
+config WILLOW_WIS_TTS_URL
+    depends on WILLOW_AUDIO_RESPONSE_WIS_TTS
+    depends on WILLOW_USE_WIS
+    string "Willow Inference Server TTS URL"
+    default "https://infer.tovera.io/api/tts"
+    help
+        URL for the TTS API of your WIS instance. Supports HTTP and HTTPS.
+
 choice WILLOW_WAKE_WORD
     # This is a typo in esp-sr
     depends on SR_WN_LOAD_MULIT_WORD
@@ -166,6 +174,9 @@ choice
 
     config WILLOW_AUDIO_RESPONSE_FS
     bool "Audio response using local files"
+
+    config WILLOW_AUDIO_RESPONSE_WIS_TTS
+    bool "Audio response using WIS TTS"
 endchoice
 
 config WILLOW_TIMEZONE

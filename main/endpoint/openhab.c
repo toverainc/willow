@@ -47,9 +47,9 @@ void openhab_send(const char *data)
 
 end:
     if (ok) {
-        war.fn_ok();
+        war.fn_ok("ok");
     } else {
-        war.fn_err();
+        war.fn_err("error");
     }
 
     lvgl_port_lock(0);

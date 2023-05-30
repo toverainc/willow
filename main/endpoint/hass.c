@@ -134,9 +134,9 @@ end:
                 lvgl_port_unlock();
 
                 if (hir.ok) {
-                    war.fn_ok();
+                    war.fn_ok(hir.speech);
                 } else {
-                    war.fn_err();
+                    war.fn_err(hir.speech);
                 }
 
                 timer_start(TIMER_GROUP_0, TIMER_0);
@@ -276,7 +276,7 @@ static void hass_post(const char *data)
     if (ret == ESP_OK) {
         if (http_status != 200) {
             ok = false;
-            war.fn_err();
+            war.fn_err("error");
         }
         cJSON *cjson = cJSON_Parse(body);
         cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
@@ -286,10 +286,10 @@ static void hass_post(const char *data)
                 ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                 if (!strcmp(response_type->valuestring, "error")) {
                     ok = false;
-                    war.fn_err();
+                    war.fn_err("error");
                 } else {
                     ok = true;
-                    war.fn_ok();
+                    war.fn_ok("ok");
                 }
             }
         }
