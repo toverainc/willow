@@ -61,6 +61,8 @@
 
 #define I2S_PORT        I2S_NUM_0
 #define PARTLABEL_AUDIO "audio"
+#define WIS_URL_TTS_ARG "?speaker=CLB&text=%s"
+#define WIS_URL_TTS_FMT CONFIG_WILLOW_WIS_TTS_URL WIS_URL_TTS_ARG
 
 bool recording = false;
 
@@ -74,23 +76,43 @@ static audio_rec_handle_t hdl_ar = NULL;
 QueueHandle_t q_rec;
 esp_lcd_panel_handle_t hdl_lcd;
 
-static void noop(void)
-{
-}
-
-static void play_audio_err(void)
+#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
+static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
     esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/error.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
-static void play_audio_ok(void)
+static void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
     esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/success.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
+
+#elif defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
+static void play_audio_wis_tts(void *data)
+{
+    if (data == NULL) {
+        ESP_LOGW(TAG, "called play_audio_wis_tts with NULL data");
+        return;
+    }
+    int len_url = strlen(WIS_URL_TTS_FMT) + strlen((char *)data) + 1;
+    char *url = calloc(sizeof(char), len_url);
+    snprintf(url, len_url, WIS_URL_TTS_FMT, (char *)data);
+    ESP_LOGI(TAG, "play_audio_wis_tts URL: %s", url);
+    gpio_set_level(get_pa_enable_gpio(), 1);
+    esp_audio_sync_play(hdl_ea, url, 0);
+    gpio_set_level(get_pa_enable_gpio(), 0);
+    free(url);
+}
+#else
+
+static void noop(void)
+{
+}
+#endif
 
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
@@ -118,7 +140,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
         case AUDIO_REC_COMMAND_DECT:
             // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
-            war.fn_err();
+            war.fn_err("unrecognized command");
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 
@@ -951,6 +973,9 @@ void app_main(void)
 #if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
     war.fn_err = play_audio_err;
     war.fn_ok = play_audio_ok;
+#elif defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
+    war.fn_err = play_audio_wis_tts;
+    war.fn_ok = play_audio_wis_tts;
 #else
     war.fn_err = noop;
     war.fn_ok = noop;

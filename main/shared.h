@@ -11,8 +11,8 @@ extern QueueHandle_t q_rec;
 static const char *TAG = "WILLOW";
 
 struct willow_audio_response {
-    void (*fn_err)(void);
-    void (*fn_ok)(void);
+    void (*fn_err)(void *data);
+    void (*fn_ok)(void *data);
 };
 
 struct willow_audio_response war;
