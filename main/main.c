@@ -102,7 +102,7 @@ static void play_audio_wis_tts(void *data)
     char *url = calloc(sizeof(char), len_url);
     snprintf(url, len_url, WIS_URL_TTS_FMT, (char *)data);
     gpio_set_level(get_pa_enable_gpio(), 1);
-    ESP_LOGI(TAG, "Using WIS TTS URI '%s'", url);
+    ESP_LOGI(TAG, "Using WIS TTS URL '%s'", url);
     esp_audio_sync_play(hdl_ea, url, 0);
     ESP_LOGI(TAG, "WIS TTS playback finished");
     gpio_set_level(get_pa_enable_gpio(), 0);
@@ -607,8 +607,8 @@ static void at_read(void *data)
                     audio_pipeline_terminate(hdl_ap_to_api);
                     audio_pipeline_run(hdl_ap_to_api);
                     stream_to_api = true;
-                    // this confirms that the URI is still set correctly
-                    ESP_LOGI(TAG, "Using WIS URI '%s'", audio_element_get_uri(hdl_ae_hs));
+                    // this confirms that the URL is still set correctly
+                    ESP_LOGI(TAG, "Using WIS URL '%s'", audio_element_get_uri(hdl_ae_hs));
                     __attribute__((fallthrough));
                 case MSG_START_LOCAL:
                     recording = true;
