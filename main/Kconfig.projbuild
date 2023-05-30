@@ -30,9 +30,23 @@ choice WILLOW_SPEECH_REC_MODE
             Use on device command detection via MultiNet
 endchoice
 
+choice
+    prompt "Willow audio response type"
+    default WILLOW_AUDIO_RESPONSE_FS
+
+    config WILLOW_AUDIO_RESPONSE_NONE
+    bool "No audio response - silent"
+
+    config WILLOW_AUDIO_RESPONSE_FS
+    bool "Audio response using local files - default chimes"
+
+    config WILLOW_AUDIO_RESPONSE_WIS_TTS
+    bool "Audio response using WIS TTS - English only for now"
+endchoice
+
 config SERVER_URI
     depends on WILLOW_USE_WIS
-    string "Willow Inference Server URI"
+    string "Willow Inference Server URL"
     default "https://infer.tovera.io/api/willow"
     help
         URI For your WIS instance. Supports HTTP and HTTPS.
@@ -164,20 +178,6 @@ config WILLOW_ENDPOINT_REST_AUTH_USERNAME
 config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
     depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
     string "Password for HTTP Basic Authentication"
-
-choice
-    prompt "Audio response type"
-    default WILLOW_AUDIO_RESPONSE_FS
-
-    config WILLOW_AUDIO_RESPONSE_NONE
-    bool "No audio response - silent"
-
-    config WILLOW_AUDIO_RESPONSE_FS
-    bool "Audio response using local files - default chimes"
-
-    config WILLOW_AUDIO_RESPONSE_WIS_TTS
-    bool "Audio response using WIS TTS - English only for now"
-endchoice
 
 config WILLOW_TIMEZONE
     string "Timezone"
