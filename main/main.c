@@ -787,7 +787,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
         .out_rb_size = ESP_DECODER_RINGBUFFER_SIZE,
         .plus_enable = false,
         .stack_in_ext = true,
-        .task_core = 1,
+        .task_core = 0,
         .task_prio = ESP_DECODER_TASK_PRIO,
         .task_stack = ESP_DECODER_TASK_STACK_SIZE,
     };
