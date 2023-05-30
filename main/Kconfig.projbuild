@@ -170,13 +170,13 @@ choice
     default WILLOW_AUDIO_RESPONSE_FS
 
     config WILLOW_AUDIO_RESPONSE_NONE
-    bool "No audio response"
+    bool "No audio response - silent"
 
     config WILLOW_AUDIO_RESPONSE_FS
-    bool "Audio response using local files"
+    bool "Audio response using local files - default chimes"
 
     config WILLOW_AUDIO_RESPONSE_WIS_TTS
-    bool "Audio response using WIS TTS"
+    bool "Audio response using WIS TTS - English only for now"
 endchoice
 
 config WILLOW_TIMEZONE

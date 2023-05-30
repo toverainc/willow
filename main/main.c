@@ -101,9 +101,10 @@ static void play_audio_wis_tts(void *data)
     int len_url = strlen(WIS_URL_TTS_FMT) + strlen((char *)data) + 1;
     char *url = calloc(sizeof(char), len_url);
     snprintf(url, len_url, WIS_URL_TTS_FMT, (char *)data);
-    ESP_LOGI(TAG, "play_audio_wis_tts URL: %s", url);
     gpio_set_level(get_pa_enable_gpio(), 1);
+    ESP_LOGI(TAG, "Using WIS TTS URI '%s'", url);
     esp_audio_sync_play(hdl_ea, url, 0);
+    ESP_LOGI(TAG, "WIS TTS playback finished");
     gpio_set_level(get_pa_enable_gpio(), 0);
     free(url);
 }
