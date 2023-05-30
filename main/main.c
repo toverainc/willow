@@ -212,7 +212,7 @@ static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev,
             };
 
             es7210_adc_init(&cfg_ahc);
-            es7210_adc_set_gain(GAIN_37_5DB);
+            es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
         }
     }
 
@@ -941,6 +941,7 @@ void app_main(void)
     init_esp_audio(hdl_audio_board);
     init_spiffs_audio();
     start_rec();
+    es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
