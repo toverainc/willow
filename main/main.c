@@ -153,7 +153,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
-            // audio_thread_create(NULL, "play_tone", play_tone, NULL, 4 * 1024, 10, true, 1);
             break;
         default:
 #ifdef CONFIG_WILLOW_USE_MULTINET
