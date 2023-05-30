@@ -73,14 +73,18 @@ static audio_rec_handle_t hdl_ar = NULL;
 QueueHandle_t q_rec;
 esp_lcd_panel_handle_t hdl_lcd;
 
-void play_audio_err(void)
+static void noop(void)
+{
+}
+
+static void play_audio_err(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
     esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/error.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
-void play_audio_ok(void)
+static void play_audio_ok(void)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
     esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/success.flac", 0);
@@ -113,7 +117,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
         case AUDIO_REC_COMMAND_DECT:
             // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
-            play_audio_err();
+            war.fn_err();
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 
@@ -925,6 +929,14 @@ void app_main(void)
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
+
+#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
+    war.fn_err = play_audio_err;
+    war.fn_ok = play_audio_ok;
+#else
+    war.fn_err = noop;
+    war.fn_ok = noop;
+#endif
 
 #ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
     init_hass();

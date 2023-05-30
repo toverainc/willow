@@ -43,9 +43,9 @@ void rest_send(const char *data)
     }
 
     if (ok) {
-        play_audio_ok();
+        war.fn_ok();
     } else {
-        play_audio_err();
+        war.fn_err();
     }
 
     lvgl_port_lock(0);
