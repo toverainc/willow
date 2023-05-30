@@ -8,6 +8,7 @@
 #include "driver/ledc.h"
 #include "driver/timer.h"
 #include "es7210.h"
+#include "esp_decoder.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
@@ -748,11 +749,21 @@ static void init_esp_audio(audio_board_handle_t hdl)
         ESP_LOGE(TAG, "failed to add input stream to ESP Audio");
     }
 
-    flac_decoder_cfg_t cfg_fd = DEFAULT_FLAC_DECODER_CONFIG();
-    cfg_fd.stack_in_ext = true;
-    cfg_fd.task_core = 1;
+    audio_decoder_t ad[] = {
+        DEFAULT_ESP_FLAC_DECODER_CONFIG(),
+    };
 
-    ret = esp_audio_codec_lib_add(hdl_ea, AUDIO_CODEC_TYPE_DECODER, flac_decoder_init(&cfg_fd));
+    esp_decoder_cfg_t cfg_dec = {
+        .out_rb_size = ESP_DECODER_RINGBUFFER_SIZE,
+        .plus_enable = false,
+        .stack_in_ext = true,
+        .task_core = 1,
+        .task_prio = ESP_DECODER_TASK_PRIO,
+        .task_stack = ESP_DECODER_TASK_STACK_SIZE,
+    };
+
+    ret = esp_audio_codec_lib_add(hdl_ea, AUDIO_CODEC_TYPE_DECODER,
+                                  esp_decoder_init(&cfg_dec, ad, sizeof(ad) / sizeof(audio_decoder_t)));
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to add FLAC decoder to ESP Audio");
     }
