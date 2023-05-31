@@ -1,6 +1,5 @@
 #include "board.h"
 #include "driver/ledc.h"
-#include "driver/timer.h"
 #include "esp_err.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_touch_tt21100.h"
@@ -49,11 +48,11 @@ void cb_scr(lv_event_t *ev)
     // printf("cb_scr\n");
     switch (lv_event_get_code(ev)) {
         case LV_EVENT_RELEASED:
-            timer_start(TIMER_GROUP_0, TIMER_0);
+            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
             break;
 
         case LV_EVENT_PRESSED:
-            reset_timer(true);
+            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
             break;
 

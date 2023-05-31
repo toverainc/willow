@@ -1,7 +1,6 @@
 #include "audio_hal.h"
 #include "audio_thread.h"
 #include "cJSON.h"
-#include "driver/timer.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
@@ -9,6 +8,7 @@
 #include "../http.h"
 #include "shared.h"
 #include "slvgl.h"
+#include "timer.h"
 
 #define OH_URI_INTERPRETERS "/rest/voice/interpreters"
 
@@ -66,7 +66,7 @@ end:
     }
     lvgl_port_unlock();
 
-    timer_start(TIMER_GROUP_0, TIMER_0);
+    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 
     free(body);
 }

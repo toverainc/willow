@@ -6,7 +6,6 @@
 #include "board.h"
 #include "cJSON.h"
 #include "driver/ledc.h"
-#include "driver/timer.h"
 #include "es7210.h"
 #include "esp_decoder.h"
 #include "esp_err.h"
@@ -147,7 +146,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 
             lv_label_set_text(lbl_ln3, "#ff0000 Unrecognized Command");
             lvgl_port_unlock();
-            timer_start(TIMER_GROUP_0, TIMER_0);
+            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
             break;
         case AUDIO_REC_WAKEUP_END:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
@@ -161,7 +160,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 xQueueSend(q_rec, &msg, 0);
                 break;
             }
-            reset_timer(true);
+            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
             lvgl_port_lock(0);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
@@ -173,10 +172,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_label_set_text_static(lbl_ln3, "Say local command...");
 #else
             lv_label_set_text_static(lbl_ln3, "Say command...");
-            if (esp_timer_is_active(hdl_sess_timer)) {
-                esp_timer_stop(hdl_sess_timer);
-            }
-            esp_timer_start_once(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000);
+            reset_timer(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000, false);
 #endif
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
@@ -207,7 +203,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_label_set_text_static(lbl_ln1, "I heard command:");
             lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
             lvgl_port_unlock();
-            timer_start(TIMER_GROUP_0, TIMER_0);
+            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 #else
             ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are);
 #endif
@@ -986,8 +982,8 @@ void app_main(void)
     init_buttons();
     init_input_key_service();
     init_lvgl_touch();
+    init_display_timer();
     init_session_timer();
-    init_timer();
 #ifdef CONFIG_WILLOW_USE_WIS
     init_ap_to_api();
 #endif
@@ -1038,7 +1034,7 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Startup complete! Waiting for wake word.");
 
-    ESP_ERROR_CHECK_WITHOUT_ABORT(timer_start(TIMER_GROUP_0, TIMER_0));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false));
 
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
