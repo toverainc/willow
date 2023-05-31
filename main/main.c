@@ -615,6 +615,7 @@ static void at_read(void *data)
                     recording = false;
                     stream_to_api = false;
                     lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
+                    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
                     break;
                 default:
                     printf("at_read(): invalid msg '%d'\n", msg);
