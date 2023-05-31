@@ -347,6 +347,11 @@ clang-format)
     clang-format-15 -i main/{,endpoint}/*.{c,h}
 ;;
 
+convert-font)
+    lv_font_conv --format bin --lcd --bpp 4 --no-compress --size 28 --font "$2" \
+        -r 0x20-0x20CF -o spiffs/ui/font.bin
+;;
+
 *)
     echo "Uknown argument - passing directly to idf.py"
     check_container

@@ -59,7 +59,7 @@
 #endif
 
 #define I2S_PORT        I2S_NUM_0
-#define PARTLABEL_AUDIO "audio"
+#define PARTLABEL_UI    "ui"
 #define WIS_URL_TTS_ARG "?speaker=CLB&text=%s"
 #define WIS_URL_TTS_FMT CONFIG_WILLOW_WIS_TTS_URL WIS_URL_TTS_ARG
 
@@ -79,14 +79,14 @@ esp_lcd_panel_handle_t hdl_lcd;
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/error.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/error.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
 static void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/audio/success.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/success.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
@@ -832,14 +832,14 @@ static void init_esp_audio(audio_board_handle_t hdl)
     ESP_LOGI(TAG, "audio player initialized");
 }
 
-static esp_err_t init_spiffs_audio(void)
+static esp_err_t init_spiffs_ui(void)
 {
     esp_err_t ret = ESP_OK;
     periph_spiffs_cfg_t pcfg_spiffs = {
         .format_if_mount_failed = false,
         .max_files = 5,
-        .partition_label = PARTLABEL_AUDIO,
-        .root = "/spiffs/audio",
+        .partition_label = PARTLABEL_UI,
+        .root = "/spiffs/ui",
     };
     esp_periph_handle_t phdl_spiffs = periph_spiffs_init(&pcfg_spiffs);
     ret = esp_periph_start(hdl_pset, phdl_spiffs);
@@ -849,7 +849,7 @@ static esp_err_t init_spiffs_audio(void)
     }
 
     while (!periph_spiffs_is_mounted(phdl_spiffs)) {
-        ESP_LOGI(TAG, "periph_spiffs_is_mounted");
+        ESP_LOGI(TAG, "SPIFFS is mounted");
         vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 
@@ -885,15 +885,11 @@ void app_main(void)
 
     init_display();
     init_lvgl_display();
+    init_spiffs_ui();
 
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
     } else {
-        // static lv_style_t lv_st_montserrat_20;
-        // lv_style_init(&lv_st_montserrat_20);
-        // lv_style_set_text_color(&lv_st_montserrat_20, lv_color_black());
-        // lv_style_set_text_font(&lv_st_montserrat_20, &lv_font_montserrat_14);
-        // lv_style_set_text_opa(&lv_st_montserrat_20, LV_OPA_30);
 
         lvgl_port_lock(0);
 
@@ -908,7 +904,28 @@ void app_main(void)
         lv_label_set_recolor(lbl_ln3, true);
         lv_label_set_recolor(lbl_ln4, true);
         lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
-        // lv_obj_add_style(lbl_hdr, &lv_st_montserrat_20, 0);
+
+#ifdef CONFIG_LV_USE_FS_POSIX
+        // Willow style
+        static lv_style_t lv_st_willow;
+        lv_style_init(&lv_st_willow);
+
+        // Willow font
+        lv_font_t *lv_font_willow;
+        lv_font_willow = lv_font_load("A/spiffs/ui/font.bin");
+
+        // Attach font to style
+        lv_style_set_text_font(&lv_st_willow, lv_font_willow);
+
+        // Set Willow style on objects
+        lv_obj_add_style(lbl_hdr, &lv_st_willow, 0);
+        lv_obj_add_style(lbl_ln1, &lv_st_willow, 0);
+        lv_obj_add_style(lbl_ln2, &lv_st_willow, 0);
+        lv_obj_add_style(lbl_ln3, &lv_st_willow, 0);
+        lv_obj_add_style(lbl_ln4, &lv_st_willow, 0);
+        lv_obj_add_style(lbl_btn_cancel, &lv_st_willow, 0);
+#endif
+
         lv_label_set_text_static(lbl_btn_cancel, "Cancel");
         lv_label_set_text_static(lbl_hdr, "Welcome to Willow!");
         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
@@ -989,7 +1006,6 @@ void app_main(void)
     init_ap_to_api();
 #endif
     init_esp_audio(hdl_audio_board);
-    init_spiffs_audio();
     start_rec();
     es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
 
