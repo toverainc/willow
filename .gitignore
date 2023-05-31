@@ -3,6 +3,7 @@
 .vscode
 build
 deps
+flags
 generated_*.h
 managed_components
 sdkconfig
