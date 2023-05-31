@@ -51,6 +51,13 @@ if(WIFI_PLEN LESS 8 OR WIFI_PLEN GREATER 63)
 	message(FATAL_ERROR "Wi-Fi WPA passphrase must be between 8 and 63 ASCII characters")
 endif()
 
+if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
+	string(LENGTH "${CONFIG_HOMEASSISTANT_TOKEN}" HASS_TLEN)
+	if(HASS_TLEN EQUAL 0)
+		message(FATAL_ERROR "Home Assistant endpoint configured without token")
+	endif()
+endif()
+
 if(CONFIG_WILLOW_USE_WIS AND NOT CONFIG_WILLOW_WIS_TTS_URL MATCHES "^https?://")
 	message(FATAL_ERROR "Willow WIS TTS URL must include URL scheme")
 endif()
