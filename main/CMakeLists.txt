@@ -37,6 +37,10 @@ if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
 	message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
 endif()
 
+if(NOT CONFIG_SERVER_URI MATCHES "^https?://")
+	message(FATAL_ERROR "Willow WIS URL must include URL scheme")
+endif()
+
 string(REGEX MATCH "^[ -~]+" WIFI_PASSPHRASE "${CONFIG_WIFI_PASSWORD}")
 if(NOT "${CONFIG_WIFI_PASSWORD}" STREQUAL "${WIFI_PASSPHRASE}")
 	message(FATAL_ERROR "Wi-Fi WPA passphrase must only contain ASCII characters")
