@@ -70,6 +70,13 @@ if(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
 endif()
 
 if(CONFIG_WILLOW_USE_ENDPOINT_REST)
+	if(CONFIG_WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER)
+		string(LENGTH "${CONFIG_WILLOW_ENDPOINT_REST_AUTH_HEADER}" RA_HLEN)
+		if(RA_HLEN EQUAL 0)
+			message(FATAL_ERROR "REST endpoint configured to use Authorization header with empty header")
+		endif()
+	endif()
+
 	if(NOT CONFIG_WILLOW_ENDPOINT_REST_URL MATCHES "^https?://")
 		message(FATAL_ERROR "REST endpoint URL must contain URL scheme")
 	endif()
