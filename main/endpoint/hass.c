@@ -1,7 +1,6 @@
 #include "audio_hal.h"
 #include "audio_thread.h"
 #include "cJSON.h"
-#include "driver/timer.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
@@ -13,6 +12,7 @@
 #include "../http.h"
 #include "shared.h"
 #include "slvgl.h"
+#include "timer.h"
 
 #define HASS_SPEECH_MAX_LEN           64
 #define HASS_URI_COMPONENTS           "/api/components"
@@ -139,7 +139,8 @@ end:
                     war.fn_err(hir.speech);
                 }
 
-                timer_start(TIMER_GROUP_0, TIMER_0);
+                reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
+
 cleanup:
                 cJSON_Delete(cjson);
                 free(resp);
@@ -310,7 +311,7 @@ static void hass_post(const char *data)
     } else {
         ESP_LOGE(TAG, "failed to read HTTP POST response");
     }
-    timer_start(TIMER_GROUP_0, TIMER_0);
+    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
     free(body);
 
     free(url);
