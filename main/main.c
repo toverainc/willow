@@ -917,18 +917,15 @@ void app_main(void)
         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         lv_obj_align(btn_cancel, LV_ALIGN_BOTTOM_MID, 0, -10);
         lv_obj_align(lbl_btn_cancel, LV_ALIGN_CENTER, 0, 0);
         lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
         lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
         lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
-        lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
+        lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, -20);
+        lv_obj_align(lbl_ln4, LV_ALIGN_CENTER, 0, 20);
         lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
-        lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
         lv_obj_set_width(lbl_ln2, 320);
-        lv_obj_set_width(lbl_ln4, 320);
 #ifdef CONFIG_WILLOW_USE_MULTINET
         lv_label_set_text_static(lbl_ln3, "Starting up (local)...");
 #else
@@ -954,6 +951,7 @@ void app_main(void)
     esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
 
     // Start wifi
+    lv_label_set_text_static(lbl_ln4, "Connecting to Wi-Fi ...");
     esp_periph_start(hdl_pset, hdl_pwifi);
     periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
 
@@ -1021,7 +1019,13 @@ void app_main(void)
             ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
         } else {
             lvgl_port_lock(0);
+            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
+            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
+            lv_obj_set_width(lbl_ln4, 320);
+            lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
             lv_label_set_text(lbl_ln3, wake_help);
+
             lvgl_port_unlock();
         }
     }
