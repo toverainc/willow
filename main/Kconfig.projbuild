@@ -50,7 +50,7 @@ config SERVER_URI
     string "Willow Inference Server URL"
     default "https://infer.tovera.io/api/willow"
     help
-        URI For your WIS instance. Supports HTTP and HTTPS.
+        URL For your WIS instance. Supports HTTP and HTTPS.
 
 config WILLOW_WIS_TTS_URL
     depends on WILLOW_AUDIO_RESPONSE_WIS_TTS
@@ -105,14 +105,14 @@ choice WILLOW_USE_ENDPOINT
 endchoice
 
 config HOMEASSISTANT_HOST
-    string "HomeAssistant host"
+    string "Home Assistant host"
     default "homeassistant.local"
     depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     help
         Hostname/IP address for your Home Assistant instance.
 
 config HOMEASSISTANT_PORT
-    int "HomeAssistant port"
+    int "Home Assistant port"
     default 8123
     depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     range 0 65535
@@ -120,14 +120,14 @@ config HOMEASSISTANT_PORT
         TCP port for your Home Assistant instance.
 
 config HOMEASSISTANT_TLS
-    bool "HomeAssistant TLS/SSL"
+    bool "Home Assistant TLS/SSL"
     depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
     help
         Enable if your Home Assistant port has TLS/SSL enabled.
 
 config HOMEASSISTANT_TOKEN
     depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
-    string "HomeAssistant Auth Token"
+    string "Home Assistant Auth Token"
     help
         Long Lived Auth Token for Home Assistant.
 
@@ -375,7 +375,7 @@ config WILLOW_NTP_HOST
     config WILLOW_DEBUG_MEM
         bool "Debug Willow memory"
         help
-            Willow will periodically print memory debugging information when set
+            Willow will periodically print memory debugging information when enabled
 
     config WILLOW_DEBUG_RUNTIME_STATS
         bool "Debug Willow runtime stats"
@@ -392,7 +392,7 @@ config WILLOW_NTP_HOST
     config WILLOW_DEBUG_TIMERS
         bool "Debug Willow timers"
         help
-            Willow will periodically print timer information
+            Willow will periodically print timer information when enabled
 
     endmenu
 
