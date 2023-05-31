@@ -263,7 +263,7 @@ http_error:
 
 static void hass_post(const char *data)
 {
-    bool ok;
+    bool ok = false;
     char *body = NULL;
     char *json = NULL;
     char *url = NULL;
@@ -279,7 +279,6 @@ static void hass_post(const char *data)
     ret = http_post(hdl_hc, url, "application/json", data, &body, &http_status);
     if (ret == ESP_OK) {
         if (http_status != 200) {
-            ok = false;
             war.fn_err("error");
         }
         cJSON *cjson = cJSON_Parse(body);
@@ -289,7 +288,6 @@ static void hass_post(const char *data)
             if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
                 ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
                 if (!strcmp(response_type->valuestring, "error")) {
-                    ok = false;
                     war.fn_err("error");
                 } else {
                     ok = true;
