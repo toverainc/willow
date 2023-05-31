@@ -236,24 +236,27 @@ static void hass_check_assist_pipeline(void)
 
     ret = http_get(hdl_hc, url, &body, &http_status);
 
-    if (ret == ESP_OK) {
-        cJSON *cjson = cJSON_Parse(body);
-        if (cJSON_IsArray(cjson)) {
-            cJSON *component = NULL;
-            cJSON_ArrayForEach(component, cjson)
-            {
-                if (cJSON_IsString(component) && component->valuestring != NULL) {
-                    if (strcmp(component->valuestring, "assist_pipeline") == 0) {
-                        ESP_LOGI(TAG, "Home Assistant has Assist Pipeline support");
-                        has_assist_pipeline = true;
-                        break;
-                    }
+    if (ret != ESP_OK || http_status != 200) {
+        goto http_error;
+    }
+
+    cJSON *cjson = cJSON_Parse(body);
+    if (cJSON_IsArray(cjson)) {
+        cJSON *component = NULL;
+        cJSON_ArrayForEach(component, cjson)
+        {
+            if (cJSON_IsString(component) && component->valuestring != NULL) {
+                if (strcmp(component->valuestring, "assist_pipeline") == 0) {
+                    ESP_LOGI(TAG, "Home Assistant has Assist Pipeline support");
+                    has_assist_pipeline = true;
+                    break;
                 }
             }
         }
-        cJSON_Delete(cjson);
     }
+    cJSON_Delete(cjson);
 
+http_error:
     free(body);
     free(url);
 }
