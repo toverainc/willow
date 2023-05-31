@@ -46,3 +46,7 @@ string(LENGTH "${CONFIG_WIFI_PASSWORD}" WIFI_PLEN)
 if(WIFI_PLEN LESS 8 OR WIFI_PLEN GREATER 63)
 	message(FATAL_ERROR "Wi-Fi WPA passphrase must be between 8 and 63 ASCII characters")
 endif()
+
+if(CONFIG_WILLOW_USE_WIS AND NOT CONFIG_WILLOW_WIS_TTS_URL MATCHES "^https?://")
+	message(FATAL_ERROR "Willow WIS TTS URL must include URL scheme")
+endif()
