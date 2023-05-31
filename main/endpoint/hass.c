@@ -277,41 +277,48 @@ static void hass_post(const char *data)
     ESP_LOGI(TAG, "sending '%s' to Home Assistant API on '%s'", data, url);
 
     ret = http_post(hdl_hc, url, "application/json", data, &body, &http_status);
-    if (ret == ESP_OK) {
-        if (http_status != 200) {
-            war.fn_err("error");
-        }
-        cJSON *cjson = cJSON_Parse(body);
-        cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
-        if (cJSON_IsObject(response)) {
-            cJSON *response_type = cJSON_GetObjectItemCaseSensitive(response, "response_type");
-            if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
-                ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
-                if (!strcmp(response_type->valuestring, "error")) {
-                    war.fn_err("error");
-                } else {
-                    ok = true;
-                    war.fn_ok("ok");
-                }
+    if (ret != ESP_OK || http_status != 200) {
+        ESP_LOGE(TAG, "hass_post: failed to contact Home Assistant: HTTP %d", http_status);
+        war.fn_err("error");
+        goto http_error;
+    }
+
+    cJSON *cjson = cJSON_Parse(body);
+    cJSON *response = cJSON_GetObjectItemCaseSensitive(cjson, "response");
+    if (cJSON_IsObject(response)) {
+        cJSON *response_type = cJSON_GetObjectItemCaseSensitive(response, "response_type");
+        if (cJSON_IsString(response_type) && response_type->valuestring != NULL) {
+            ESP_LOGI(TAG, "home assistant response_type: %s", response_type->valuestring);
+            if (!strcmp(response_type->valuestring, "error")) {
+                war.fn_err("error");
+            } else {
+                ok = true;
+                war.fn_ok("ok");
             }
         }
-        json = cJSON_Print(cjson);
-        cJSON_Delete(cjson);
-        if (json != NULL) {
-            ESP_LOGI(TAG, "HTTP POST response body:\n%s", json);
-        }
-
-        lvgl_port_lock(0);
-        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
-        lv_label_set_text_static(lbl_ln3, "Command status:");
-        lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
-        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
-        lvgl_port_unlock();
-    } else {
-        ESP_LOGE(TAG, "failed to read HTTP POST response");
     }
+    json = cJSON_Print(cjson);
+    cJSON_Delete(cjson);
+    if (json != NULL) {
+        ESP_LOGI(TAG, "HTTP POST response body:\n%s", json);
+    }
+
+http_error:
+    lvgl_port_lock(0);
+    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
+    lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
+    if (http_status == 200) {
+        lv_label_set_text_static(lbl_ln3, "Command status:");
+        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
+    } else {
+        lv_label_set_text_static(lbl_ln3, "Error contacting HASS:");
+        lv_label_set_text_fmt(lbl_ln4, "#ff0000 HTTP %d", http_status);
+    }
+
+    lvgl_port_unlock();
+
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
     free(body);
 
