@@ -33,10 +33,6 @@ register_component()
 
 spiffs_create_partition_image(audio ../spiffs/audio FLASH_IN_PROJECT)
 
-if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
-	message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
-endif()
-
 if(NOT CONFIG_SERVER_URI MATCHES "^https?://")
 	message(FATAL_ERROR "Willow WIS URL must include URL scheme")
 endif()
@@ -52,6 +48,10 @@ if(WIFI_PLEN LESS 8 OR WIFI_PLEN GREATER 63)
 endif()
 
 if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
+	if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
+		message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
+	endif()
+
 	string(LENGTH "${CONFIG_HOMEASSISTANT_TOKEN}" HASS_TLEN)
 	if(HASS_TLEN EQUAL 0)
 		message(FATAL_ERROR "Home Assistant endpoint configured without token")
