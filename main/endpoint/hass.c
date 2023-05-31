@@ -271,6 +271,7 @@ static void hass_post(const char *data)
     int http_status;
 
     esp_http_client_handle_t hdl_hc = init_http_client();
+    ret = hass_set_http_auth(hdl_hc);
 
     hass_get_url(&url, HASS_URI_CONVERSATION_PROCESS, false);
 
