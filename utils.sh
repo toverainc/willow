@@ -46,6 +46,7 @@ fi
 check_port() {
     if [ ! $PORT ]; then
         echo "You need to define the PORT environment variable to do serial stuff - exiting"
+        echo "If using sudo because of permissions, pass PORT with sudo. Example: sudo PORT=/dev/ttyACM0 ./utils.sh [command]"
         exit 1
     fi
 
@@ -57,6 +58,7 @@ check_port() {
     if [ ! -w "$PORT" ]; then
         echo "You don't have permission to write to $PORT - exiting"
         echo "You need to either run this command with sudo or add yourself to the dialout group"
+        echo "Example: sudo -E ./utils.sh erase-flash or sudo -E ./utils.sh flash"
         exit 1
     fi
 }
