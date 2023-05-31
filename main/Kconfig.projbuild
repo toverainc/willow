@@ -8,7 +8,7 @@ config WIFI_SSID
 
 config WIFI_PASSWORD
     string "WiFi Password"
-	default "myssid"
+	default "mypassword"
 	help
 		WiFi password (WPA, WPA2, WPA3) for Willow to use.
 
@@ -127,6 +127,7 @@ config HOMEASSISTANT_TLS
 
 config HOMEASSISTANT_TOKEN
     depends on WILLOW_USE_ENDPOINT_HOMEASSISTANT
+    default "your_ha_token"
     string "Home Assistant Auth Token"
     help
         Long Lived Auth Token for Home Assistant.
