@@ -28,7 +28,11 @@ void task_timer(void *data)
     while (true) {
         xQueueReceive(hdl_q_timer, &value, portMAX_DELAY);
         ESP_LOGI(TAG, "Wake LCD timeout, turning off LCD");
+#ifdef CONFIG_ESP32_S3_BOX_LITE_BOARD
+        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023, 0);
+#else
         ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
+#endif
         reset_timer(true);
     }
     vTaskDelete(NULL);
