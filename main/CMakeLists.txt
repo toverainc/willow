@@ -69,6 +69,12 @@ if(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
 	endif()
 endif()
 
+if(CONFIG_WILLOW_USE_ENDPOINT_REST)
+	if(NOT CONFIG_WILLOW_ENDPOINT_REST_URL MATCHES "^https?://")
+		message(FATAL_ERROR "REST endpoint URL must contain URL scheme")
+	endif()
+endif()
+
 if(CONFIG_WILLOW_USE_WIS AND NOT CONFIG_WILLOW_WIS_TTS_URL MATCHES "^https?://")
 	message(FATAL_ERROR "Willow WIS TTS URL must include URL scheme")
 endif()
