@@ -21,10 +21,6 @@ set(COMPONENT_PRIV_REQUIRES
 	spiffs
 )
 
-if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
-	message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
-endif()
-
 if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
 	set(COMPONENT_SRCS ${COMPONENT_SRCS} "endpoint/hass.c")
 elseif(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
@@ -36,6 +32,10 @@ endif()
 register_component()
 
 spiffs_create_partition_image(audio ../spiffs/audio FLASH_IN_PROJECT)
+
+if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
+	message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
+endif()
 
 string(REGEX MATCH "^[ -~]+" WIFI_PASSPHRASE "${CONFIG_WIFI_PASSWORD}")
 if(NOT "${CONFIG_WIFI_PASSWORD}" STREQUAL "${WIFI_PASSPHRASE}")
