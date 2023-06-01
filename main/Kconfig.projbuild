@@ -2,17 +2,17 @@ menu "Willow Configuration"
 
 config WIFI_SSID
     string "WiFi SSID"
-	default "myssid"
-	help
-		SSID (network name) for Willow to connect to.
+    default "myssid"
+    help
+        SSID (network name) for Willow to connect to.
 
 config WIFI_PASSWORD
     string "WiFi Password"
-	default "mypassword"
-	help
-		WiFi password (WPA, WPA2, WPA3) for Willow to use.
+    default "mypassword"
+    help
+        WiFi password (WPA, WPA2, WPA3) for Willow to use.
 
-		Can be left blank if the network is open.
+        Can be left blank if the network is open.
 
 choice WILLOW_SPEECH_REC_MODE
     prompt "Willow Speech Recognition Mode"
