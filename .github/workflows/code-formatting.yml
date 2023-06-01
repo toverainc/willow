@@ -1,0 +1,25 @@
+---
+name: code formatting
+on:
+  - pull_request
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: clang-format
+        uses: jidicula/clang-format-action@v4.11.0
+        with:
+          clang-format-version: 15
+          check-path: 'main'
+  editorconfig-checker:
+    name: editorconfig-check
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: editorconfig-check
+        uses: wow-rp-addons/actions-editorconfig-check@v1.0.2
+        with:
+          files: $(git log -1 --name-only --pretty='')
+
