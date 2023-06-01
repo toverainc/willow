@@ -849,10 +849,10 @@ static esp_err_t init_spiffs_ui(void)
     }
 
     while (!periph_spiffs_is_mounted(phdl_spiffs)) {
-        ESP_LOGI(TAG, "SPIFFS is mounted");
+        ESP_LOGI(TAG, "Waiting on SPIFFS mount...");
         vTaskDelay(500 / portTICK_PERIOD_MS);
     }
-
+    ESP_LOGI(TAG, "SPIFFS mounted");
     return ret;
 }
 
