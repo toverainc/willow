@@ -126,7 +126,7 @@ It's getting real now - plug it in!
 
 ### Back on the host - set serial port
 
-To do anything involving the serial port you will need to set the ```PORT``` environment variable for all further invocations of ```utils.sh```. 
+To do anything involving the serial port you will need to set the ```PORT``` environment variable for all further invocations of ```utils.sh```.
 
 With recent versions of ```tio``` you can use ```tio -L``` to list available ports. On Linux you can check ```dmesg``` and look for the path of the recently connected ESP BOX (furthest at the bottom, hopefully). On Linux it's ```/dev/ACM*``` and on Mac it's ```/dev/usbmodem*```.
 
