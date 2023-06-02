@@ -1,9 +1,13 @@
 #include "esp_log.h"
+#include "esp_lvgl_port.h"
 #include "esp_sntp.h"
 #include "esp_wifi.h"
+#include "lvgl.h"
+#include "periph_wifi.h"
 #include "sdkconfig.h"
 
 #include "shared.h"
+#include "slvgl.h"
 
 #define MAC_ADDR_SIZE 6
 
@@ -31,6 +35,30 @@ esp_err_t init_sntp(void)
     sntp_init();
 
     return ESP_OK;
+}
+
+esp_err_t init_wifi(void)
+{
+    esp_err_t ret = ESP_OK;
+    periph_wifi_cfg_t cfg_pwifi = {
+        .ssid = CONFIG_WIFI_SSID,
+        .password = CONFIG_WIFI_PASSWORD,
+    };
+    esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
+
+    // Start wifi
+    lvgl_port_lock(0);
+    lv_label_set_text_static(lbl_ln4, "Connecting to Wi-Fi ...");
+    lvgl_port_unlock();
+
+    esp_periph_start(hdl_pset, hdl_pwifi);
+    periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
+
+    ret = esp_wifi_set_ps(WIFI_PS_NONE);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set Wi-Fi power save mode");
+    }
+    return ret;
 }
 
 void get_mac_address(void)
