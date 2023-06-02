@@ -63,8 +63,8 @@
 #include "net/ethernet.h"
 #endif
 
-#define I2S_PORT     I2S_NUM_0
-#define PARTLABEL_UI "ui"
+#define I2S_PORT       I2S_NUM_0
+#define PARTLABEL_USER "user"
 
 bool recording = false;
 
@@ -590,27 +590,28 @@ static void at_read(void *data)
     vTaskDelete(NULL);
 }
 
-static esp_err_t init_spiffs_ui(void)
+static esp_err_t init_spiffs_user(void)
 {
     esp_err_t ret = ESP_OK;
-    periph_spiffs_cfg_t pcfg_spiffs = {
+    periph_spiffs_cfg_t pcfg_spiffs_user = {
         .format_if_mount_failed = false,
         .max_files = 5,
-        .partition_label = PARTLABEL_UI,
-        .root = "/spiffs/ui",
+        .partition_label = PARTLABEL_USER,
+        .root = "/spiffs/user",
     };
-    esp_periph_handle_t phdl_spiffs = periph_spiffs_init(&pcfg_spiffs);
-    ret = esp_periph_start(hdl_pset, phdl_spiffs);
+    esp_periph_handle_t phdl_spiffs_user = periph_spiffs_init(&pcfg_spiffs_user);
+    ret = esp_periph_start(hdl_pset, phdl_spiffs_user);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to start spiffs peripheral: %s", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "failed to start spiffs user peripheral: %s", esp_err_to_name(ret));
         return ret;
     }
 
-    while (!periph_spiffs_is_mounted(phdl_spiffs)) {
+    while (!periph_spiffs_is_mounted(phdl_spiffs_user)) {
         ESP_LOGI(TAG, "Waiting on SPIFFS mount...");
         vTaskDelay(500 / portTICK_PERIOD_MS);
     }
     ESP_LOGI(TAG, "SPIFFS mounted");
+
     return ret;
 }
 
@@ -634,7 +635,7 @@ void app_main(void)
 
     init_display();
     init_lvgl_display();
-    init_spiffs_ui();
+    init_spiffs_user();
     init_ui();
 
     ESP_ERROR_CHECK(esp_netif_init());

@@ -40,7 +40,7 @@ endif()
 
 register_component()
 
-spiffs_create_partition_image(ui ../spiffs/ui FLASH_IN_PROJECT)
+spiffs_create_partition_image(user ../spiffs/user FLASH_IN_PROJECT)
 
 # sdkconfig sanity checks
 if($ENV{WILLOW_SDKCONFIG_SANITY_CHECKS})

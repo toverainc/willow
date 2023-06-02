@@ -32,7 +32,7 @@ void init_ui(void)
 
         // Willow font
         lv_font_t *lv_font_willow;
-        lv_font_willow = lv_font_load("A/spiffs/ui/font.bin");
+        lv_font_willow = lv_font_load("A/spiffs/user/font/tonnelier.bin");
 
         // Attach font to style
         lv_style_set_text_font(&lv_st_willow, lv_font_willow);
