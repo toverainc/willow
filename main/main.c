@@ -14,7 +14,6 @@
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
 #include "esp_peripherals.h"
-#include "esp_wifi.h"
 #include "filter_resample.h"
 #include "flac_decoder.h"
 #include "http_stream.h"
@@ -25,7 +24,6 @@
 #include "nvs_flash.h"
 #include "periph_button.h"
 #include "periph_spiffs.h"
-#include "periph_wifi.h"
 #include "raw_stream.h"
 #include "recorder_encoder.h"
 #include "recorder_sr.h"
@@ -935,22 +933,7 @@ void app_main(void)
         ESP_ERROR_CHECK(nvs_flash_init());
     }
 
-    periph_wifi_cfg_t cfg_pwifi = {
-        .ssid = CONFIG_WIFI_SSID,
-        .password = CONFIG_WIFI_PASSWORD,
-    };
-    esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
-
-    // Start wifi
-    lv_label_set_text_static(lbl_ln4, "Connecting to Wi-Fi ...");
-    esp_periph_start(hdl_pset, hdl_pwifi);
-    periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
-
-    err = esp_wifi_set_ps(WIFI_PS_NONE);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "failed to set Wi-Fi power save mode");
-    }
-
+    init_wifi();
     init_sntp();
 
     audio_board_handle_t hdl_audio_board = audio_board_init();
