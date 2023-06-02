@@ -210,7 +210,7 @@ build)
     check_container
     check_deps
     generate_speech_commands
-    idf.py build
+    WILLOW_SDKCONFIG_SANITY_CHECKS=1 idf.py build
 ;;
 
 build-docker|docker-build)
