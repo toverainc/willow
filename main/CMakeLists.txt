@@ -1,6 +1,7 @@
 set(COMPONENT_SRCS
     "http.c"
     "lv_img_hand_left.c"
+    "network.c"
     "slvgl.c"
     "tasks.c"
     "timer.c"
