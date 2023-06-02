@@ -1,6 +1,7 @@
 set(COMPONENT_SRCS
     "display.c"
     "http.c"
+    "input.c"
     "lv_img_hand_left.c"
     "network.c"
     "slvgl.c"
