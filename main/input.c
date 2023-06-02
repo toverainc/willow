@@ -1,7 +1,9 @@
 #include "es7210.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "esp_peripherals.h"
 #include "input_key_service.h"
+#include "periph_button.h"
 
 #include "shared.h"
 
@@ -32,6 +34,18 @@ static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev,
     }
 
     return ret;
+}
+
+esp_err_t init_buttons(void)
+{
+    periph_button_cfg_t cfg_btn = {
+        .gpio_mask = GPIO_SEL_0 | GPIO_SEL_1, // BOOT/CONFIG | MUTE
+    };
+    esp_periph_handle_t hdl_btn = periph_button_init(&cfg_btn);
+    if (hdl_btn == NULL) {
+        return ESP_ERR_ADF_MEMORY_LACK;
+    }
+    return esp_periph_start(hdl_pset, hdl_btn);
 }
 
 esp_err_t init_input_key_service(void)
