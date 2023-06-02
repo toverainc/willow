@@ -6,6 +6,7 @@ set(COMPONENT_SRCS
     "slvgl.c"
     "tasks.c"
     "timer.c"
+    "ui.c"
     "main.c"
 )
 set(COMPONENT_ADD_INCLUDEDIRS .)
