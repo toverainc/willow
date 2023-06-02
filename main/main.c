@@ -842,15 +842,6 @@ static esp_err_t init_spiffs_ui(void)
     return ret;
 }
 
-#define MAC_ADDR_SIZE 6
-uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
-static void get_mac_address()
-{
-    uint8_t mac[MAC_ADDR_SIZE];
-    esp_wifi_get_mac(ESP_IF_WIFI_STA, mac);
-    ESP_LOGI(TAG, "MAC address: %02x:%02x:%02x:%02x:%02x:%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-}
-
 void app_main(void)
 {
 #ifdef CONFIG_WILLOW_DEBUG_LOG
