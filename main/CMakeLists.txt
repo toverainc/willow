@@ -33,7 +33,7 @@ register_component()
 
 spiffs_create_partition_image(ui ../spiffs/ui FLASH_IN_PROJECT)
 
-if(NOT CONFIG_SERVER_URI MATCHES "^https?://")
+if(CONFIG_WILLOW_USE_WIS AND NOT CONFIG_SERVER_URI MATCHES "^https?://")
     message(FATAL_ERROR "Willow WIS URL must include URL scheme")
 endif()
 
