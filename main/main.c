@@ -21,7 +21,6 @@
 #include "lvgl.h"
 #include "model_path.h"
 #include "nvs_flash.h"
-#include "periph_button.h"
 #include "periph_spiffs.h"
 #include "raw_stream.h"
 #include "recorder_encoder.h"
@@ -602,18 +601,6 @@ static void at_read(void *data)
 
     free(buf);
     vTaskDelete(NULL);
-}
-
-static esp_err_t init_buttons(void)
-{
-    periph_button_cfg_t cfg_btn = {
-        .gpio_mask = GPIO_SEL_0 | GPIO_SEL_1, // BOOT/CONFIG | MUTE
-    };
-    esp_periph_handle_t hdl_btn = periph_button_init(&cfg_btn);
-    if (hdl_btn == NULL) {
-        return ESP_ERR_ADF_MEMORY_LACK;
-    }
-    return esp_periph_start(hdl_pset, hdl_btn);
 }
 
 static void init_esp_audio(audio_board_handle_t hdl)
