@@ -14,7 +14,6 @@
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
 #include "esp_peripherals.h"
-#include "esp_sntp.h"
 #include "esp_wifi.h"
 #include "filter_resample.h"
 #include "flac_decoder.h"
@@ -45,6 +44,7 @@
 #include "generated_cmd_multinet.h"
 #endif
 
+#include "network.h"
 #include "shared.h"
 #include "slvgl.h"
 #include "tasks.h"
@@ -242,11 +242,6 @@ static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev,
     return ret;
 }
 
-void cb_sntp(struct timeval *tv)
-{
-    ESP_LOGI(TAG, "SNTP client synchronized time to %lu", tv->tv_sec);
-}
-
 static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
 {
     if (buf == NULL || hdl_ae_rs_from_i2s == NULL) {
@@ -393,25 +388,6 @@ static esp_err_t init_ap_to_api()
     return ESP_OK;
 }
 #endif
-
-static esp_err_t init_sntp()
-{
-    ESP_LOGI(TAG, "initializing SNTP client");
-    setenv("TZ", CONFIG_WILLOW_TIMEZONE, 1);
-    tzset();
-    sntp_setoperatingmode(SNTP_OPMODE_POLL);
-#ifdef CONFIG_WILLOW_NTP_USE_DHCP
-    ESP_LOGI(TAG, "Using DHCP SNTP server");
-    sntp_servermode_dhcp(1);
-#else
-    ESP_LOGI(TAG, "Using configured SNTP server '%s'", CONFIG_WILLOW_NTP_HOST);
-    sntp_setservername(0, CONFIG_WILLOW_NTP_HOST);
-#endif
-    sntp_set_time_sync_notification_cb(cb_sntp);
-    sntp_init();
-
-    return ESP_OK;
-}
 
 static void start_rec()
 {
