@@ -15,14 +15,14 @@
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/error.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/error.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
 static void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/success.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.flac", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
