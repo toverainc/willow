@@ -1,4 +1,5 @@
 set(COMPONENT_SRCS
+    "audio.c"
     "display.c"
     "http.c"
     "input.c"
