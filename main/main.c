@@ -40,6 +40,7 @@
 #include "generated_cmd_multinet.h"
 #endif
 
+#include "audio.h"
 #include "display.h"
 #include "input.h"
 #include "network.h"
@@ -57,10 +58,8 @@
 #include "endpoint/rest.h"
 #endif
 
-#define I2S_PORT        I2S_NUM_0
-#define PARTLABEL_UI    "ui"
-#define WIS_URL_TTS_ARG "?speaker=CLB&text=%s"
-#define WIS_URL_TTS_FMT CONFIG_WILLOW_WIS_TTS_URL WIS_URL_TTS_ARG
+#define I2S_PORT     I2S_NUM_0
+#define PARTLABEL_UI "ui"
 
 bool recording = false;
 
@@ -72,45 +71,6 @@ static audio_pipeline_handle_t hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
 
 QueueHandle_t q_rec;
-
-#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
-static void play_audio_err(void *data)
-{
-    gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/error.flac", 0);
-    gpio_set_level(get_pa_enable_gpio(), 0);
-}
-
-static void play_audio_ok(void *data)
-{
-    gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/success.flac", 0);
-    gpio_set_level(get_pa_enable_gpio(), 0);
-}
-
-#elif defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
-static void play_audio_wis_tts(void *data)
-{
-    if (data == NULL) {
-        ESP_LOGW(TAG, "called play_audio_wis_tts with NULL data");
-        return;
-    }
-    int len_url = strlen(WIS_URL_TTS_FMT) + strlen((char *)data) + 1;
-    char *url = calloc(sizeof(char), len_url);
-    snprintf(url, len_url, WIS_URL_TTS_FMT, (char *)data);
-    gpio_set_level(get_pa_enable_gpio(), 1);
-    ESP_LOGI(TAG, "Using WIS TTS URL '%s'", url);
-    esp_audio_sync_play(hdl_ea, url, 0);
-    ESP_LOGI(TAG, "WIS TTS playback finished");
-    gpio_set_level(get_pa_enable_gpio(), 0);
-    free(url);
-}
-#else
-
-static void noop(void)
-{
-}
-#endif
 
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
@@ -762,20 +722,10 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
-#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
-    war.fn_err = play_audio_err;
-    war.fn_ok = play_audio_ok;
-#elif defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
-    war.fn_err = play_audio_wis_tts;
-    war.fn_ok = play_audio_wis_tts;
-#else
-    war.fn_err = noop;
-    war.fn_ok = noop;
-#endif
-
 #ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
     init_hass();
 #endif
+    init_audio_response();
     init_buttons();
     init_input_key_service();
     init_lvgl_touch();
