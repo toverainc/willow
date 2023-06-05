@@ -650,33 +650,28 @@ void app_main(void)
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
 
-    ESP_LOGI(TAG, "esp_netif_get_nr_of_ifs: %d", esp_netif_get_nr_of_ifs());
-    esp_netif_t *hdl_netif = esp_netif_next(NULL);
-
-    if (hdl_netif != NULL) {
 #if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
-        char *wake_help = "Say 'Hi ESP' to start!";
+    char *wake_help = "Say 'Hi ESP' to start!";
 #elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
-        char *wake_help = "Say 'Alexa' to start!";
+    char *wake_help = "Say 'Alexa' to start!";
 #elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN)
-        char *wake_help = "Say 'Hi Lexin' to start!";
+    char *wake_help = "Say 'Hi Lexin' to start!";
 #else
-        char *wake_help = "Ready!";
+    char *wake_help = "Ready!";
 #endif
 
-        if (ld == NULL) {
-            ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
-        } else {
-            lvgl_port_lock(0);
-            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
-            lv_obj_set_width(lbl_ln4, 320);
-            lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
-            lv_label_set_text(lbl_ln3, wake_help);
+    if (ld == NULL) {
+        ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
+    } else {
+        lvgl_port_lock(0);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
+        lv_obj_set_width(lbl_ln4, 320);
+        lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
+        lv_label_set_text(lbl_ln3, wake_help);
 
-            lvgl_port_unlock();
-        }
+        lvgl_port_unlock();
     }
 
 #ifdef CONFIG_WILLOW_USE_MULTINET
