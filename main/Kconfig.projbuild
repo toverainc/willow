@@ -297,6 +297,26 @@ config WILLOW_NTP_HOST
                     bool "DET_MODE_3CH_95"
         endchoice
 
+        choice WILLOW_WAKE_VAD_MODE
+            prompt "Voice Activity Detection Mode"
+            default WILLOW_WAKE_VAD_MODE_3
+
+                config WILLOW_WAKE_VAD_MODE_0
+                    bool "VAD_MODE_0"
+
+                config WILLOW_WAKE_VAD_MODE_1
+                    bool "VAD_MODE_1"
+
+                config WILLOW_WAKE_VAD_MODE_2
+                    bool "VAD_MODE_2"
+
+                config WILLOW_WAKE_VAD_MODE_3
+                    bool "VAD_MODE_3"
+
+                config WILLOW_WAKE_VAD_MODE_4
+                    bool "VAD_MODE_4"
+        endchoice
+
         choice
             prompt "Microphone gain"
             default WILLOW_MIC_GAIN_37_5DB
