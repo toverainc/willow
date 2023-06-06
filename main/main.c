@@ -238,6 +238,22 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 
         case HTTP_STREAM_FINISH_REQUEST:
             ESP_LOGI(TAG, "WIS HTTP client HTTP_STREAM_FINISH_REQUEST");
+            // Check status code
+            int http_status = esp_http_client_get_status_code(http);
+            if (http_status != 200) {
+                if (http_status == 406) {
+                    ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
+                    lvgl_port_lock(0);
+                    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                    lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
+                    lvgl_port_unlock();
+#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS) || defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
+                    war.fn_err("Unauthorized Speaker");
+#endif
+                }
+                ESP_LOGE(TAG, "WIS returned HTTP error: %d", http_status);
+                return ESP_FAIL;
+            }
             // Allocate memory for response. Should be enough?
             char *buf = calloc(sizeof(char), 2048);
             assert(buf);
