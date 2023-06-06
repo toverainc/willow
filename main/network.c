@@ -37,6 +37,7 @@ esp_err_t init_sntp(void)
     return ESP_OK;
 }
 
+#ifndef CONFIG_WILLOW_ETHERNET
 esp_err_t init_wifi(void)
 {
     esp_err_t ret = ESP_OK;
@@ -60,6 +61,7 @@ esp_err_t init_wifi(void)
     }
     return ret;
 }
+#endif
 
 void get_mac_address(void)
 {
