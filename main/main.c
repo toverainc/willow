@@ -274,11 +274,16 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 
             cJSON *cjson = cJSON_Parse(buf);
             cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
+            cJSON *speaker_status = cJSON_GetObjectItemCaseSensitive(cjson, "speaker_status");
 
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-            lv_label_set_text_static(lbl_ln1, "I heard:");
+            if (cJSON_IsString(speaker_status) && speaker_status->valuestring != NULL) {
+                lv_label_set_text(lbl_ln1, speaker_status->valuestring);
+            } else {
+                lv_label_set_text(lbl_ln1, "I heard:");
+            }
             if (cJSON_IsString(text) && text->valuestring != NULL) {
                 lv_label_set_text(lbl_ln2, text->valuestring);
             } else {
@@ -684,6 +689,7 @@ void app_main(void)
         lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
         lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
         lv_obj_set_width(lbl_ln4, 320);
+        lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
         lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
         lv_label_set_text(lbl_ln3, wake_help);
 
