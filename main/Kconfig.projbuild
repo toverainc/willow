@@ -2,12 +2,14 @@ menu "Willow Configuration"
 
 config WIFI_SSID
     string "WiFi SSID"
+    depends on !WILLOW_ETHERNET
     default "myssid"
     help
         SSID (network name) for Willow to connect to.
 
 config WIFI_PASSWORD
     string "WiFi Password"
+    depends on !WILLOW_ETHERNET
     default "mypassword"
     help
         WiFi password (WPA, WPA2, WPA3) for Willow to use.
@@ -384,6 +386,13 @@ config WILLOW_NTP_HOST
             default 12 if WILLOW_MIC_GAIN_34_5DB
             default 13 if WILLOW_MIC_GAIN_36DB
             default 14 if WILLOW_MIC_GAIN_37_5DB
+
+        config WILLOW_ETHERNET
+        depends on ETH_SPI_ETHERNET_W5500
+        bool "Ethernet support"
+        help
+            Ethernet support via W5500 over SPI
+
     endmenu
 
     menu "Debugging"

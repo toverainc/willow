@@ -57,6 +57,10 @@
 #include "endpoint/rest.h"
 #endif
 
+#if defined(CONFIG_WILLOW_ETHERNET)
+#include "net/ethernet.h"
+#endif
+
 #define I2S_PORT     I2S_NUM_0
 #define PARTLABEL_UI "ui"
 
@@ -640,7 +644,11 @@ void app_main(void)
         ESP_ERROR_CHECK(nvs_flash_init());
     }
 
+#ifdef CONFIG_WILLOW_ETHERNET
+    init_ethernet();
+#else
     init_wifi();
+#endif
     init_sntp();
 
     audio_board_handle_t hdl_audio_board = audio_board_init();
@@ -700,7 +708,9 @@ void app_main(void)
     ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
 #endif
 
+#ifndef CONFIG_WILLOW_ETHERNET
     get_mac_address(); // should be on wifi by now; print the MAC
+#endif
 
     ESP_LOGI(TAG, "Startup complete! Waiting for wake word.");
 
