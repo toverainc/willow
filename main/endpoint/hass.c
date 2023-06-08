@@ -127,17 +127,13 @@ end:
                 if (hir.has_speech) {
                     lv_label_set_text_static(lbl_ln3, "Response:");
                     lv_label_set_text(lbl_ln4, hir.speech);
+                    hir.ok ? war.fn_ok(hir.speech) : war.fn_err(hir.speech);
                 } else {
                     lv_label_set_text_static(lbl_ln3, "Command status:");
                     lv_label_set_text(lbl_ln4, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
+                    hir.ok ? war.fn_ok("success") : war.fn_err("error");
                 }
                 lvgl_port_unlock();
-
-                if (hir.ok) {
-                    war.fn_ok(hir.speech);
-                } else {
-                    war.fn_err(hir.speech);
-                }
 
                 reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 
@@ -362,6 +358,7 @@ static void hass_send_ws(const char *data)
 
     hir.has_speech = false;
     hir.ok = false;
+    memset(hir.speech, '\0', sizeof(hir.speech));
 
     cJSON *end_stage = cJSON_CreateString("intent");
     cJSON *id = cJSON_CreateNumber(tv_now.tv_sec);
