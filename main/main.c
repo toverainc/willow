@@ -42,6 +42,7 @@
 #endif
 
 #include "audio.h"
+#include "config.h"
 #include "display.h"
 #include "input.h"
 #include "network.h"
@@ -737,6 +738,8 @@ void app_main(void)
     ESP_LOGI(TAG, "Startup complete! Waiting for wake word.");
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false));
+
+    config_print();
 
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
