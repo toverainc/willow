@@ -98,7 +98,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                 }
 
                 cJSON *speech2 = cJSON_GetObjectItemCaseSensitive(plain, "speech");
-                if (cJSON_IsString(speech2) && speech2->valuestring != NULL) {
+                if (cJSON_IsString(speech2) && speech2->valuestring != NULL && strlen(speech2->valuestring) > 0) {
                     hir.has_speech = true;
                     strncpy(hir.speech, speech2->valuestring, HASS_SPEECH_MAX_LEN - 1);
                 }
