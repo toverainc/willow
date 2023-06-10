@@ -14,7 +14,7 @@ class HttpHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         path, args = self.parse_url()
 
-        if path == 'name' in args:
+        if 'name' in args:
             name = args['name'][0]
 
             self.write_response(200, "text/plain", f"Hello, {name}!")
