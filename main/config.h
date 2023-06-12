@@ -1,1 +1,1 @@
-void config_print(void);
+void config_parse(void);

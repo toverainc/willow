@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include "cJSON.h"
 #include "esp_log.h"
 #include "esp_spiffs.h"
 
@@ -8,7 +9,7 @@
 
 static const char *TAG = "WILLOW/CONFIG";
 
-void config_print(void)
+static char *config_read(void)
 {
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
     char *config = NULL;
@@ -33,7 +34,35 @@ void config_print(void)
     ESP_LOGI(TAG, "fread: %d", rlen);
     config[fs.st_size] = '\0';
     ESP_LOGI(TAG, "config file content: %s", config);
-    free(config);
 close:
     fclose(f);
+
+    return config;
+}
+
+void config_parse(void)
+{
+    char *config = config_read();
+    char *json = NULL;
+
+    if (config == NULL) {
+        return;
+    }
+
+    cJSON *cjson = cJSON_Parse(config);
+    if (cjson == NULL) {
+        const char *eptr = cJSON_GetErrorPtr();
+        if (eptr != NULL) {
+            ESP_LOGE(TAG, "error parsing config file: %s\n", eptr);
+            goto cleanup;
+        }
+    }
+
+    json = cJSON_Print(cjson);
+    ESP_LOGI(TAG, "parsed config file:");
+    printf("%s\n", json);
+
+cleanup:
+    cJSON_Delete(cjson);
+    free(config);
 }
