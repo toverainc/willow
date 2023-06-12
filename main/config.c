@@ -4,6 +4,7 @@
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_spiffs.h"
+#include "esp_system.h"
 
 #define CONFIG_PATH "/spiffs/user/config/willow.json"
 
@@ -65,4 +66,20 @@ void config_parse(void)
 cleanup:
     cJSON_Delete(cjson);
     free(config);
+}
+
+void config_write(const char *data)
+{
+    FILE *f = fopen(CONFIG_PATH, "w");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "failed to open %s", CONFIG_PATH);
+        goto close;
+    }
+    fputs(data, f);
+
+close:
+    fclose(f);
+
+    ESP_LOGI(TAG, "%s updated, restarting", CONFIG_PATH);
+    esp_restart();
 }
