@@ -640,6 +640,8 @@ void app_main(void)
     init_spiffs_user();
     init_ui();
 
+    config_parse();
+
     ESP_ERROR_CHECK(esp_netif_init());
 
     esp_err_t err = nvs_flash_init();
@@ -738,8 +740,6 @@ void app_main(void)
     ESP_LOGI(TAG, "Startup complete! Waiting for wake word.");
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false));
-
-    config_parse();
 
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
