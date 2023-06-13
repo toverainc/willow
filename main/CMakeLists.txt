@@ -9,6 +9,7 @@ set(COMPONENT_SRCS
     "tasks.c"
     "timer.c"
     "ui.c"
+    "was.c"
     "main.c"
 )
 set(COMPONENT_ADD_INCLUDEDIRS .)
