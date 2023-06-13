@@ -50,6 +50,7 @@
 #include "tasks.h"
 #include "timer.h"
 #include "ui.h"
+#include "was.h"
 
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
 #include "endpoint/hass.h"
@@ -653,6 +654,19 @@ void app_main(void)
 #else
     init_wifi();
 #endif
+    ret = init_was();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to initialize Willow Application Server connection");
+        if (ld == NULL) {
+            lvgl_port_lock(0);
+            lv_label_set_text_static(lbl_ln2, "Fatal error!");
+            lv_label_set_text_static(lbl_ln3, "WAS initialization failed.");
+            lvgl_port_unlock();
+        }
+        // wait "indefinitely"
+        vTaskDelay(portMAX_DELAY);
+    }
+
     init_sntp();
 
     audio_board_handle_t hdl_audio_board = audio_board_init();
