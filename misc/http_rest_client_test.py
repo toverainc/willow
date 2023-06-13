@@ -11,16 +11,6 @@ class HttpHandler(BaseHTTPRequestHandler):
     error_content_type = 'text/plain'
     error_message_format = "Error %(code)d: %(message)s"
 
-    def do_GET(self):
-        path, args = self.parse_url()
-
-        if 'name' in args:
-            name = args['name'][0]
-
-            self.write_response(200, "text/plain", f"Hello, {name}!")
-        else:
-            self.send_error(404, 'Not found')
-
     def do_POST(self):
         body = self.read_body()
         print(str(self.headers))
