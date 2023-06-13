@@ -13,6 +13,7 @@
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
 #include "esp_peripherals.h"
+#include "esp_task_wdt.h"
 #include "filter_resample.h"
 #include "flac_decoder.h"
 #include "http_stream.h"
@@ -35,11 +36,7 @@
 #include "wav_encoder.h"
 #endif
 
-#ifdef CONFIG_WILLOW_USE_MULTINET
-#define MULTINET_TWDT 30
-#include "esp_task_wdt.h"
 #include "generated_cmd_multinet.h"
-#endif
 
 #include "audio.h"
 #include "config.h"
@@ -66,6 +63,7 @@
 #endif
 
 #define I2S_PORT       I2S_NUM_0
+#define MULTINET_TWDT  30
 #define PARTLABEL_USER "user"
 
 bool recording = false;
@@ -82,9 +80,7 @@ QueueHandle_t q_rec;
 static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     int msg = -1;
-#ifdef CONFIG_WILLOW_USE_MULTINET
     int command_id = 0;
-#endif
 
     switch (are) {
         case AUDIO_REC_VAD_END:
@@ -95,11 +91,13 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_VAD_START:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
-#ifdef CONFIG_WILLOW_USE_MULTINET
-            msg = MSG_START_LOCAL;
-#else
-            msg = MSG_START;
-#endif
+            if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
+                msg = MSG_START_LOCAL;
+            } else if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
+                msg = MSG_START;
+            } else {
+                return ESP_ERR_INVALID_ARG;
+            }
             xQueueSend(q_rec, &msg, 0);
             break;
         case AUDIO_REC_COMMAND_DECT:
@@ -133,45 +131,49 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-#ifdef CONFIG_WILLOW_USE_MULTINET
-            lv_label_set_text_static(lbl_ln3, "Say local command...");
-#else
-            lv_label_set_text_static(lbl_ln3, "Say command...");
-            reset_timer(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000, false);
-#endif
+
+            if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
+                lv_label_set_text_static(lbl_ln3, "Say local command...");
+            } else if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
+                lv_label_set_text_static(lbl_ln3, "Say command...");
+                reset_timer(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000, false);
+            } else {
+                return ESP_ERR_INVALID_ARG;
+            }
+
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
             ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
             break;
         default:
-#ifdef CONFIG_WILLOW_USE_MULTINET
-            // Catch all for local commands
-            command_id = are;
-            char *json;
-            json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
-            snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
-                     lookup_cmd_multinet(command_id));
+            if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
+                // Catch all for local commands
+                command_id = are;
+                char *json;
+                json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
+                snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
+                         lookup_cmd_multinet(command_id));
 #if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
-            hass_send(json);
+                hass_send(json);
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
-            openhab_send(lookup_cmd_multinet(command_id));
+                openhab_send(lookup_cmd_multinet(command_id));
 #elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
-            rest_send(json);
+                rest_send(json);
 #endif
-            free(json);
+                free(json);
 
-            ESP_LOGI(TAG, "Got local command ID: '%d'", command_id);
-            lvgl_port_lock(0);
-            lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                ESP_LOGI(TAG, "Got local command ID: '%d'", command_id);
+                lvgl_port_lock(0);
+                lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
 
-            lv_label_set_text_static(lbl_ln1, "I heard command:");
-            lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
-            lvgl_port_unlock();
-            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
-#else
-            ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are);
-#endif
+                lv_label_set_text_static(lbl_ln1, "I heard command:");
+                lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
+                lvgl_port_unlock();
+                reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
+            } else {
+                ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are);
+            }
             break;
     }
 
@@ -312,7 +314,6 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
     return ESP_OK;
 }
 
-#ifdef CONFIG_WILLOW_USE_WIS
 static esp_err_t init_ap_to_api()
 {
     ESP_LOGD(TAG, "init_ap_to_api()");
@@ -344,7 +345,6 @@ static esp_err_t init_ap_to_api()
 
     return ESP_OK;
 }
-#endif
 
 static void start_rec()
 {
@@ -472,12 +472,12 @@ static void start_rec()
     cfg_srr.rb_size = CONFIG_WILLOW_RECORD_BUFFER * 1024;
 #endif
 
-#ifdef CONFIG_WILLOW_USE_MULTINET
-    ESP_LOGI(TAG, "Using local multinet");
-    esp_task_wdt_init(MULTINET_TWDT, CONFIG_TASK_WDT_PANIC ? true : false);
-    cfg_srr.multinet_init = true;
-    cfg_srr.rb_size = 6 * 1024;
-#endif
+    if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
+        ESP_LOGI(TAG, "Using local multinet");
+        esp_task_wdt_init(MULTINET_TWDT, CONFIG_TASK_WDT_PANIC ? true : false);
+        cfg_srr.multinet_init = true;
+        cfg_srr.rb_size = 6 * 1024;
+    }
 
 #ifdef CONFIG_WILLOW_USE_AMRWB
     recorder_encoder_cfg_t recorder_encoder_cfg = {0};
@@ -638,9 +638,8 @@ void app_main(void)
     init_display();
     init_lvgl_display();
     init_spiffs_user();
-    init_ui();
-
     config_parse();
+    init_ui();
 
     ESP_ERROR_CHECK(esp_netif_init());
 
@@ -692,16 +691,12 @@ void app_main(void)
     init_lvgl_touch();
     init_display_timer();
     init_session_timer();
-#ifdef CONFIG_WILLOW_USE_WIS
-    init_ap_to_api();
-#endif
+    if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
+        init_ap_to_api();
+    }
     init_esp_audio(hdl_audio_board);
     start_rec();
     es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
-
-#ifdef CONFIG_WILLOW_USE_MULTINET
-    esp_task_wdt_init(30, true);
-#endif
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
@@ -733,9 +728,9 @@ void app_main(void)
         lvgl_port_unlock();
     }
 
-#ifdef CONFIG_WILLOW_USE_MULTINET
-    ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
-#endif
+    if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
+        ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
+    }
 
 #ifndef CONFIG_WILLOW_ETHERNET
     get_mac_address(); // should be on wifi by now; print the MAC

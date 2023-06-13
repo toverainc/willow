@@ -22,22 +22,6 @@ config WILLOW_WAS_URL
     help
         URL for your WAS instance. Supports WS and WSS.
 
-choice WILLOW_SPEECH_REC_MODE
-    prompt "Willow Speech Recognition Mode"
-    default WILLOW_USE_WIS
-
-    config WILLOW_USE_WIS
-        bool "Willow Inference Server"
-        help
-            Use WIS for free-flow speech recognition
-
-    config WILLOW_USE_MULTINET
-        depends on USE_MULTINET && SR_MN_EN_MULTINET6_QUANT
-        bool "On device command detection via MultiNet"
-        help
-            Use on device command detection via MultiNet
-endchoice
-
 choice
     prompt "Willow audio response type"
     default WILLOW_AUDIO_RESPONSE_FS
@@ -49,13 +33,11 @@ choice
     bool "Audio response using local files - default chimes"
 
     config WILLOW_AUDIO_RESPONSE_WIS_TTS
-    depends on WILLOW_USE_WIS
     bool "Audio response using WIS TTS - English only for now"
 endchoice
 
 config WILLOW_WIS_TTS_URL
     depends on WILLOW_AUDIO_RESPONSE_WIS_TTS
-    depends on WILLOW_USE_WIS
     string "Willow Inference Server TTS URL"
     default "https://infer.tovera.io/api/tts"
     help
@@ -237,7 +219,6 @@ config WILLOW_NTP_HOST
             Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck...
 
         config WILLOW_RECORD_BUFFER
-            depends on WILLOW_USE_WIS
             int "Record buffer"
             range 1 16
             default 12
@@ -246,7 +227,6 @@ config WILLOW_NTP_HOST
                 Users with a local WIS instance may want to try setting lower (10 or so)
 
         config WILLOW_STREAM_TIMEOUT
-            depends on WILLOW_USE_WIS
             int "Maximum speech duration"
             range 1 30
             default 5
@@ -263,13 +243,11 @@ config WILLOW_NTP_HOST
                     High bandwidth but very fast
 
             config WILLOW_USE_AMRWB
-                depends on WILLOW_USE_WIS
                 bool "AMR-WB"
                 help
                     AMR-WB is a very low bitrate codec
 
             config WILLOW_USE_WAV
-                depends on WILLOW_USE_WIS
                 bool "WAV"
                 help
                     Industry standard WAV file

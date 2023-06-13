@@ -2,6 +2,7 @@
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 
+#include "config.h"
 #include "shared.h"
 #include "slvgl.h"
 
@@ -60,11 +61,13 @@ void init_ui(void)
         lv_obj_align(lbl_ln4, LV_ALIGN_CENTER, 0, 20);
         lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
         lv_obj_set_width(lbl_ln2, 320);
-#ifdef CONFIG_WILLOW_USE_MULTINET
-        lv_label_set_text_static(lbl_ln3, "Starting up (local)...");
-#else
-        lv_label_set_text_static(lbl_ln3, "Starting up (server)...");
-#endif
+
+        if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
+            lv_label_set_text_static(lbl_ln3, "Starting up (local)...");
+        } else if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
+            lv_label_set_text_static(lbl_ln3, "Starting up (server)...");
+        }
+
         lvgl_port_unlock();
     }
 }
