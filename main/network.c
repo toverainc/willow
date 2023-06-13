@@ -6,9 +6,11 @@
 #include "periph_wifi.h"
 #include "sdkconfig.h"
 
+#include "network.h"
 #include "shared.h"
 #include "slvgl.h"
 
+#define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6
 
 uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
@@ -16,6 +18,33 @@ uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 void cb_sntp(struct timeval *tv)
 {
     ESP_LOGI(TAG, "SNTP client synchronized time to %lu", tv->tv_sec);
+}
+
+void set_hostname(esp_mac_type_t emt)
+{
+    esp_err_t ret = ESP_OK;
+    uint8_t mac[MAC_ADDR_SIZE];
+
+    ret = esp_read_mac(mac, emt);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to read MAC address, using default hostname (%s)", CONFIG_LWIP_LOCAL_HOSTNAME);
+        return;
+    }
+
+    while (esp_netif_get_nr_of_ifs() == 0) {
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+
+    char hostname[HOSTNAME_SIZE];
+    hdl_netif = esp_netif_next(NULL);
+
+    snprintf(hostname, HOSTNAME_SIZE, "willow-%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4],
+             mac[5]);
+
+    ret = esp_netif_set_hostname(hdl_netif, hostname);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set hostname (%s): %s", hostname, esp_err_to_name(ret));
+    }
 }
 
 esp_err_t init_sntp(void)
@@ -53,6 +82,7 @@ esp_err_t init_wifi(void)
     lvgl_port_unlock();
 
     esp_periph_start(hdl_pset, hdl_pwifi);
+    set_hostname(ESP_MAC_WIFI_STA);
     periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
 
     ret = esp_wifi_set_ps(WIFI_PS_NONE);

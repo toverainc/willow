@@ -1,5 +1,6 @@
 #include "esp_audio.h"
 #include "esp_lvgl_port.h"
+#include "esp_netif.h"
 #include "esp_peripherals.h"
 
 #define DISPLAY_TIMEOUT_US 10 * 1000 * 1000
