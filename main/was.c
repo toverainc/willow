@@ -3,6 +3,7 @@
 #include "esp_transport_ws.h"
 #include "esp_websocket_client.h"
 
+#include "config.h"
 #include "network.h"
 
 static const char *TAG = "WILLOW/WAS";
@@ -24,6 +25,14 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
             if (data->op_code == WS_TRANSPORT_OPCODES_TEXT) {
                 char *resp = strndup((char *)data->data_ptr, data->data_len);
                 ESP_LOGI(TAG, "received text data on WebSocket: %s", resp);
+                cJSON *cjson = cJSON_Parse(resp);
+                cJSON *json_config = cJSON_GetObjectItemCaseSensitive(cjson, "config");
+                if (cJSON_IsObject(json_config)) {
+                    char *config = cJSON_Print(json_config);
+                    ESP_LOGI(TAG, "found config in WebSocket message: %s", config);
+                    config_write(config);
+                }
+                cJSON_Delete(cjson);
                 free(resp);
             }
             break;
