@@ -16,6 +16,12 @@ config WIFI_PASSWORD
 
         Can be left blank if the network is open.
 
+config WILLOW_WAS_URL
+    string "Willow Application Server URL"
+    default "wss://was.local"
+    help
+        URL for your WAS instance. Supports WS and WSS.
+
 choice WILLOW_SPEECH_REC_MODE
     prompt "Willow Speech Recognition Mode"
     default WILLOW_USE_WIS
