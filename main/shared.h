@@ -3,6 +3,8 @@
 #include "esp_netif.h"
 #include "esp_peripherals.h"
 
+#define DEFAULT_SPEECH_REC_MODE "WIS"
+
 #define DISPLAY_TIMEOUT_US 10 * 1000 * 1000
 
 bool recording;
