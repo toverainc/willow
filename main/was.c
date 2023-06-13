@@ -1,9 +1,14 @@
+#include "cJSON.h"
 #include "esp_log.h"
 #include "esp_transport_ws.h"
 #include "esp_websocket_client.h"
 
+#include "network.h"
+
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
+
+static void send_hello(void);
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
 {
@@ -54,4 +59,41 @@ esp_err_t init_was(void)
         ESP_LOGE(TAG, "failed to start WebSocket client: %s", esp_err_to_name(err));
     }
     return err;
+}
+
+static void send_hello(void)
+{
+    char *json;
+    const char *hostname;
+    esp_err_t ret;
+
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        esp_websocket_client_destroy(hdl_wc);
+        init_was();
+    }
+
+    ret = esp_netif_get_hostname(hdl_netif, &hostname);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to get hostname");
+        return;
+    }
+
+    cJSON *cjson = cJSON_CreateObject();
+    cJSON *hello = cJSON_CreateObject();
+    if (cJSON_AddStringToObject(hello, "hostname", hostname) == NULL) {
+        goto cleanup;
+    }
+    if (!cJSON_AddItemToObject(cjson, "hello", hello)) {
+        goto cleanup;
+    }
+
+    json = cJSON_Print(cjson);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send WAS hello message");
+    }
+
+cleanup:
+    cJSON_Delete(cjson);
 }
