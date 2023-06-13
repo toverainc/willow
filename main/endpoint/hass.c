@@ -182,6 +182,7 @@ static void init_hass_ws_client(void)
         .buffer_size = 4096,
         .path = HASS_URI_WEBSOCKET,
         .uri = url,
+        .user_agent = WILLOW_USER_AGENT,
     };
 
     hdl_wc = esp_websocket_client_init(&cfg_wc);
