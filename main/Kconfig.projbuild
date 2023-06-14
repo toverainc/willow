@@ -22,12 +22,6 @@ config WILLOW_WAS_URL
     help
         URL for your WAS instance. Supports WS and WSS.
 
-config WILLOW_WIS_TTS_URL
-    string "Willow Inference Server TTS URL"
-    default "https://infer.tovera.io/api/tts"
-    help
-        URL for the TTS API of your WIS instance. Supports HTTP and HTTPS.
-
 choice WILLOW_WAKE_WORD
     # This is a typo in esp-sr
     depends on SR_WN_LOAD_MULIT_WORD

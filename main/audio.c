@@ -9,8 +9,7 @@
 #include "config.h"
 #include "shared.h"
 
-#define WIS_URL_TTS_ARG "?speaker=CLB&text=%s"
-#define WIS_URL_TTS_FMT CONFIG_WILLOW_WIS_TTS_URL WIS_URL_TTS_ARG
+#define WIS_URL_TTS_ARG "?speaker=CLB&text="
 
 static void play_audio_err(void *data)
 {
@@ -32,9 +31,9 @@ static void play_audio_wis_tts(void *data)
         ESP_LOGW(TAG, "called play_audio_wis_tts with NULL data");
         return;
     }
-    int len_url = strlen(WIS_URL_TTS_FMT) + strlen((char *)data) + 1;
+    int len_url = strlen(config_get_char("wis_tts_url")) + strlen(WIS_URL_TTS_ARG) + strlen((char *)data) + 1;
     char *url = calloc(sizeof(char), len_url);
-    snprintf(url, len_url, WIS_URL_TTS_FMT, (char *)data);
+    snprintf(url, len_url, "%s%s%s", config_get_char("wis_tts_url"), WIS_URL_TTS_ARG, (char *)data);
     gpio_set_level(get_pa_enable_gpio(), 1);
     ESP_LOGI(TAG, "Using WIS TTS URL '%s'", url);
     esp_audio_sync_play(hdl_ea, url, 0);
