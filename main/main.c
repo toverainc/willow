@@ -335,7 +335,7 @@ static esp_err_t init_ap_to_api()
 
     const char *tag_link[2] = {"raw_stream_writer_to_api", "http_stream_writer"};
     audio_pipeline_link(hdl_ap_to_api, &tag_link[0], 2);
-    audio_element_set_uri(hdl_ae_hs, CONFIG_SERVER_URI);
+    audio_element_set_uri(hdl_ae_hs, config_get_char("wis_url"));
 
     audio_element_info_t info = AUDIO_ELEMENT_INFO_DEFAULT();
     audio_element_getinfo(hdl_ae_hs, &info);
