@@ -5,35 +5,50 @@
 #include "esp_lvgl_port.h"
 #include "lvgl.h"
 
+#include "config.h"
 #include "http.h"
 #include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 
+#define DEFAULT_AUTH_HEADER ""
+#define DEFAULT_AUTH_PASS   ""
+#define DEFAULT_AUTH_TYPE   "None"
+#define DEFAULT_AUTH_USER   ""
+#define DEFAULT_URL         "http://your_rest_url"
+
 void rest_send(const char *data)
 {
     bool ok = false;
-    char *body = NULL;
-    char *url = CONFIG_WILLOW_ENDPOINT_REST_URL;
+    char *auth_type = NULL, *body = NULL, *pass = NULL, *url = NULL, *user = NULL;
     esp_err_t ret;
     int http_status;
 
     esp_http_client_handle_t hdl_hc = init_http_client();
 
-#if defined(CONFIG_WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER)
-    ret = esp_http_client_set_header(hdl_hc, "Authorization", CONFIG_WILLOW_ENDPOINT_REST_AUTH_HEADER);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to set authorization header: %s", esp_err_to_name(ret));
+    auth_type = config_get_char("rest_auth_type", DEFAULT_AUTH_TYPE);
+    if (strcmp(auth_type, "Header") == 0) {
+        char *auth_header = config_get_char("rest_auth_header", DEFAULT_AUTH_HEADER);
+        ret = esp_http_client_set_header(hdl_hc, "Authorization", auth_header);
+        free(auth_header);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "failed to set authorization header: %s", esp_err_to_name(ret));
+        }
+    } else if (strcmp(auth_type, "Basic") == 0) {
+        pass = config_get_char("rest_auth_pass", DEFAULT_AUTH_PASS);
+        user = config_get_char("rest_auth_user", DEFAULT_AUTH_USER);
+        ret = http_set_basic_auth(hdl_hc, user, pass);
+        free(pass);
+        free(user);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "failed to enable HTTP Basic Authentication: %s", esp_err_to_name(ret));
+        }
     }
-#elif defined(CONFIG_WILLOW_ENDPOINT_REST_AUTH_BASIC)
-    ret = http_set_basic_auth(hdl_hc, CONFIG_WILLOW_ENDPOINT_REST_AUTH_USERNAME,
-                              CONFIG_WILLOW_ENDPOINT_REST_AUTH_PASSWORD);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to enable HTTP Basic Authentication: %s", esp_err_to_name(ret));
-    }
-#endif
+    free(auth_type);
 
+    url = config_get_char("rest_url", DEFAULT_URL);
     ret = http_post(hdl_hc, url, "application/json", data, &body, &http_status);
+    free(url);
     if (ret == ESP_OK) {
         if (http_status >= 200 && http_status <= 299) {
             ok = true;
