@@ -58,17 +58,6 @@ if($ENV{WILLOW_SDKCONFIG_SANITY_CHECKS})
         endif()
     endif()
 
-    if(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
-        string(LENGTH "${CONFIG_WILLOW_ENDPOINT_OPENHAB_TOKEN}" OH_TLEN)
-        if(OH_TLEN EQUAL 0)
-            message(FATAL_ERROR "openHAB endpoint configured without token")
-        endif()
-
-        if(NOT CONFIG_WILLOW_ENDPOINT_OPENHAB_URL MATCHES "^https?://")
-            message(FATAL_ERROR "openHAB endpoint URL must contain URL scheme")
-        endif()
-    endif()
-
     if(CONFIG_WILLOW_USE_ENDPOINT_REST)
         if(CONFIG_WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER)
             string(LENGTH "${CONFIG_WILLOW_ENDPOINT_REST_AUTH_HEADER}" RA_HLEN)
