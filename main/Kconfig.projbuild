@@ -72,17 +72,6 @@ choice WILLOW_USE_ENDPOINT
                 Send command inferred from speech to generic REST endpoint
 endchoice
 
-config WILLOW_ENDPOINT_OPENHAB_URL
-    depends on WILLOW_USE_ENDPOINT_OPENHAB
-    string "openHAB base URL"
-    help
-        URL for the openHAB endpoint. Use the complete base URL!
-        E.g.: http://openhab:8080
-
-config WILLOW_ENDPOINT_OPENHAB_TOKEN
-    depends on WILLOW_USE_ENDPOINT_OPENHAB
-    string "openHAB API token"
-
 config WILLOW_ENDPOINT_REST_URL
     depends on WILLOW_USE_ENDPOINT_REST
     string "Generic REST endpoint URL"
