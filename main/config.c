@@ -63,6 +63,9 @@ char *config_get_char(char *key)
     cJSON *val = cJSON_GetObjectItemCaseSensitive(wc, key);
     if (cJSON_IsString(val) && val->valuestring != NULL) {
         ret = strndup(val->valuestring, strlen(val->valuestring));
+    } else {
+        ESP_LOGW(TAG, "key %s not found in config, use bogus value to avoid NULL pointer dereference", key);
+        ret = strndup("bogus", 6);
     }
     return ret;
 }
