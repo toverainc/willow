@@ -6,6 +6,7 @@
 #include "periph_wifi.h"
 #include "sdkconfig.h"
 
+#include "config.h"
 #include "network.h"
 #include "shared.h"
 #include "slvgl.h"
@@ -53,13 +54,14 @@ esp_err_t init_sntp(void)
     setenv("TZ", CONFIG_WILLOW_TIMEZONE, 1);
     tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-#ifdef CONFIG_WILLOW_NTP_USE_DHCP
-    ESP_LOGI(TAG, "Using DHCP SNTP server");
-    sntp_servermode_dhcp(1);
-#else
-    ESP_LOGI(TAG, "Using configured SNTP server '%s'", CONFIG_WILLOW_NTP_HOST);
-    sntp_setservername(0, CONFIG_WILLOW_NTP_HOST);
-#endif
+
+    if (strcmp(config_get_char("ntp_config"), "DHCP") == 0) {
+        ESP_LOGI(TAG, "Using DHCP SNTP server");
+        sntp_servermode_dhcp(1);
+    } else if (strcmp(config_get_char("ntp_config"), "Host") == 0) {
+        ESP_LOGI(TAG, "Using configured SNTP server '%s'", config_get_char("ntp_host"));
+        sntp_setservername(0, config_get_char("ntp_host"));
+    }
     sntp_set_time_sync_notification_cb(cb_sntp);
     sntp_init();
 
