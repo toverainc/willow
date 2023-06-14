@@ -53,25 +53,6 @@ choice WILLOW_WAKE_WORD
             Say Hi Lexin to wake Willow
 endchoice
 
-choice WILLOW_USE_ENDPOINT
-    prompt "Command Endpoint"
-    default WILLOW_USE_ENDPOINT_HOMEASSISTANT
-        config WILLOW_USE_ENDPOINT_HOMEASSISTANT
-            bool "Home Assistant"
-            help
-                Send command inferred from speech to Home Assistant
-
-        config WILLOW_USE_ENDPOINT_OPENHAB
-            bool "openHAB"
-            help
-                Send command inferred from speech to openHAB
-
-        config WILLOW_USE_ENDPOINT_REST
-            bool "Generic REST endpoint"
-            help
-                Send command inferred from speech to generic REST endpoint
-endchoice
-
 config WILLOW_TIMEZONE
     string "Timezone"
     default "UTC+5"
