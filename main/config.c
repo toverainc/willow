@@ -12,6 +12,8 @@
 
 static const char *TAG = "WILLOW/CONFIG";
 
+bool config_valid = false;
+
 static char *config_read(void)
 {
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
@@ -49,7 +51,6 @@ void config_parse(void)
     char *json = NULL;
 
     if (config == NULL) {
-        request_config();
         return;
     }
 
@@ -61,6 +62,8 @@ void config_parse(void)
             goto cleanup;
         }
     }
+
+    config_valid = true;
 
     json = cJSON_Print(cjson);
     ESP_LOGI(TAG, "parsed config file:");
