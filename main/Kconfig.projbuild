@@ -72,44 +72,6 @@ choice WILLOW_USE_ENDPOINT
                 Send command inferred from speech to generic REST endpoint
 endchoice
 
-config WILLOW_ENDPOINT_REST_URL
-    depends on WILLOW_USE_ENDPOINT_REST
-    string "Generic REST endpoint URL"
-    help
-        URL for the generic REST endpoint. Use the complete URL!
-        E.g.: https://generic/api/rest
-
-choice WILLOW_ENDPOINT_REST_AUTH
-    depends on WILLOW_USE_ENDPOINT_REST
-    prompt "Generic REST endpoint auth type"
-    default WILLOW_ENDPOINT_REST_AUTH_NONE
-
-        config WILLOW_ENDPOINT_REST_AUTH_NONE
-            bool "No authentication"
-
-        config WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
-            bool "Authorization header"
-
-        config WILLOW_ENDPOINT_REST_AUTH_BASIC
-            bool "Basic Authentication"
-            select ESP_HTTP_CLIENT_ENABLE_BASIC_AUTH
-endchoice
-
-config WILLOW_ENDPOINT_REST_AUTH_HEADER
-    depends on WILLOW_ENDPOINT_REST_AUTH_AUTH_HEADER
-    string "Generic REST endpoint Authorization header (READ HELP)"
-    help
-        Authorization header to send to REST endpoint. Use full header!
-        E.g.: Bearer 3a623b52297fb23844159ad393de2b27
-
-config WILLOW_ENDPOINT_REST_AUTH_USERNAME
-    depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
-    string "Username for HTTP Basic Authentication"
-
-config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
-    depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
-    string "Password for HTTP Basic Authentication"
-
 config WILLOW_TIMEZONE
     string "Timezone"
     default "UTC+5"
