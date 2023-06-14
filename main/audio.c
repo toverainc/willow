@@ -10,9 +10,9 @@
 #include "shared.h"
 
 #define DEFAULT_AUDIO_RESPONSE_TYPE "None"
+#define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
 
-#define WIS_URL_TTS_ARG "?speaker=CLB&text=%s"
-#define WIS_URL_TTS_FMT CONFIG_WILLOW_WIS_TTS_URL WIS_URL_TTS_ARG
+#define WIS_URL_TTS_ARG "?speaker=CLB&text="
 
 static void play_audio_err(void *data)
 {
@@ -34,9 +34,11 @@ static void play_audio_wis_tts(void *data)
         ESP_LOGW(TAG, "called play_audio_wis_tts with NULL data");
         return;
     }
-    int len_url = strlen(WIS_URL_TTS_FMT) + strlen((char *)data) + 1;
+    char *wis_tts_url = config_get_char("wis_tts_url", DEFAULT_WIS_TTS_URL);
+    int len_url = strlen(wis_tts_url) + strlen(WIS_URL_TTS_ARG) + strlen((char *)data) + 1;
     char *url = calloc(sizeof(char), len_url);
-    snprintf(url, len_url, WIS_URL_TTS_FMT, (char *)data);
+    snprintf(url, len_url, "%s%s%s", wis_tts_url, WIS_URL_TTS_ARG, (char *)data);
+    free(wis_tts_url);
     gpio_set_level(get_pa_enable_gpio(), 1);
     ESP_LOGI(TAG, "Using WIS TTS URL '%s'", url);
     esp_audio_sync_play(hdl_ea, url, 0);
