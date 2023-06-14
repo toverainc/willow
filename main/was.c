@@ -9,6 +9,7 @@
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
+esp_err_t init_was(void);
 static void send_hello(void);
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
@@ -41,6 +42,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
             break;
         case WEBSOCKET_EVENT_CLOSED:
             ESP_LOGI(TAG, "WebSocket closed");
+            init_was();
             break;
         default:
             ESP_LOGD(TAG, "unhandled WebSocket event - ID: %d", id_ev);
