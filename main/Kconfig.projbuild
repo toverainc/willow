@@ -22,22 +22,7 @@ config WILLOW_WAS_URL
     help
         URL for your WAS instance. Supports WS and WSS.
 
-choice
-    prompt "Willow audio response type"
-    default WILLOW_AUDIO_RESPONSE_FS
-
-    config WILLOW_AUDIO_RESPONSE_NONE
-    bool "No audio response - silent"
-
-    config WILLOW_AUDIO_RESPONSE_FS
-    bool "Audio response using local files - default chimes"
-
-    config WILLOW_AUDIO_RESPONSE_WIS_TTS
-    bool "Audio response using WIS TTS - English only for now"
-endchoice
-
 config WILLOW_WIS_TTS_URL
-    depends on WILLOW_AUDIO_RESPONSE_WIS_TTS
     string "Willow Inference Server TTS URL"
     default "https://infer.tovera.io/api/tts"
     help
