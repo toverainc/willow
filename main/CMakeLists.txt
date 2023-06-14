@@ -58,17 +58,6 @@ if($ENV{WILLOW_SDKCONFIG_SANITY_CHECKS})
         endif()
     endif()
 
-    if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
-        if(CONFIG_HOMEASSISTANT_HOST MATCHES ^https?://)
-            message(FATAL_ERROR "Home Assistant host must not contain URL scheme")
-        endif()
-
-        string(LENGTH "${CONFIG_HOMEASSISTANT_TOKEN}" HASS_TLEN)
-        if(HASS_TLEN EQUAL 0)
-            message(FATAL_ERROR "Home Assistant endpoint configured without token")
-        endif()
-    endif()
-
     if(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
         string(LENGTH "${CONFIG_WILLOW_ENDPOINT_OPENHAB_TOKEN}" OH_TLEN)
         if(OH_TLEN EQUAL 0)
