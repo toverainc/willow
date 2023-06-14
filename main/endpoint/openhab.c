@@ -33,6 +33,10 @@ void openhab_send(const char *data)
     }
 
     esp_http_client_handle_t hdl_hc = init_http_client();
+    ret = http_set_basic_auth(hdl_hc, CONFIG_WILLOW_ENDPOINT_OPENHAB_TOKEN, "");
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to enable HTTP Basic Authentication: %s", esp_err_to_name(ret));
+    }
 
     ESP_LOGI(TAG, "sending '%s' to openHAB REST API on '%s'", text->valuestring, url);
 
