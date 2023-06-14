@@ -6,12 +6,12 @@
 #include "sdkconfig.h"
 #include "spiffs_stream.h"
 
+#include "config.h"
 #include "shared.h"
 
 #define WIS_URL_TTS_ARG "?speaker=CLB&text=%s"
 #define WIS_URL_TTS_FMT CONFIG_WILLOW_WIS_TTS_URL WIS_URL_TTS_ARG
 
-#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
@@ -26,7 +26,6 @@ static void play_audio_ok(void *data)
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
-#elif defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
 static void play_audio_wis_tts(void *data)
 {
     if (data == NULL) {
@@ -43,25 +42,23 @@ static void play_audio_wis_tts(void *data)
     gpio_set_level(get_pa_enable_gpio(), 0);
     free(url);
 }
-#else
 
-static void noop(void)
+static void noop(void *data)
 {
 }
-#endif
 
 void init_audio_response(void)
 {
-#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS)
-    war.fn_err = play_audio_err;
-    war.fn_ok = play_audio_ok;
-#elif defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
-    war.fn_err = play_audio_wis_tts;
-    war.fn_ok = play_audio_wis_tts;
-#else
-    war.fn_err = noop;
-    war.fn_ok = noop;
-#endif
+    if (strcmp(config_get_char("audio_response_type"), "Chimes") == 0) {
+        war.fn_err = play_audio_err;
+        war.fn_ok = play_audio_ok;
+    } else if (strcmp(config_get_char("audio_response_type"), "TTS") == 0) {
+        war.fn_err = play_audio_wis_tts;
+        war.fn_ok = play_audio_wis_tts;
+    } else {
+        war.fn_err = noop;
+        war.fn_ok = noop;
+    }
 }
 
 void init_esp_audio(audio_board_handle_t hdl)
