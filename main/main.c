@@ -65,6 +65,8 @@
 #include "net/ethernet.h"
 #endif
 
+#define DEFAULT_WIS_URL "https://infer.tovera.io/api/willow"
+
 #define I2S_PORT       I2S_NUM_0
 #define PARTLABEL_USER "user"
 
@@ -333,9 +335,11 @@ static esp_err_t init_ap_to_api()
     audio_pipeline_register(hdl_ap_to_api, hdl_ae_hs, "http_stream_writer");
     audio_pipeline_register(hdl_ap_to_api, hdl_ae_rs_to_api, "raw_stream_writer_to_api");
 
+    char *wis_url = config_get_char("wis_url", DEFAULT_WIS_URL);
     const char *tag_link[2] = {"raw_stream_writer_to_api", "http_stream_writer"};
     audio_pipeline_link(hdl_ap_to_api, &tag_link[0], 2);
-    audio_element_set_uri(hdl_ae_hs, CONFIG_SERVER_URI);
+    audio_element_set_uri(hdl_ae_hs, wis_url);
+    free(wis_url);
 
     audio_element_info_t info = AUDIO_ELEMENT_INFO_DEFAULT();
     audio_element_getinfo(hdl_ae_hs, &info);
