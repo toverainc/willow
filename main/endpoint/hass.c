@@ -10,21 +10,21 @@
 #include "sdkconfig.h"
 
 #include "../http.h"
+#include "config.h"
 #include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 
+#define DEFAULT_HOST  "homeassistant.local"
+#define DEFAULT_PORT  8123
+#define DEFAULT_TLS   false
+#define DEFAULT_TOKEN "your_ha_token"
+
 #define HASS_URI_COMPONENTS           "/api/components"
 #define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
 #define HASS_URI_WEBSOCKET            "/api/websocket"
-#define STRLEN(s)                     strlen(s)
+#define STR_SCHEME_LEN                6
 #define URL_CLEN                      (8 + 1 + 5 + 1) // https:// + : + $PORT + NULL terminator
-
-#ifdef CONFIG_HOMEASSISTANT_TLS
-#define HOMEASSISTANT_TLS true
-#else
-#define HOMEASSISTANT_TLS false
-#endif
 
 struct hass_intent_response {
     bool has_speech;
@@ -151,20 +151,25 @@ cleanup:
 
 static void hass_get_url(char **url, const char *path, const bool ws)
 {
+    char *hass_host;
+    char scheme[STR_SCHEME_LEN];
     int len_url = 0;
-#if HOMEASSISTANT_TLS
-    char *scheme = ws ? "wss" : "https";
-#else
-    char *scheme = ws ? "ws" : "http";
-#endif
 
-    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + strlen(path);
+    if (config_get_bool("hass_tls", DEFAULT_TLS)) {
+        strncpy(scheme, ws ? "wss" : "https", STR_SCHEME_LEN);
+    } else {
+        strncpy(scheme, ws ? "ws" : "http", STR_SCHEME_LEN);
+    }
+
+    hass_host = config_get_char("hass_host", DEFAULT_HOST);
+    len_url = URL_CLEN + strlen(hass_host) + strlen(path);
     if (path != NULL) {
         len_url += strlen(path);
     }
     *url = calloc(sizeof(char), len_url);
-    snprintf(*url, len_url, "%s://%s:%d%s", scheme, CONFIG_HOMEASSISTANT_HOST, CONFIG_HOMEASSISTANT_PORT,
+    snprintf(*url, len_url, "%s://%s:%d%s", scheme, hass_host, config_get_int("hass_port", DEFAULT_PORT),
              path ? path : "");
+    free(hass_host);
 
     ESP_LOGI(TAG, "HASS URL: %s", *url);
 }
@@ -172,6 +177,7 @@ static void hass_get_url(char **url, const char *path, const bool ws)
 static void init_hass_ws_client(void)
 {
     char *auth = NULL;
+    char *hass_token = NULL;
     char *url = NULL;
     esp_err_t err;
     int len_auth, ret;
@@ -196,9 +202,11 @@ static void init_hass_ws_client(void)
         return;
     }
 
-    len_auth = strlen(CONFIG_HOMEASSISTANT_TOKEN) + 34;
+    hass_token = config_get_char("hass_token", DEFAULT_TOKEN);
+    len_auth = strlen(hass_token) + 34;
     auth = calloc(sizeof(char), len_auth);
-    snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", CONFIG_HOMEASSISTANT_TOKEN);
+    snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", hass_token);
+    free(hass_token);
 
     // we must not send the terminating null byte
     ret = esp_websocket_client_send_text(hdl_wc, auth, len_auth - 1, 2000 / portTICK_PERIOD_MS);
@@ -210,8 +218,10 @@ static void init_hass_ws_client(void)
 
 static esp_err_t hass_set_http_auth(const esp_http_client_handle_t hdl_hc)
 {
-    char *hdr_auth = calloc(sizeof(char), 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
-    snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
+    char *hass_token = config_get_char("hass_token", DEFAULT_TOKEN);
+    char *hdr_auth = calloc(sizeof(char), 8 + strlen(hass_token));
+    snprintf(hdr_auth, 8 + strlen(hass_token), "Bearer %s", hass_token);
+    free(hass_token);
     esp_err_t ret = esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to set authorization header: %s", esp_err_to_name(ret));
