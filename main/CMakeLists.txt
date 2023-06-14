@@ -100,8 +100,4 @@ if($ENV{WILLOW_SDKCONFIG_SANITY_CHECKS})
             message(FATAL_ERROR "REST endpoint URL must contain URL scheme")
         endif()
     endif()
-
-    if(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS AND NOT CONFIG_WILLOW_WIS_TTS_URL MATCHES "^https?://")
-        message(FATAL_ERROR "Willow WIS TTS URL must include URL scheme")
-    endif()
 endif()
