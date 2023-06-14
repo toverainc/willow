@@ -46,10 +46,6 @@ spiffs_create_partition_image(user ../spiffs/user FLASH_IN_PROJECT)
 
 # sdkconfig sanity checks
 if($ENV{WILLOW_SDKCONFIG_SANITY_CHECKS})
-    if(CONFIG_WILLOW_USE_WIS AND NOT CONFIG_SERVER_URI MATCHES "^https?://")
-        message(FATAL_ERROR "Willow WIS URL must include URL scheme")
-    endif()
-
     if (NOT CONFIG_WILLOW_ETHERNET)
         string(REGEX MATCH "^[ -~]+" WIFI_PASSPHRASE "${CONFIG_WIFI_PASSWORD}")
         if(NOT "${CONFIG_WIFI_PASSWORD}" STREQUAL "${WIFI_PASSPHRASE}")

@@ -53,13 +53,6 @@ choice
     bool "Audio response using WIS TTS - English only for now"
 endchoice
 
-config SERVER_URI
-    depends on WILLOW_USE_WIS
-    string "Willow Inference Server URL"
-    default "https://infer.tovera.io/api/willow"
-    help
-        URL For your WIS instance. Supports HTTP and HTTPS.
-
 config WILLOW_WIS_TTS_URL
     depends on WILLOW_AUDIO_RESPONSE_WIS_TTS
     depends on WILLOW_USE_WIS
