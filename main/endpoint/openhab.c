@@ -6,9 +6,13 @@
 #include "esp_lvgl_port.h"
 
 #include "../http.h"
+#include "config.h"
 #include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
+
+#define DEFAULT_TOKEN "http://your_openhab_url"
+#define DEFAULT_URL   "your_openhab_token"
 
 #define OH_URI_INTERPRETERS "/rest/voice/interpreters"
 
@@ -19,9 +23,11 @@ void openhab_send(const char *data)
     esp_err_t ret;
     int http_status = 0, len_url = 0;
 
-    len_url = strlen(CONFIG_WILLOW_ENDPOINT_OPENHAB_URL) + strlen(OH_URI_INTERPRETERS) + 1;
+    char *openhab_url = config_get_char("openhab_url", DEFAULT_URL);
+    len_url = strlen(openhab_url) + strlen(OH_URI_INTERPRETERS) + 1;
     url = calloc(sizeof(char), len_url);
-    snprintf(url, len_url, "%s%s", CONFIG_WILLOW_ENDPOINT_OPENHAB_URL, OH_URI_INTERPRETERS);
+    snprintf(url, len_url, "%s%s", openhab_url, OH_URI_INTERPRETERS);
+    free(openhab_url);
 
     cJSON *cjson = cJSON_Parse(data);
     if (!cJSON_IsObject(cjson)) {
@@ -33,7 +39,9 @@ void openhab_send(const char *data)
     }
 
     esp_http_client_handle_t hdl_hc = init_http_client();
-    ret = http_set_basic_auth(hdl_hc, CONFIG_WILLOW_ENDPOINT_OPENHAB_TOKEN, "");
+    char *openhab_token = config_get_char("openhab_token", DEFAULT_TOKEN);
+    ret = http_set_basic_auth(hdl_hc, openhab_token, "");
+    free(openhab_token);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to enable HTTP Basic Authentication: %s", esp_err_to_name(ret));
     }
