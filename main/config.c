@@ -1,11 +1,12 @@
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 
-#include "cJSON.h"
 #include "esp_log.h"
 #include "esp_spiffs.h"
 #include "esp_system.h"
 
+#include "config.h"
 #include "was.h"
 
 #define CONFIG_PATH "/spiffs/user/config/willow.json"
@@ -13,6 +14,7 @@
 static const char *TAG = "WILLOW/CONFIG";
 
 bool config_valid = false;
+cJSON *wc = NULL; // TODO: cJSON_Delete() after all config_get_* calls
 
 static char *config_read(void)
 {
@@ -45,6 +47,38 @@ close:
     return config;
 }
 
+bool config_get_bool(char *key, const bool default_value)
+{
+    bool ret = default_value;
+    cJSON *val = cJSON_GetObjectItemCaseSensitive(wc, key);
+    if (val != NULL && cJSON_IsBool(val)) {
+        ret = cJSON_IsTrue(val) ? true : false;
+    }
+    return ret;
+}
+
+char *config_get_char(const char *key, const char *default_value)
+{
+    char *ret = NULL;
+    cJSON *val = cJSON_GetObjectItemCaseSensitive(wc, key);
+    if (val != NULL && cJSON_IsString(val) && val->valuestring != NULL) {
+        ret = strndup(val->valuestring, strlen(val->valuestring));
+    } else {
+        ret = strndup(default_value, strlen(default_value));
+    }
+    return ret;
+}
+
+int config_get_int(char *key, const int default_value)
+{
+    int ret = -1;
+    cJSON *val = cJSON_GetObjectItemCaseSensitive(wc, key);
+    if (cJSON_IsNumber(val)) {
+        ret = val->valueint;
+    }
+    return ret;
+}
+
 void config_parse(void)
 {
     char *config = config_read();
@@ -54,8 +88,8 @@ void config_parse(void)
         return;
     }
 
-    cJSON *cjson = cJSON_Parse(config);
-    if (cjson == NULL) {
+    wc = cJSON_Parse(config);
+    if (wc == NULL) {
         const char *eptr = cJSON_GetErrorPtr();
         if (eptr != NULL) {
             ESP_LOGE(TAG, "error parsing config file: %s\n", eptr);
@@ -65,12 +99,11 @@ void config_parse(void)
 
     config_valid = true;
 
-    json = cJSON_Print(cjson);
+    json = cJSON_Print(wc);
     ESP_LOGI(TAG, "parsed config file:");
     printf("%s\n", json);
 
 cleanup:
-    cJSON_Delete(cjson);
     free(config);
 }
 
