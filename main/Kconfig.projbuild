@@ -141,28 +141,6 @@ config WILLOW_LCD_BRIGHTNESS
     help
         LCD Brightness from 0-1023
 
-choice WILLOW_NTP
-    prompt "NTP Configuration"
-    default WILLOW_NTP_USE_HOST
-
-    config WILLOW_NTP_USE_HOST
-        bool "Use specific NTP server"
-        help
-            NTP host for obtaining system time
-
-    config WILLOW_NTP_USE_DHCP
-        bool "Use NTP server provided by DHCP"
-        help
-            Override NTP server with host provided via DHCP
-endchoice
-
-config WILLOW_NTP_HOST
-    depends on WILLOW_NTP_USE_HOST
-    string "Willow NTP host"
-    default "pool.ntp.org"
-    help
-        NTP host for obtaining system time
-
     menu "Advanced settings"
 
         config WILLOW_VAD_TIMEOUT

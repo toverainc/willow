@@ -6,9 +6,13 @@
 #include "periph_wifi.h"
 #include "sdkconfig.h"
 
+#include "config.h"
 #include "network.h"
 #include "shared.h"
 #include "slvgl.h"
+
+#define DEFAULT_NTP_CONFIG "Host"
+#define DEFAULT_NTP_HOST   "pool.ntp.org"
 
 #define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6
@@ -53,13 +57,18 @@ esp_err_t init_sntp(void)
     setenv("TZ", CONFIG_WILLOW_TIMEZONE, 1);
     tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
-#ifdef CONFIG_WILLOW_NTP_USE_DHCP
-    ESP_LOGI(TAG, "Using DHCP SNTP server");
-    sntp_servermode_dhcp(1);
-#else
-    ESP_LOGI(TAG, "Using configured SNTP server '%s'", CONFIG_WILLOW_NTP_HOST);
-    sntp_setservername(0, CONFIG_WILLOW_NTP_HOST);
-#endif
+
+    char *ntp_config = config_get_char("ntp_config", DEFAULT_NTP_CONFIG);
+    if (strcmp(ntp_config, "DHCP") == 0) {
+        ESP_LOGI(TAG, "Using DHCP SNTP server");
+        sntp_servermode_dhcp(1);
+    } else if (strcmp(ntp_config, "Host") == 0) {
+        char *ntp_host = config_get_char("ntp_host", DEFAULT_NTP_HOST);
+        ESP_LOGI(TAG, "Using configured SNTP server '%s'", ntp_host);
+        sntp_setservername(0, ntp_host);
+        free(ntp_host);
+    }
+    free(ntp_config);
     sntp_set_time_sync_notification_cb(cb_sntp);
     sntp_init();
 
