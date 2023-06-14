@@ -268,9 +268,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
                     lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                     lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
                     lvgl_port_unlock();
-#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS) || defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
                     war.fn_err("Unauthorized Speaker");
-#endif
                 }
                 ESP_LOGE(TAG, "WIS returned HTTP error: %d", http_status);
                 return ESP_FAIL;
