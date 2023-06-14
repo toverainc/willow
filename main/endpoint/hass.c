@@ -30,7 +30,7 @@
 struct hass_intent_response {
     bool has_speech;
     bool ok;
-    char speech[64];
+    char speech[HASS_SPEECH_MAX_LEN];
 };
 
 static struct hass_intent_response hir;
