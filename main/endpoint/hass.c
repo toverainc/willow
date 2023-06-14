@@ -14,7 +14,6 @@
 #include "slvgl.h"
 #include "timer.h"
 
-#define HASS_SPEECH_MAX_LEN           64
 #define HASS_URI_COMPONENTS           "/api/components"
 #define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
 #define HASS_URI_WEBSOCKET            "/api/websocket"
@@ -30,7 +29,7 @@
 struct hass_intent_response {
     bool has_speech;
     bool ok;
-    char speech[HASS_SPEECH_MAX_LEN];
+    char *speech;
 };
 
 static struct hass_intent_response hir;
@@ -100,7 +99,8 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                 cJSON *speech2 = cJSON_GetObjectItemCaseSensitive(plain, "speech");
                 if (cJSON_IsString(speech2) && speech2->valuestring != NULL && strlen(speech2->valuestring) > 0) {
                     hir.has_speech = true;
-                    strncpy(hir.speech, speech2->valuestring, HASS_SPEECH_MAX_LEN - 1);
+                    hir.speech = calloc(sizeof(char), strlen(speech2->valuestring) + 1);
+                    snprintf(hir.speech, strlen(speech2->valuestring) + 1, "%s", speech2->valuestring);
                 }
 
 no_speech:;
@@ -128,6 +128,7 @@ end:
                     lv_label_set_text_static(lbl_ln3, "Response:");
                     lv_label_set_text(lbl_ln4, hir.speech);
                     hir.ok ? war.fn_ok(hir.speech) : war.fn_err(hir.speech);
+                    free(hir.speech);
                 } else {
                     lv_label_set_text_static(lbl_ln3, "Command status:");
                     lv_label_set_text(lbl_ln4, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
@@ -358,7 +359,6 @@ static void hass_send_ws(const char *data)
 
     hir.has_speech = false;
     hir.ok = false;
-    memset(hir.speech, '\0', sizeof(hir.speech));
 
     cJSON *end_stage = cJSON_CreateString("intent");
     cJSON *id = cJSON_CreateNumber(tv_now.tv_sec);
