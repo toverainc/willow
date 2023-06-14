@@ -2,6 +2,9 @@ set(COMPONENT_SRCS
     "audio.c"
     "config.c"
     "display.c"
+    "endpoint/hass.c"
+    "endpoint/openhab.c"
+    "endpoint/rest.c"
     "http.c"
     "input.c"
     "lv_img_hand_left.c"
@@ -27,14 +30,6 @@ set(COMPONENT_PRIV_REQUIRES
     input_key_service
     spiffs
 )
-
-if(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
-    set(COMPONENT_SRCS ${COMPONENT_SRCS} "endpoint/hass.c")
-elseif(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
-    set(COMPONENT_SRCS ${COMPONENT_SRCS} "endpoint/openhab.c")
-elseif(CONFIG_WILLOW_USE_ENDPOINT_REST)
-    set(COMPONENT_SRCS "${COMPONENT_SRCS}" "endpoint/rest.c")
-endif()
 
 if(CONFIG_WILLOW_ETHERNET)
     set(COMPONENT_SRCS ${COMPONENT_SRCS} "net/ethernet.c")
