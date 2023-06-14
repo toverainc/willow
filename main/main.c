@@ -50,13 +50,9 @@
 #include "ui.h"
 #include "was.h"
 
-#if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
 #include "endpoint/hass.h"
-#elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
 #include "endpoint/openhab.h"
-#elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
 #include "endpoint/rest.h"
-#endif
 
 #if defined(CONFIG_WILLOW_ETHERNET)
 #include "net/ethernet.h"
@@ -159,17 +155,19 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
                 // Catch all for local commands
                 command_id = are;
+                char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
                 char *json;
                 json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
                 snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
                          lookup_cmd_multinet(command_id));
-#if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
-                hass_send(json);
-#elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
-                openhab_send(lookup_cmd_multinet(command_id));
-#elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
-                rest_send(json);
-#endif
+                if (strcmp(command_endpoint, "Home Assistant") == 0) {
+                    hass_send(json);
+                } else if (strcmp(command_endpoint, "openHAB") == 0) {
+                    openhab_send(lookup_cmd_multinet(command_id));
+                } else if (strcmp(command_endpoint, "REST") == 0) {
+                    rest_send(json);
+                }
+                free(command_endpoint);
                 free(json);
 
                 ESP_LOGI(TAG, "Got local command ID: '%d'", command_id);
@@ -283,13 +281,15 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             }
             buf[read_len] = 0;
             ESP_LOGI(TAG, "WIS HTTP Response = %s", (char *)buf);
-#if defined(CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT)
-            hass_send(buf);
-#elif defined(CONFIG_WILLOW_USE_ENDPOINT_OPENHAB)
-            openhab_send(buf);
-#elif defined(CONFIG_WILLOW_USE_ENDPOINT_REST)
-            rest_send(buf);
-#endif
+            char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
+            if (strcmp(command_endpoint, "Home Assistant") == 0) {
+                hass_send(buf);
+            } else if (strcmp(command_endpoint, "openHAB") == 0) {
+                openhab_send(buf);
+            } else if (strcmp(command_endpoint, "REST") == 0) {
+                rest_send(buf);
+            }
+            free(command_endpoint);
 
             cJSON *cjson = cJSON_Parse(buf);
             cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
@@ -696,9 +696,11 @@ void app_main(void)
 
     audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
 
-#ifdef CONFIG_WILLOW_USE_ENDPOINT_HOMEASSISTANT
-    init_hass();
-#endif
+    char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
+    if (strcmp(command_endpoint, "Home Assistant") == 0) {
+        init_hass();
+    }
+    free(command_endpoint);
     init_audio_response();
     init_buttons();
     init_input_key_service();
