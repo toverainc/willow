@@ -670,6 +670,10 @@ void app_main(void)
         vTaskDelay(portMAX_DELAY);
     }
 
+    if (!config_valid) {
+        request_config();
+    }
+
     init_sntp();
 
     audio_board_handle_t hdl_audio_board = audio_board_init();
