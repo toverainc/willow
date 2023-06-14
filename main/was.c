@@ -70,6 +70,33 @@ esp_err_t init_was(void)
     return err;
 }
 
+void request_config(void)
+{
+    cJSON *cjson = NULL;
+    char *json = NULL;
+    esp_err_t ret;
+
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        esp_websocket_client_destroy(hdl_wc);
+        init_was();
+    }
+
+    cjson = cJSON_CreateObject();
+    if (cJSON_AddStringToObject(cjson, "cmd", "get_config") == NULL) {
+        goto cleanup;
+    }
+
+    json = cJSON_Print(cjson);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send WAS get_config message");
+    }
+
+cleanup:
+    cJSON_Delete(cjson);
+}
+
 static void send_hello(void)
 {
     char *json;

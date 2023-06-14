@@ -6,6 +6,8 @@
 #include "esp_spiffs.h"
 #include "esp_system.h"
 
+#include "was.h"
+
 #define CONFIG_PATH "/spiffs/user/config/willow.json"
 
 static const char *TAG = "WILLOW/CONFIG";
@@ -47,6 +49,7 @@ void config_parse(void)
     char *json = NULL;
 
     if (config == NULL) {
+        request_config();
         return;
     }
 
