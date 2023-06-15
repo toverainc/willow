@@ -9,8 +9,15 @@ import string
 
 max_commands = 400
 
-entity_types = ['light.', 'switch.']
+entity_types = ['cover.', 'fan.', 'light.', 'switch.']
 entity_types_str = str(entity_types)
+
+entity_commands = {
+    "cover.": ("OPEN", "CLOSE"),
+    "fan.": ("TURN ON", "TURN OFF"),
+    "light.": ("TURN ON", "TURN OFF"),
+    "switch.": ("TURN ON", "TURN OFF")
+}
 
 tag = "MULTINET: Generate speech commands:"
 
@@ -103,7 +110,7 @@ for type in entity_types:
                 continue
             # Add device
             if friendly_name not in devices:
-                devices.append(friendly_name)
+                devices.append((friendly_name, type))
 
 # Make the devices unique
 devices = [*set(devices)]
@@ -113,10 +120,14 @@ index = 0
 
 commands = []
 for device in devices:
+    name = device[0]
+    domain = device[1]
     index = index + 1
-    on = (f'{index} TURN ON {device}')
+    on_cmd = entity_commands[domain][0]
+    on = (f'{index} {on_cmd} {name}')
     index = index + 1
-    off = (f'{index} TURN OFF {device}')
+    off_cmd = entity_commands[domain][1]
+    off = (f'{index} {off_cmd} {name}')
     commands.append(on)
     commands.append(off)
 
@@ -142,9 +153,12 @@ multinet_header.write('char *cmd_multinet[] = {\n')
 multinet_header.write(f'\t\"DUMMY\",\n')
 
 for device in devices:
-    device = string.capwords(device)
-    on = f'Turn on {device}'
-    off = f'Turn off {device}'
+    domain = device[1]
+    device = string.capwords(device[0])
+    on_cmd = string.capwords(entity_commands[domain][0])
+    on = f'{on_cmd} {device}'
+    off_cmd = string.capwords(entity_commands[domain][1])
+    off = f'{off_cmd} {device}'
     multinet_header.write(f'\t\"{on}.\",\n')
     multinet_header.write(f'\t\"{off}.\",\n')
 
