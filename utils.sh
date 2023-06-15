@@ -155,6 +155,34 @@ generate_speech_commands() {
     fi
 }
 
+install() {
+    if [ -d deps ]; then
+        echo "You already have a deps directory - exiting"
+        exit 1
+    fi
+    mkdir -p deps
+    cd deps
+    # Setup ADF
+    git clone -b "$ADF_VER" https://github.com/espressif/esp-adf.git
+    cd $ADF_PATH
+    git submodule update --init components/esp-adf-libs
+
+    # Setup esp-sr
+    cd $WILLOW_PATH/components
+    git clone https://github.com/espressif/esp-sr.git
+    cd esp-sr
+    git checkout "$ESP_SR_VER"
+
+    cd $WILLOW_PATH
+    cp sdkconfig.willow sdkconfig
+    idf.py reconfigure
+    do_patch
+}
+
+destroy() {
+    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
+}
+
 # Just in case
 mkdir -p flags serve
 
@@ -290,37 +318,23 @@ destroy)
     read
     echo "LAST CHANCE!"
     read
-    #git reset --hard
-    #git clean -fdx
-    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
+    destroy
     echo "Not a trace left. You will have to run setup again."
 ;;
 
 install|setup)
     check_container
-    if [ -d deps ]; then
-        echo "You already have a deps directory - exiting"
-        exit 1
-    fi
-    mkdir -p deps
-    cd deps
-    # Setup ADF
-    git clone -b "$ADF_VER" https://github.com/espressif/esp-adf.git
-    cd $ADF_PATH
-    git submodule update --init components/esp-adf-libs
-
-    # Setup esp-sr
-    cd $WILLOW_PATH/components
-    git clone https://github.com/espressif/esp-sr.git
-    cd esp-sr
-    git checkout "$ESP_SR_VER"
-
-    cd $WILLOW_PATH
-    cp sdkconfig.willow sdkconfig
-    idf.py reconfigure
-    do_patch
-
+    install
     echo "You can now run ./utils.sh config and navigate to Willow Configuration for your environment"
+;;
+
+reinstall)
+    check_container
+    cp sdkconfig sdkconfig.user
+    destroy
+    install
+    mv sdkconfig.user sdkconfig
+    echo "Reinstalled with your configuration - you can either run ./utils.sh config and/or ./utils.sh build"
 ;;
 
 torture)
