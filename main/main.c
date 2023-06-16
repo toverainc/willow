@@ -36,6 +36,8 @@
 #endif
 
 #ifdef CONFIG_WILLOW_USE_MULTINET
+#define MULTINET_TWDT 30
+#include "esp_task_wdt.h"
 #include "generated_cmd_multinet.h"
 #endif
 
@@ -470,6 +472,7 @@ static void start_rec()
 
 #ifdef CONFIG_WILLOW_USE_MULTINET
     ESP_LOGI(TAG, "Using local multinet");
+    esp_task_wdt_init(MULTINET_TWDT, CONFIG_TASK_WDT_PANIC ? true : false);
     cfg_srr.multinet_init = true;
     cfg_srr.rb_size = 6 * 1024;
 #endif
