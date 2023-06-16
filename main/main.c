@@ -677,6 +677,10 @@ void app_main(void)
     start_rec();
     es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
 
+#ifdef CONFIG_WILLOW_USE_MULTINET
+    esp_task_wdt_init(30, true);
+#endif
+
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
     q_rec = xQueueCreate(3, sizeof(int));
