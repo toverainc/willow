@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
+#include "display.h"
 #include "shared.h"
 #include "tasks.h"
 #include "timer.h"
@@ -12,11 +13,7 @@ esp_timer_handle_t hdl_display_timer = NULL, hdl_sess_timer = NULL;
 static void cb_display_timer(void *data)
 {
     ESP_LOGI(TAG, "Wake LCD timeout, turning off LCD");
-#ifdef CONFIG_ESP32_S3_BOX_LITE_BOARD
-    ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 1023, 0);
-#else
-    ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, 0, 0);
-#endif
+    display_set_backlight(false);
 }
 
 static void cb_session_timer(void *data)
