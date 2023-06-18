@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include "network.h"
+#include "ota.h"
 
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
@@ -32,7 +33,25 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     char *config = cJSON_Print(json_config);
                     ESP_LOGI(TAG, "found config in WebSocket message: %s", config);
                     config_write(config);
+                    goto cleanup;
                 }
+
+                cJSON *json_cmd = cJSON_GetObjectItemCaseSensitive(cjson, "cmd");
+                if (cJSON_IsString(json_cmd) && json_cmd->valuestring != NULL) {
+                    ESP_LOGI(TAG, "found command in WebSocket message: %s", json_cmd->valuestring);
+                    if (strcmp(json_cmd->valuestring, "ota_start") == 0) {
+                        cJSON *json_ota_url = cJSON_GetObjectItemCaseSensitive(cjson, "ota_url");
+                        if (cJSON_IsString(json_ota_url) && json_ota_url->valuestring != NULL) {
+                            // we can't pass json_ota_url->valuestring to ota_start
+                            // it will be freed before the OTA task reads it
+                            char *ota_url = strndup(json_ota_url->valuestring, (strlen(json_ota_url->valuestring)));
+                            ESP_LOGI(TAG, "OTA URL: %s", ota_url);
+                            ota_start(ota_url);
+                        }
+                    }
+                }
+
+cleanup:
                 cJSON_Delete(cjson);
                 free(resp);
             }
