@@ -9,6 +9,7 @@ set(COMPONENT_SRCS
     "input.c"
     "lv_img_hand_left.c"
     "network.c"
+    "ota.c"
     "slvgl.c"
     "tasks.c"
     "timer.c"
@@ -18,6 +19,7 @@ set(COMPONENT_SRCS
 )
 set(COMPONENT_ADD_INCLUDEDIRS .)
 set(COMPONENT_PRIV_REQUIRES
+    app_update
     audio_board
     audio_hal
     audio_pipeline
