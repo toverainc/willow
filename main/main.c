@@ -140,7 +140,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 
             lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
             lvgl_port_unlock();
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
+            display_set_backlight(true);
             break;
         default:
             if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
