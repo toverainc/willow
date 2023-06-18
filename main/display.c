@@ -5,6 +5,14 @@
 
 #include "shared.h"
 
+#ifdef CONFIG_ESP32_S3_BOX_LITE_BOARD
+#define BL_DUTY_OFF 1023
+#define BL_DUTY_ON  BL_DUTY_OFF - CONFIG_WILLOW_LCD_BRIGHTNESS
+#else
+#define BL_DUTY_OFF 0
+#define BL_DUTY_ON  CONFIG_WILLOW_LCD_BRIGHTNESS
+#endif
+
 esp_err_t init_display(void)
 {
     ESP_LOGD(TAG, "initializing display");
@@ -55,4 +63,13 @@ esp_err_t init_display(void)
     }
 
     return ret;
+}
+
+void display_set_backlight(const bool on)
+{
+    if (on) {
+        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, BL_DUTY_ON, 0);
+    } else {
+        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, BL_DUTY_OFF, 0);
+    }
 }

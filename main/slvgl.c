@@ -8,6 +8,7 @@
 #include "lvgl.h"
 #include "periph_lcd.h"
 
+#include "display.h"
 #include "shared.h"
 #include "timer.h"
 
@@ -53,7 +54,7 @@ void cb_scr(lv_event_t *ev)
 
         case LV_EVENT_PRESSED:
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
+            display_set_backlight(true);
             break;
 
         default:
