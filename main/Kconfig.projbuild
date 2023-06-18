@@ -416,6 +416,7 @@ config WILLOW_NTP_HOST
     config WILLOW_DEBUG_TASKS
         bool "Debug Willow tasks"
         select FREERTOS_USE_STATS_FORMATTING_FUNCTIONS
+        select FREERTOS_USE_TRACE_FACILITY
         help
             Willow will periodically print task list when enabled
 
