@@ -12,6 +12,7 @@
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_netif.h"
+#include "esp_ota_ops.h"
 #include "esp_peripherals.h"
 #include "esp_task_wdt.h"
 #include "filter_resample.h"
@@ -730,7 +731,8 @@ void app_main(void)
     get_mac_address(); // should be on wifi by now; print the MAC
 #endif
 
-    ESP_LOGI(TAG, "Startup complete! Waiting for wake word.");
+    const esp_app_desc_t *app_desc = esp_ota_get_app_description();
+    ESP_LOGI(TAG, "Startup complete! Version: %s. Waiting for wake word.", app_desc->version);
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false));
 
