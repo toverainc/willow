@@ -732,7 +732,7 @@ void app_main(void)
 #endif
 #ifdef CONFIG_WILLOW_DEBUG_TASKS
         char buf[128];
-        vTaskList(&buf);
+        vTaskList(buf);
         printf("%s\n", buf);
 #endif
 #ifdef CONFIG_WILLOW_DEBUG_TIMERS
