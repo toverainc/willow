@@ -50,6 +50,24 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
     }
 }
 
+void was_deinit_task(void *data)
+{
+    ESP_LOGI(TAG, "stopping WebSocket client");
+    esp_err_t ret = esp_websocket_client_destroy(hdl_wc);
+
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to stop WebSocket client: %s", esp_err_to_name(ret));
+    }
+    vTaskDelete(NULL);
+}
+
+void deinit_was(void)
+{
+    // needs to be done in a task to avoid this error:
+    // WEBSOCKET_CLIENT: Client cannot be stopped from websocket task
+    xTaskCreate(&was_deinit_task, "was_deinit_task", 4096, NULL, 5, NULL);
+}
+
 esp_err_t init_was(void)
 {
     const esp_websocket_client_config_t cfg_wc = {
