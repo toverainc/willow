@@ -757,6 +757,11 @@ void app_main(void)
     const esp_app_desc_t *app_desc = esp_ota_get_app_description();
     ESP_LOGI(TAG, "Startup complete! Version: %s. Waiting for wake word.", app_desc->version);
 
+    // if we reached this point, we can mark the current partition valid
+    // we can still crash on wake or other events but we should be able to do another OTA
+    // we can also still crash in the while loop below - this should be improved
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_mark_app_valid_cancel_rollback());
+
     ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false));
 
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
