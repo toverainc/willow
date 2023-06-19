@@ -44,3 +44,17 @@ $ /opt/esp/tools/xtensa-esp32s3-elf/esp-2021r2-patch5-8.4.0/xtensa-esp32s3-elf/b
 /willow/main/main.c:558
 /opt/esp/idf/components/freertos/port/port_common.c:141
 ```
+
+# Generate NVS partition
+
+nvs.csv:
+```
+key,type,encoding,value
+WIFI,namespace,,
+PSK,data,string,mypassword
+SSID,data,string,myssid
+```
+
+```
+/opt/esp/idf/components/nvs_flash/nvs_partition_generator/nvs_partition_gen.py generate --version 2 nvs.csv nvs.bin 0x24000
+```
