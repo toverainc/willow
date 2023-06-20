@@ -669,7 +669,7 @@ void app_main(void)
 #ifdef CONFIG_WILLOW_ETHERNET
     init_ethernet();
 #else
-    init_wifi();
+    init_wifi(CONFIG_WIFI_PASSWORD, CONFIG_WIFI_SSID);
 #endif
     ret = init_was();
     if (ret != ESP_OK) {
