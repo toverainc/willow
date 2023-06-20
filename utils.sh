@@ -10,7 +10,7 @@ export CONSOLE_BAUD=2000000 # Subject to change
 
 export DOCKER_IMAGE="willow:latest"
 export DOCKER_NAME="willow-build"
-export DIST_FILE="serve/willow-dist.bin"
+export DIST_FILE="build/willow-dist.bin"
 export SERVE_PORT="10000"
 
 # ESP-SR Componenent ver hash
@@ -153,6 +153,17 @@ generate_speech_commands() {
     fi
 }
 
+generate_nvs() {
+    SSID=$(grep CONFIG_WIFI_SSID sdkconfig | cut -d'=' -f2 | tr -d '"')
+    PASSWORD=$(grep CONFIG_WIFI_PASSWORD sdkconfig | cut -d'=' -f2 | tr -d '"')
+    echo -n "key,type,encoding,value
+WIFI,namespace,,
+PSK,data,string,$PASSWORD
+SSID,data,string,$SSID" > build/nvs.csv
+    /opt/esp/idf/components/nvs_flash/nvs_partition_generator/nvs_partition_gen.py generate \
+        --version 2 build/nvs.csv build/nvs.bin 0x24000
+}
+
 install() {
     if [ -d deps ]; then
         echo "You already have a deps directory - exiting"
@@ -178,11 +189,11 @@ install() {
 }
 
 destroy() {
-    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
+    sudo rm -rf build/* serve deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
 }
 
 # Just in case
-mkdir -p flags serve
+mkdir -p flags
 
 check_flag() {
     FLAG="$1"
@@ -278,6 +289,8 @@ dist)
     check_esptool
     check_build_host
     do_dist
+    generate_nvs
+    dd conv=notrunc bs=1 if=build/nvs.bin of="$DIST_FILE" seek=$((0x9000))
 ;;
 
 flash-dist|dist-flash)
@@ -287,6 +300,7 @@ flash-dist|dist-flash)
     fi
     check_port
     check_esptool
+    check_build_host
     check_flag "erase-flash"
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$WILLOW_PATH/$DIST_FILE"
@@ -349,7 +363,7 @@ torture)
 
 serve)
     do_dist
-    cd "$WILLOW_PATH"/serve
+    cd "$WILLOW_PATH"/build
     echo "Serving your Willow dist firmare image - go to http://[YOUR HOST IP]:$SERVE_PORT"
     python3 -m http.server "$SERVE_PORT"
 ;;
