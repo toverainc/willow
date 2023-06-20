@@ -633,6 +633,8 @@ static esp_err_t init_spiffs_user(void)
 
 void app_main(void)
 {
+    state = STATE_INIT;
+
 #ifdef CONFIG_WILLOW_DEBUG_LOG
     esp_log_level_set("*", ESP_LOG_DEBUG);
 #else
@@ -669,7 +671,30 @@ void app_main(void)
 #ifdef CONFIG_WILLOW_ETHERNET
     init_ethernet();
 #else
-    init_wifi(CONFIG_WIFI_PASSWORD, CONFIG_WIFI_SSID);
+    nvs_handle_t hdl_nvs;
+    ret = nvs_open("WIFI", NVS_READONLY, &hdl_nvs);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to open NVS namespace WIFI: %s", esp_err_to_name(err));
+        goto err_nvs;
+    }
+
+    char psk[64];
+    size_t sz = sizeof(psk);
+    ret = nvs_get_str(hdl_nvs, "PSK", psk, &sz);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to get PSK from NVS namespace WIFI: %s", esp_err_to_name(err));
+        goto err_nvs;
+    }
+
+    char ssid[33];
+    sz = sizeof(ssid);
+    ret = nvs_get_str(hdl_nvs, "SSID", ssid, &sz);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to get PSK from NVS namespace WIFI: %s", esp_err_to_name(err));
+        goto err_nvs;
+    }
+    state = STATE_NVS_OK;
+    init_wifi(psk, ssid);
 #endif
     ret = init_was();
     if (ret != ESP_OK) {
@@ -680,12 +705,23 @@ void app_main(void)
             lv_label_set_text_static(lbl_ln3, "WAS initialization failed.");
             lvgl_port_unlock();
         }
-        // wait "indefinitely"
-        vTaskDelay(portMAX_DELAY);
     }
 
     if (!config_valid) {
         request_config();
+    }
+
+// we jump over WAS initialization was without Wi-Fi this will never work
+err_nvs:
+    if (state < STATE_NVS_OK) {
+        if (ld == NULL) {
+            lvgl_port_lock(0);
+            lv_label_set_text_static(lbl_ln2, "Fatal error!");
+            lv_label_set_text_static(lbl_ln3, "Failed to read NVS partition.");
+            lvgl_port_unlock();
+        }
+        // wait "indefinitely"
+        vTaskDelay(portMAX_DELAY);
     }
 
     init_sntp();
