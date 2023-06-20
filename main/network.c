@@ -69,12 +69,12 @@ esp_err_t init_sntp(void)
 }
 
 #ifndef CONFIG_WILLOW_ETHERNET
-esp_err_t init_wifi(void)
+esp_err_t init_wifi(const char *psk, const char *ssid)
 {
     esp_err_t ret = ESP_OK;
     periph_wifi_cfg_t cfg_pwifi = {
-        .ssid = CONFIG_WIFI_SSID,
-        .password = CONFIG_WIFI_PASSWORD,
+        .ssid = ssid,
+        .password = psk,
     };
     esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
 
