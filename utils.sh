@@ -358,7 +358,7 @@ serve)
 
 clang-format)
     check_clang_format
-    clang-format-15 -i main/{,endpoint}/*.{c,h}
+    find main/ -name '*.c' -or -name '*.h' -exec clang-format-15 -i {} +
 ;;
 
 convert-font)
