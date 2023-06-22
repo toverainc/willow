@@ -152,12 +152,18 @@ void ota_task(void *data)
     }
 
     ESP_LOGI(TAG, "OTA completed, restarting");
+    lvgl_port_lock(0);
+    lv_label_set_text_static(lbl_ln3, "OTA update done");
+    lvgl_port_unlock();
     restart_delayed();
 err:
     esp_ota_abort(hdl_ota);
     esp_http_client_close(hdl_hc);
     esp_http_client_cleanup(hdl_hc);
     ESP_LOGI(TAG, "OTA failed, restarting");
+    lvgl_port_lock(0);
+    lv_label_set_text_static(lbl_ln3, "OTA update failed");
+    lvgl_port_unlock();
     restart_delayed();
     vTaskDelete(NULL);
 }
