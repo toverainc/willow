@@ -6,6 +6,8 @@
 #include "shared.h"
 #include "slvgl.h"
 
+static const char *TAG = "WILLOW/UI";
+
 void init_ui(void)
 {
     if (ld == NULL) {
