@@ -6,11 +6,11 @@
 #include "config.h"
 #include "network.h"
 #include "ota.h"
+#include "was.h"
 
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
-esp_err_t init_was(void);
 static void send_hello(void);
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
@@ -91,13 +91,13 @@ esp_err_t init_was(void)
 {
     const esp_websocket_client_config_t cfg_wc = {
         .buffer_size = 4096,
-        .uri = CONFIG_WILLOW_WAS_URL,
+        .uri = was_url,
         .user_agent = WILLOW_USER_AGENT,
     };
     esp_err_t err = ESP_OK;
 
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    ESP_LOGI(TAG, "initializing WebSocket client (%s)", CONFIG_WILLOW_WAS_URL);
+    ESP_LOGI(TAG, "initializing WebSocket client (%s)", was_url);
 
     hdl_wc = esp_websocket_client_init(&cfg_wc);
     esp_websocket_register_events(hdl_wc, WEBSOCKET_EVENT_ANY, (esp_event_handler_t)cb_ws_event, NULL);
