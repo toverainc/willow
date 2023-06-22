@@ -156,7 +156,10 @@ generate_speech_commands() {
 generate_nvs() {
     SSID=$(grep CONFIG_WIFI_SSID sdkconfig | cut -d'=' -f2 | tr -d '"')
     PASSWORD=$(grep CONFIG_WIFI_PASSWORD sdkconfig | cut -d'=' -f2 | tr -d '"')
+    WAS_URL=$(grep CONFIG_WILLOW_WAS_URL sdkconfig | cut -d'=' -f2 | tr -d '"')
     echo -n "key,type,encoding,value
+WAS,namespace,,
+URL,data,string,$WAS_URL
 WIFI,namespace,,
 PSK,data,string,$PASSWORD
 SSID,data,string,$SSID" > build/nvs.csv
