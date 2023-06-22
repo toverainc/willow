@@ -11,6 +11,7 @@ set(COMPONENT_SRCS
     "network.c"
     "ota.c"
     "slvgl.c"
+    "system.c"
     "tasks.c"
     "timer.c"
     "ui.c"
