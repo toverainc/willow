@@ -66,6 +66,7 @@
 #define PARTLABEL_USER "user"
 
 bool recording = false;
+char was_url[2048];
 
 static bool stream_to_api = false;
 static int total_write = 0;
@@ -696,9 +697,21 @@ void app_main(void)
         ESP_LOGE(TAG, "failed to get PSK from NVS namespace WIFI: %s", esp_err_to_name(err));
         goto err_nvs;
     }
-    state = STATE_NVS_OK;
     init_wifi(psk, ssid);
 #endif
+
+    ret = nvs_open("WAS", NVS_READONLY, &hdl_nvs);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to open NVS namespace WAS: %s", esp_err_to_name(err));
+        goto err_nvs;
+    }
+    sz = sizeof(was_url);
+    ret = nvs_get_str(hdl_nvs, "URL", was_url, &sz);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to get WASL URL from NVS namespace WAS: %s", esp_err_to_name(err));
+        goto err_nvs;
+    }
+    state = STATE_NVS_OK;
     ret = init_was();
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize Willow Application Server connection");
