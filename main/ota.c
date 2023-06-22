@@ -177,10 +177,11 @@ void ota_start(char *url)
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
     lvgl_port_lock(0);
     lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text_static(lbl_ln2, "Starting OTA update");
-    lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+    lv_label_set_text_static(lbl_ln3, "Starting OTA update");
+    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
     lvgl_port_unlock();
     display_set_backlight(true);
 
