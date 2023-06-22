@@ -53,6 +53,7 @@ void init_ui(void)
         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         lv_obj_align(btn_cancel, LV_ALIGN_BOTTOM_MID, 0, -10);
         lv_obj_align(lbl_btn_cancel, LV_ALIGN_CENTER, 0, 0);
         lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
@@ -68,6 +69,7 @@ void init_ui(void)
         } else if (strcmp(speech_rec_mode, "WIS") == 0) {
             lv_label_set_text_static(lbl_ln3, "Starting up (server)...");
         }
+        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 
         lvgl_port_unlock();
         free(speech_rec_mode);
