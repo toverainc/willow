@@ -108,9 +108,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
             war.fn_err("unrecognized command");
             lvgl_port_lock(0);
-            lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
 
-            lv_label_set_text(lbl_ln3, "#ff0000 Unrecognized Command");
+            lv_label_set_text(lbl_ln4, "#ff0000 Unrecognized Command");
             lvgl_port_unlock();
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
             break;
@@ -131,9 +131,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
@@ -265,8 +265,8 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
                 if (http_status == 406) {
                     ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
                     lvgl_port_lock(0);
-                    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-                    lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
+                    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                    lv_label_set_text_static(lbl_ln4, "Unauthorized Speaker");
                     lvgl_port_unlock();
                     war.fn_err("Unauthorized Speaker");
                 }
@@ -301,6 +301,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             if (cJSON_IsString(speaker_status) && speaker_status->valuestring != NULL) {
                 lv_label_set_text(lbl_ln1, speaker_status->valuestring);
             } else {
@@ -773,11 +774,10 @@ err_nvs:
     } else {
         lvgl_port_lock(0);
         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, 0);
-        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 150);
-        lv_obj_set_width(lbl_ln4, 320);
+        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
+        lv_obj_set_width(lbl_ln5, 320);
         lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
-        lv_label_set_long_mode(lbl_ln4, LV_LABEL_LONG_SCROLL);
+        lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_SCROLL);
         lv_label_set_text(lbl_ln3, wake_help);
 
         lvgl_port_unlock();
