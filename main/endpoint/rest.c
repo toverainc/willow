@@ -17,6 +17,8 @@
 #define DEFAULT_AUTH_USER   ""
 #define DEFAULT_URL         "http://your_rest_url"
 
+static const char *TAG = "WILLOW/REST";
+
 void rest_send(const char *data)
 {
     bool ok = false;
