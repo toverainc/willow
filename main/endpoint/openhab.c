@@ -13,6 +13,8 @@
 
 #define OH_URI_INTERPRETERS "/rest/voice/interpreters"
 
+static const char *TAG = "WILLOW/OPENHAB";
+
 void openhab_send(const char *data)
 {
     bool ok = false;

@@ -20,8 +20,6 @@ esp_periph_set_handle_t hdl_pset;
 
 extern QueueHandle_t q_rec;
 
-static const char *TAG = "WILLOW";
-
 struct willow_audio_response {
     void (*fn_err)(void *data);
     void (*fn_ok)(void *data);

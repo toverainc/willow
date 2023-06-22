@@ -96,7 +96,6 @@ esp_err_t init_was(void)
     };
     esp_err_t err = ESP_OK;
 
-    esp_log_level_set(TAG, ESP_LOG_DEBUG);
     ESP_LOGI(TAG, "initializing WebSocket client");
 
     hdl_wc = esp_websocket_client_init(&cfg_wc);

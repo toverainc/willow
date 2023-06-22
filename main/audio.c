@@ -11,6 +11,8 @@
 
 #define WIS_URL_TTS_ARG "?speaker=CLB&text="
 
+static const char *TAG = "WILLOW/AUDIO";
+
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);

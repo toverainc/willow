@@ -11,6 +11,8 @@
 #include "slvgl.h"
 #include "timer.h"
 
+static const char *TAG = "WILLOW/REST";
+
 void rest_send(const char *data)
 {
     bool ok = false;

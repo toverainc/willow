@@ -31,6 +31,7 @@ struct hass_intent_response {
 static struct hass_intent_response hir;
 
 static bool has_assist_pipeline = false;
+static const char *TAG = "WILLOW/HASS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)

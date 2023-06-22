@@ -24,7 +24,6 @@ cJSON *wc = NULL; // TODO: cJSON_Delete() after all config_get_* calls
 
 static char *config_read(void)
 {
-    esp_log_level_set(TAG, ESP_LOG_DEBUG);
     char *config = NULL;
 
     ESP_LOGI(TAG, "opening %s", CONFIG_PATH);

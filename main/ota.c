@@ -30,7 +30,6 @@ void ota_task(void *data)
     esp_ota_handle_t hdl_ota = 0;
     int http_status = 0, ota_len = 0, ota_size = 0, read = 0;
 
-    esp_log_level_set(TAG, ESP_LOG_DEBUG);
     ESP_LOGI(TAG, "downloading OTA from %s", url);
 
     pt_boot = esp_ota_get_boot_partition();
