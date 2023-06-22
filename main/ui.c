@@ -23,8 +23,10 @@ void init_ui(void)
         lbl_ln2 = lv_label_create(scr_act);
         lbl_ln3 = lv_label_create(scr_act);
         lbl_ln4 = lv_label_create(scr_act);
-        lv_label_set_recolor(lbl_ln3, true);
+        lbl_ln5 = lv_label_create(scr_act);
+        lv_obj_set_style_text_align(lbl_ln3, LV_TEXT_ALIGN_CENTER, 0);
         lv_label_set_recolor(lbl_ln4, true);
+        lv_label_set_recolor(lbl_ln5, true);
         lv_obj_add_event_cb(scr_act, cb_scr, LV_EVENT_ALL, NULL);
 
 #ifdef CONFIG_LV_USE_FS_POSIX
@@ -45,6 +47,7 @@ void init_ui(void)
         lv_obj_add_style(lbl_ln2, &lv_st_willow, 0);
         lv_obj_add_style(lbl_ln3, &lv_st_willow, 0);
         lv_obj_add_style(lbl_ln4, &lv_st_willow, 0);
+        lv_obj_add_style(lbl_ln5, &lv_st_willow, 0);
         lv_obj_add_style(lbl_btn_cancel, &lv_st_willow, 0);
 #endif
 
@@ -53,14 +56,17 @@ void init_ui(void)
         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
         lv_obj_align(btn_cancel, LV_ALIGN_BOTTOM_MID, 0, -10);
         lv_obj_align(lbl_btn_cancel, LV_ALIGN_CENTER, 0, 0);
         lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
         lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 30);
         lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 60);
-        lv_obj_align(lbl_ln3, LV_ALIGN_CENTER, 0, -20);
-        lv_obj_align(lbl_ln4, LV_ALIGN_CENTER, 0, 20);
+        lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
+        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_MID, 0, 120);
+        lv_obj_align(lbl_ln5, LV_ALIGN_TOP_LEFT, 0, 150);
         lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
         lv_obj_set_width(lbl_ln2, 320);
 

@@ -120,18 +120,17 @@ end:
                 ESP_LOGI(TAG, "received run-end event on WebSocket: %s", json);
 
                 lvgl_port_lock(0);
-                lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
-                lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
+                lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
                 if (hir.has_speech) {
-                    lv_label_set_text_static(lbl_ln3, "Response:");
-                    lv_label_set_text(lbl_ln4, hir.speech);
+                    lv_label_set_text_static(lbl_ln4, "Response:");
+                    lv_label_set_text(lbl_ln5, hir.speech);
                     hir.ok ? war.fn_ok(hir.speech) : war.fn_err(hir.speech);
                     free(hir.speech);
                 } else {
-                    lv_label_set_text_static(lbl_ln3, "Command status:");
-                    lv_label_set_text(lbl_ln4, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
+                    lv_label_set_text_static(lbl_ln4, "Command status:");
+                    lv_label_set_text(lbl_ln5, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
                     hir.ok ? war.fn_ok("success") : war.fn_err("error");
                 }
                 lvgl_port_unlock();
@@ -314,16 +313,15 @@ static void hass_post(const char *data)
 
 http_error:
     lvgl_port_lock(0);
-    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
-    lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
+    lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
     if (http_status == 200) {
-        lv_label_set_text_static(lbl_ln3, "Command status:");
-        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
+        lv_label_set_text_static(lbl_ln4, "Command status:");
+        lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
     } else {
-        lv_label_set_text_static(lbl_ln3, "Error contacting HASS:");
-        lv_label_set_text_fmt(lbl_ln4, "#ff0000 HTTP %d", http_status);
+        lv_label_set_text_static(lbl_ln4, "Error contacting HASS:");
+        lv_label_set_text_fmt(lbl_ln5, "#ff0000 HTTP %d", http_status);
     }
 
     lvgl_port_unlock();
