@@ -80,6 +80,7 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
 
     // Start wifi
     lvgl_port_lock(0);
+    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
     lv_label_set_text_static(lbl_ln4, "Connecting to Wi-Fi ...");
     lvgl_port_unlock();
 

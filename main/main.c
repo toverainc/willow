@@ -163,6 +163,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 lvgl_port_lock(0);
                 lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 
                 lv_label_set_text_static(lbl_ln1, "I heard command:");
                 lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
@@ -284,6 +285,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             lvgl_port_lock(0);
             lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
             lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
             if (cJSON_IsString(speaker_status) && speaker_status->valuestring != NULL) {
                 lv_label_set_text(lbl_ln1, speaker_status->valuestring);
             } else {
