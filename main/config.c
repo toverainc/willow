@@ -7,6 +7,7 @@
 #include "esp_system.h"
 
 #include "config.h"
+#include "system.h"
 #include "was.h"
 
 #define CONFIG_PATH "/spiffs/user/config/willow.json"
@@ -121,5 +122,5 @@ close:
     fclose(f);
 
     ESP_LOGI(TAG, "%s updated, restarting", CONFIG_PATH);
-    esp_restart();
+    restart_delayed();
 }

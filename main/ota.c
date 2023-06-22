@@ -10,6 +10,7 @@
 #include "display.h"
 #include "http.h"
 #include "slvgl.h"
+#include "system.h"
 #include "timer.h"
 #include "was.h"
 
@@ -156,13 +157,13 @@ void ota_task(void *data)
     }
 
     ESP_LOGI(TAG, "OTA completed, restarting");
-    esp_restart();
+    restart_delayed();
 err:
     esp_ota_abort(hdl_ota);
     esp_http_client_close(hdl_hc);
     esp_http_client_cleanup(hdl_hc);
     ESP_LOGI(TAG, "OTA failed, restarting");
-    esp_restart();
+    restart_delayed();
     vTaskDelete(NULL);
 }
 
