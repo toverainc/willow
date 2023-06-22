@@ -1,4 +1,5 @@
 #include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "sdkconfig.h"
 
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
