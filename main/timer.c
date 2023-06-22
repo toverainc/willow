@@ -8,6 +8,7 @@
 #include "tasks.h"
 #include "timer.h"
 
+static const char *TAG = "WILLOW/TIMER";
 esp_timer_handle_t hdl_display_timer = NULL, hdl_sess_timer = NULL;
 
 static void cb_display_timer(void *data)

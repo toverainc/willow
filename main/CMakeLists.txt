@@ -7,6 +7,7 @@ set(COMPONENT_SRCS
     "endpoint/rest.c"
     "http.c"
     "input.c"
+    "log.c"
     "lv_img_hand_left.c"
     "network.c"
     "ota.c"

@@ -43,6 +43,7 @@
 #include "config.h"
 #include "display.h"
 #include "input.h"
+#include "log.h"
 #include "network.h"
 #include "shared.h"
 #include "slvgl.h"
@@ -67,6 +68,7 @@ bool recording = false;
 char was_url[2048];
 
 static bool stream_to_api = false;
+static const char *TAG = "WILLOW/MAIN";
 static int total_write = 0;
 
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
@@ -619,19 +621,10 @@ static esp_err_t init_spiffs_user(void)
 void app_main(void)
 {
     state = STATE_INIT;
-
-#ifdef CONFIG_WILLOW_DEBUG_LOG
-    esp_log_level_set("*", ESP_LOG_DEBUG);
-#else
-    esp_log_level_set("*", ESP_LOG_ERROR);
-    esp_log_level_set("PERIPH_WIFI", ESP_LOG_WARN);
-#endif
-
-    esp_log_level_set(TAG, ESP_LOG_DEBUG);
-
-    ESP_LOGI(TAG, "Starting up! Please wait...");
-
     esp_err_t ret;
+
+    init_logging();
+    ESP_LOGI(TAG, "Starting up! Please wait...");
 
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     hdl_pset = esp_periph_set_init(&pcfg);

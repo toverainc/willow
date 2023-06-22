@@ -11,8 +11,6 @@ static const char *TAG = "WILLOW/SYSTEM";
 
 void restart_delayed(void)
 {
-    esp_log_level_set(TAG, ESP_LOG_DEBUG);
-
     uint32_t delay = esp_random() % 9;
     if (delay < 3) {
         delay = 3;

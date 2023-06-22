@@ -13,6 +13,8 @@
 #define BL_DUTY_ON  CONFIG_WILLOW_LCD_BRIGHTNESS
 #endif
 
+static const char *TAG = "WILLOW/DISPLAY";
+
 esp_err_t init_display(void)
 {
     ESP_LOGD(TAG, "initializing display");
