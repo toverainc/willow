@@ -34,10 +34,15 @@ static bool has_assist_pipeline = false;
 static const char *TAG = "WILLOW/HASS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
 
+static void init_hass_ws_client(void);
+
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
 {
     esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)ev_data;
     switch (id_ev) {
+        case WEBSOCKET_EVENT_CONNECTED:
+            ESP_LOGI(TAG, "WebSocket connected");
+            break;
         case WEBSOCKET_EVENT_DATA:
             if (data->op_code == WS_TRANSPORT_OPCODES_TEXT) {
                 char *json = NULL;
@@ -136,6 +141,13 @@ cleanup:
                 cJSON_Delete(cjson);
                 free(resp);
             }
+            break;
+        case WEBSOCKET_EVENT_DISCONNECTED:
+            ESP_LOGI(TAG, "WebSocket disconnected");
+            break;
+        case WEBSOCKET_EVENT_CLOSED:
+            ESP_LOGI(TAG, "WebSocket closed");
+            init_hass_ws_client();
             break;
         default:
             ESP_LOGI(TAG, "WS event ID: %d", id_ev);
