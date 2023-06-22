@@ -12,6 +12,8 @@
 #include "shared.h"
 #include "timer.h"
 
+static const char *TAG = "WILLOW/LVGL";
+
 // this is absolutely horrendous but lvgl_port_esp32 requires esp_lcd_panel_io_handle_t and esp-adf does not expose this
 typedef struct periph_lcd {
     void *io_bus;

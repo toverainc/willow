@@ -27,6 +27,8 @@
         eth_module_config[num].phy_addr = WILLOW_ETHERNET_PHY;                                                         \
     } while (0)
 
+static const char *TAG = "WILLOW/ETHERNET";
+
 typedef struct {
     uint8_t spi_cs_gpio;
     uint8_t int_gpio;

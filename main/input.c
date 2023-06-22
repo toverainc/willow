@@ -7,6 +7,8 @@
 
 #include "shared.h"
 
+static const char *TAG = "WILLOW/INPUT";
+
 static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev, void *data)
 {
     int key = (int)ev->data;
