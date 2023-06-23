@@ -37,6 +37,11 @@ fi
 # Get Willow version
 export WILLOW_VERSION=$(git rev-parse --short HEAD)
 
+# Append dirty if local changes
+if ! git diff --quiet; then
+    WILLOW_VERSION="$WILLOW_VERSION-dirty"
+fi
+
 # Test for local environment file and use any overrides
 if [ -r .env ]; then
     echo "Using configuration overrides from .env file"
