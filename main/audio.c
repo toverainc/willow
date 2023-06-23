@@ -53,8 +53,9 @@
 QueueHandle_t q_rec;
 bool recording = false;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
-static audio_pipeline_handle_t hdl_ap_to_api;
+static audio_pipeline_handle_t hdl_ap, hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
+static audio_thread_t hdl_at = NULL;
 static bool stream_to_api = false;
 static const char *TAG = "WILLOW/AUDIO";
 static int total_write = 0;
@@ -493,7 +494,6 @@ static void start_rec(void)
 {
     audio_element_handle_t hdl_ae_is;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
-    audio_pipeline_handle_t hdl_ap;
 
     hdl_ap = audio_pipeline_init(&cfg_ap);
     if (hdl_ap == NULL) {
@@ -761,7 +761,7 @@ void init_audio(void)
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
     q_rec = xQueueCreate(3, sizeof(int));
-    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
+    audio_thread_create(&hdl_at, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
 
 #if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
     char *wake_help = "Say 'Hi ESP' to start!";
@@ -786,4 +786,16 @@ void init_audio(void)
 
         lvgl_port_unlock();
     }
+}
+
+void deinit_audio(void)
+{
+    audio_thread_cleanup(hdl_at);
+    audio_pipeline_stop(hdl_ap);
+    char *speech_rec_mode = config_get_char("speech_rec_mode");
+    if (strcmp(speech_rec_mode, "WIS") == 0) {
+        audio_pipeline_stop(hdl_ap_to_api);
+    }
+    free(speech_rec_mode);
+    esp_audio_destroy(hdl_ea);
 }

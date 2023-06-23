@@ -7,6 +7,7 @@
 #include "esp_task_wdt.h"
 #include "lvgl.h"
 
+#include "audio.h"
 #include "display.h"
 #include "http.h"
 #include "slvgl.h"
@@ -171,8 +172,7 @@ void ota_start(char *url)
 {
     // TODO
 
-    // * stop a bunch of stuff like recorder first
-
+    deinit_audio();
     deinit_was();
 
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
