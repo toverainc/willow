@@ -8,8 +8,10 @@
 #include "esp_system.h"
 #include "lvgl.h"
 
+#include "audio.h"
 #include "config.h"
 #include "display.h"
+#include "endpoint/hass.h"
 #include "slvgl.h"
 #include "system.h"
 #include "timer.h"
@@ -115,6 +117,10 @@ cleanup:
 
 void config_write(const char *data)
 {
+    deinit_audio();
+    deinit_hass();
+    deinit_was();
+
     FILE *f = fopen(CONFIG_PATH, "w");
     if (f == NULL) {
         ESP_LOGE(TAG, "failed to open %s", CONFIG_PATH);
