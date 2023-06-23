@@ -47,6 +47,7 @@
 #include "network.h"
 #include "shared.h"
 #include "slvgl.h"
+#include "system.h"
 #include "tasks.h"
 #include "timer.h"
 #include "ui.h"
@@ -629,6 +630,7 @@ void app_main(void)
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
     hdl_pset = esp_periph_set_init(&pcfg);
 
+    init_system();
     init_display();
     init_lvgl_display();
     init_spiffs_user();

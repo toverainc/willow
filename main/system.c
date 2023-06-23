@@ -4,10 +4,42 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "lvgl.h"
+#include "sdkconfig.h"
 
 #include "slvgl.h"
+#include "system.h"
 
 static const char *TAG = "WILLOW/SYSTEM";
+static const char *wilow_hw_t[WILLOW_HW_MAX] = {
+    [WILLOW_HW_UNSUPPORTED] = "Hardware not supported.",
+    [WILLOW_HW_ESP32_S3_BOX] = "ESP32-S3-BOX",
+    [WILLOW_HW_ESP32_S3_BOX_LITE] = "ESP32-S3-BOX-Lite",
+};
+
+const char *str_hw_type(int id)
+{
+    if (id < 0 || id >= WILLOW_HW_MAX || !wilow_hw_t[id]) {
+        return "Invalid hardware type.";
+    }
+    return wilow_hw_t[id];
+}
+
+static void set_hw_type(void)
+{
+#if defined(CONFIG_ESP32_S3_BOX_BOARD)
+    hw_type = WILLOW_HW_ESP32_S3_BOX;
+#elif defined(CONFIG_ESP32_S3_BOX_LITE_BOARD)
+    hw_type = WILLOW_HW_ESP32_S3_BOX_LITE;
+#else
+    hw_type = WILLOW_HW_UNSUPPORTED;
+#endif
+    ESP_LOGD(TAG, "hardware type %d (%s)", hw_type, str_hw_type(hw_type));
+}
+
+void init_system(void)
+{
+    set_hw_type();
+}
 
 void restart_delayed(void)
 {

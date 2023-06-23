@@ -6,6 +6,7 @@
 #include "config.h"
 #include "network.h"
 #include "ota.h"
+#include "system.h"
 #include "was.h"
 
 static const char *TAG = "WILLOW/WAS";
@@ -155,6 +156,9 @@ static void send_hello(void)
     cJSON *cjson = cJSON_CreateObject();
     cJSON *hello = cJSON_CreateObject();
     if (cJSON_AddStringToObject(hello, "hostname", hostname) == NULL) {
+        goto cleanup;
+    }
+    if (cJSON_AddStringToObject(hello, "hw_type", str_hw_type(hw_type)) == NULL) {
         goto cleanup;
     }
     if (!cJSON_AddItemToObject(cjson, "hello", hello)) {
