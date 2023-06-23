@@ -407,3 +407,21 @@ void init_hass(void)
         init_hass_ws_client();
     }
 }
+
+void hass_deinit_task(void *data)
+{
+    ESP_LOGI(TAG, "stopping WebSocket client");
+    esp_err_t ret = esp_websocket_client_destroy(hdl_wc);
+
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to stop WebSocket client: %s", esp_err_to_name(ret));
+    }
+    vTaskDelete(NULL);
+}
+
+void deinit_hass(void)
+{
+    // needs to be done in a task to avoid this error:
+    // WEBSOCKET_CLIENT: Client cannot be stopped from websocket task
+    xTaskCreate(&hass_deinit_task, "hass_deinit_task", 4096, NULL, 5, NULL);
+}
