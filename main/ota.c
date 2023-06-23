@@ -101,11 +101,6 @@ void ota_task(void *data)
                            sizeof(esp_app_desc_t));
                     ESP_LOGI(TAG, "new firmware version: %s", app_desc_new.version);
 
-                    if (memcmp(app_desc_cur.version, app_desc_new.version, sizeof(app_desc_new.version)) == 0) {
-                        ESP_LOGW(TAG, "already running version %s, aborting update", app_desc_new.version);
-                        goto err;
-                    }
-
                     if (pt_bad != NULL) {
                         if (memcmp(app_desc_bad.version, app_desc_new.version, sizeof(app_desc_new.version)) == 0) {
                             ESP_LOGW(TAG, "OTA version (%s) previously failed, aborting update", app_desc_new.version);
