@@ -792,7 +792,7 @@ void deinit_audio(void)
 {
     audio_thread_cleanup(hdl_at);
     audio_pipeline_stop(hdl_ap);
-    char *speech_rec_mode = config_get_char("speech_rec_mode");
+    char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     if (strcmp(speech_rec_mode, "WIS") == 0) {
         audio_pipeline_stop(hdl_ap_to_api);
     }
