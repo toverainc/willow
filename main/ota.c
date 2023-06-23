@@ -9,6 +9,7 @@
 
 #include "audio.h"
 #include "display.h"
+#include "endpoint/hass.h"
 #include "http.h"
 #include "slvgl.h"
 #include "system.h"
@@ -173,6 +174,7 @@ void ota_start(char *url)
     // TODO
 
     deinit_audio();
+    deinit_hass();
     deinit_was();
 
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
