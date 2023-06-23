@@ -35,6 +35,20 @@ void init_ui(void)
         static lv_style_t lv_st_willow;
         lv_style_init(&lv_st_willow);
 
+        // Willow colors
+        lv_color_t lv_clr_willow = lv_color_hex(0x583759);
+        lv_color_t lv_clr_willow_alt = lv_color_hex(0xfbe870);
+
+        // Attach background color to screen
+        lv_obj_set_style_bg_color(scr_act, lv_clr_willow, LV_PART_MAIN);
+
+        // White text
+        lv_obj_set_style_text_color(scr_act, lv_color_hex(0xffffff), LV_PART_MAIN);
+
+        // Cancel button to alt with black text
+        lv_obj_set_style_bg_color(btn_cancel, lv_clr_willow_alt, LV_PART_MAIN);
+        lv_obj_set_style_text_color(btn_cancel, lv_color_hex(0x000000), LV_PART_MAIN);
+
         // Willow font
         lv_font_t *lv_font_willow;
         lv_font_willow = lv_font_load("A/spiffs/user/font/tonnelier.bin");
