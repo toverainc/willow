@@ -1,7 +1,3 @@
-#include "audio_hal.h"
-#include "audio_thread.h"
-#include "board.h"
-#include "es7210.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_netif.h"
@@ -160,57 +156,14 @@ err_nvs:
 
     init_sntp();
 
-    audio_board_handle_t hdl_audio_board = audio_board_init();
-    gpio_set_level(get_pa_enable_gpio(), 0);
-    ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
-    ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
-
-    audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
-
     if (strcmp(config_get_char("command_endpoint"), "Home Assistant") == 0) {
         init_hass();
     }
-    init_audio_response();
     init_buttons();
     init_input_key_service();
+    init_audio();
     init_lvgl_touch();
     init_display_timer();
-    init_session_timer();
-    if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
-        init_ap_to_api();
-    }
-    init_esp_audio(hdl_audio_board);
-    start_rec();
-    es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
-
-    ESP_LOGI(TAG, "app_main() - start_rec() finished");
-
-    q_rec = xQueueCreate(3, sizeof(int));
-    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
-
-#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
-    char *wake_help = "Say 'Hi ESP' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
-    char *wake_help = "Say 'Alexa' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN)
-    char *wake_help = "Say 'Hi Lexin' to start!";
-#else
-    char *wake_help = "Ready!";
-#endif
-
-    if (ld == NULL) {
-        ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
-    } else {
-        lvgl_port_lock(0);
-        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
-        lv_obj_set_width(lbl_ln5, 320);
-        lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
-        lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_SCROLL);
-        lv_label_set_text(lbl_ln3, wake_help);
-
-        lvgl_port_unlock();
-    }
 
 #ifndef CONFIG_WILLOW_ETHERNET
     get_mac_address(); // should be on wifi by now; print the MAC

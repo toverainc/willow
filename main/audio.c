@@ -89,7 +89,7 @@ static void noop(void *data)
 {
 }
 
-void init_audio_response(void)
+static void init_audio_response(void)
 {
     if (strcmp(config_get_char("audio_response_type"), "Chimes") == 0) {
         war.fn_err = play_audio_err;
@@ -103,7 +103,7 @@ void init_audio_response(void)
     }
 }
 
-void init_esp_audio(audio_board_handle_t hdl)
+static void init_esp_audio(audio_board_handle_t hdl)
 {
     audio_err_t ret = ESP_OK;
     esp_audio_cfg_t cfg_ea = {
@@ -308,7 +308,7 @@ static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
     return raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
 }
 
-esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
+static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 {
     if (msg == NULL) {
         return ESP_ERR_INVALID_ARG;
@@ -433,7 +433,7 @@ esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
     return ESP_OK;
 }
 
-esp_err_t init_ap_to_api(void)
+static esp_err_t init_ap_to_api(void)
 {
     ESP_LOGD(TAG, "init_ap_to_api()");
     // audio_element_handle_t hdl_ae_hs;
@@ -465,7 +465,7 @@ esp_err_t init_ap_to_api(void)
     return ESP_OK;
 }
 
-void start_rec(void)
+static void start_rec(void)
 {
     audio_element_handle_t hdl_ae_is;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
@@ -647,7 +647,7 @@ void start_rec(void)
     hdl_ar = audio_recorder_create(&cfg_ar);
 }
 
-void at_read(void *data)
+static void at_read(void *data)
 {
     const int len = 2 * 1024;
     char *buf = audio_calloc(1, len);
@@ -710,4 +710,52 @@ void at_read(void *data)
 
     free(buf);
     vTaskDelete(NULL);
+}
+
+void init_audio(void)
+{
+    esp_err_t ret;
+    audio_board_handle_t hdl_audio_board = audio_board_init();
+    gpio_set_level(get_pa_enable_gpio(), 0);
+    ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
+    ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
+
+    audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
+    init_audio_response();
+    init_session_timer();
+    if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
+        init_ap_to_api();
+    }
+    init_esp_audio(hdl_audio_board);
+    start_rec();
+    es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
+
+    ESP_LOGI(TAG, "app_main() - start_rec() finished");
+
+    q_rec = xQueueCreate(3, sizeof(int));
+    audio_thread_create(NULL, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
+
+#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
+    char *wake_help = "Say 'Hi ESP' to start!";
+#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
+    char *wake_help = "Say 'Alexa' to start!";
+#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN)
+    char *wake_help = "Say 'Hi Lexin' to start!";
+#else
+    char *wake_help = "Ready!";
+#endif
+
+    if (ld == NULL) {
+        ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
+    } else {
+        lvgl_port_lock(0);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
+        lv_obj_set_width(lbl_ln5, 320);
+        lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
+        lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_SCROLL);
+        lv_label_set_text(lbl_ln3, wake_help);
+
+        lvgl_port_unlock();
+    }
 }
