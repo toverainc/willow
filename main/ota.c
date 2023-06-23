@@ -171,8 +171,6 @@ err:
 
 void ota_start(char *url)
 {
-    // TODO
-
     deinit_audio();
     deinit_hass();
     deinit_was();
@@ -188,6 +186,5 @@ void ota_start(char *url)
     lvgl_port_unlock();
     display_set_backlight(true);
 
-    // finally also do this for config update
     xTaskCreate(&ota_task, "ota_task", 8192, url, 5, NULL);
 }
