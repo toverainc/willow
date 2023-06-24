@@ -728,7 +728,7 @@ void init_audio(void)
     }
     init_esp_audio(hdl_audio_board);
     start_rec();
-    es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
+    es7210_adc_set_gain(config_get_int("mic_gain"));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
