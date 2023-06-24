@@ -69,16 +69,6 @@ config WILLOW_LCD_BRIGHTNESS
 
     menu "Advanced settings"
 
-        config WILLOW_VAD_TIMEOUT
-        int "VAD Timeout"
-        range 1 1000
-        default 300
-        help
-            VAD (Voice Activity Detection) timeout in ms
-            How long to wait after end of speech to trigger end of VAD
-            Improves response times but can also clip speech if you don't talk fast enough
-            Allows for entering 1 - 1000 ms but if you go lower than 50 or so good luck...
-
         config WILLOW_RECORD_BUFFER
             int "Record buffer"
             range 1 16
