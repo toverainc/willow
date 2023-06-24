@@ -48,6 +48,9 @@ if [ -r .env ]; then
     . .env
 fi
 
+# Always print Willow version
+echo "Willow build version: $WILLOW_VERSION"
+
 check_port() {
     if [ ! $PORT ]; then
         echo "You need to define the PORT environment variable to do serial stuff - exiting"
