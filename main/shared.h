@@ -4,6 +4,7 @@
 #include "esp_peripherals.h"
 
 #define DEFAULT_COMMAND_ENDPOINT "Home Assistant"
+#define DEFAULT_MIC_GAIN          14
 #define DEFAULT_SPEECH_REC_MODE  "WIS"
 
 bool recording;
