@@ -1,3 +1,4 @@
+#include "amrwb_encoder.h"
 #include "audio_hal.h"
 #include "audio_mem.h"
 #include "audio_pipeline.h"
@@ -21,14 +22,7 @@
 #include "recorder_sr.h"
 #include "sdkconfig.h"
 #include "spiffs_stream.h"
-
-#ifdef CONFIG_WILLOW_USE_AMRWB
-#include "amrwb_encoder.h"
-#endif
-
-#ifdef CONFIG_WILLOW_USE_WAV
 #include "wav_encoder.h"
-#endif
 
 #include "config.h"
 #include "display.h"
@@ -332,15 +326,13 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             memset(dat, 0, sizeof(dat));
             snprintf(dat, sizeof(dat), "%d", 1);
             esp_http_client_set_header(http, "x-audio-channel", dat);
-#ifdef CONFIG_WILLOW_USE_AMRWB
-            esp_http_client_set_header(http, "x-audio-codec", "amrwb");
-#endif
-#ifdef CONFIG_WILLOW_USE_WAV
-            esp_http_client_set_header(http, "x-audio-codec", "wav");
-#endif
-#ifdef CONFIG_WILLOW_USE_PCM
-            esp_http_client_set_header(http, "x-audio-codec", "pcm");
-#endif
+            if (strcmp(config_get_char("audio_codec"), "AMR-WB") == 0) {
+                esp_http_client_set_header(http, "x-audio-codec", "amrwb");
+            } else if (strcmp(config_get_char("audio_codec"), "WAV") == 0) {
+                esp_http_client_set_header(http, "x-audio-codec", "wav");
+            } else if (strcmp(config_get_char("audio_codec"), "PCM") == 0) {
+                esp_http_client_set_header(http, "x-audio-codec", "pcm");
+            }
             total_write = 0;
             return ESP_OK;
 
@@ -597,29 +589,27 @@ static void start_rec(void)
         cfg_srr.rb_size = 6 * 1024;
     }
 
-#ifdef CONFIG_WILLOW_USE_AMRWB
     recorder_encoder_cfg_t recorder_encoder_cfg = {0};
-    amrwb_encoder_cfg_t amrwb_cfg = DEFAULT_AMRWB_ENCODER_CONFIG();
-    amrwb_cfg.contain_amrwb_header = true;
-    amrwb_cfg.stack_in_ext = true;
-    amrwb_cfg.task_core = 0;
-    amrwb_cfg.task_prio = 5;
-    amrwb_cfg.out_rb_size = 8 * 1024;
-    amrwb_cfg.bitrate_mode = AMRWB_ENC_BITRATE_MD2385;
 
-    recorder_encoder_cfg.encoder = amrwb_encoder_init(&amrwb_cfg);
-#endif
+    if (strcmp(config_get_char("audio_codec"), "AMR-WB") == 0) {
+        amrwb_encoder_cfg_t amrwb_cfg = DEFAULT_AMRWB_ENCODER_CONFIG();
+        amrwb_cfg.contain_amrwb_header = true;
+        amrwb_cfg.stack_in_ext = true;
+        amrwb_cfg.task_core = 0;
+        amrwb_cfg.task_prio = 5;
+        amrwb_cfg.out_rb_size = 8 * 1024;
+        amrwb_cfg.bitrate_mode = AMRWB_ENC_BITRATE_MD2385;
 
-#ifdef CONFIG_WILLOW_USE_WAV
-    recorder_encoder_cfg_t recorder_encoder_cfg = {0};
-    wav_encoder_cfg_t wav_cfg = DEFAULT_WAV_ENCODER_CONFIG();
-    wav_cfg.stack_in_ext = true;
-    wav_cfg.task_core = 0;
-    wav_cfg.task_prio = 5;
-    wav_cfg.out_rb_size = 8 * 1024;
+        recorder_encoder_cfg.encoder = amrwb_encoder_init(&amrwb_cfg);
+    } else if (strcmp(config_get_char("audio_codec"), "WAV") == 0) {
+        wav_encoder_cfg_t wav_cfg = DEFAULT_WAV_ENCODER_CONFIG();
+        wav_cfg.stack_in_ext = true;
+        wav_cfg.task_core = 0;
+        wav_cfg.task_prio = 5;
+        wav_cfg.out_rb_size = 8 * 1024;
 
-    recorder_encoder_cfg.encoder = wav_encoder_init(&wav_cfg);
-#endif
+        recorder_encoder_cfg.encoder = wav_encoder_init(&wav_cfg);
+    }
 
     audio_rec_cfg_t cfg_ar = {
         .pinned_core = AUDIO_REC_DEF_TASK_CORE,
@@ -638,10 +628,10 @@ static void start_rec(void)
         .encoder_iface = NULL,
     };
     cfg_ar.sr_handle = recorder_sr_create(&cfg_srr, &cfg_ar.sr_iface);
-#if defined(CONFIG_WILLOW_USE_AMRWB) || defined(CONFIG_WILLOW_USE_WAV)
-    ESP_LOGI(TAG, "Using recorder encoder");
-    cfg_ar.encoder_handle = recorder_encoder_create(&recorder_encoder_cfg, &cfg_ar.encoder_iface);
-#endif
+    if (strcmp(config_get_char("audio_codec"), "AMR-WB") == 0 || strcmp(config_get_char("audio_codec"), "WAV") == 0) {
+        ESP_LOGI(TAG, "Using recorder encoder");
+        cfg_ar.encoder_handle = recorder_encoder_create(&recorder_encoder_cfg, &cfg_ar.encoder_iface);
+    }
     hdl_ar = audio_recorder_create(&cfg_ar);
 }
 
