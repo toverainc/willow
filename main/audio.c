@@ -42,6 +42,7 @@
 #define DEFAULT_SPEECH_REC_MODE     "WIS"
 #define DEFAULT_STREAM_TIMEOUT      5
 #define DEFAULT_VAD_TIMEOUT         300
+#define DEFAULT_WAKE_MODE           "2CH_90"
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
 #define DEFAULT_WIS_URL             "https://infer.tovera.io/api/willow"
 
@@ -544,6 +545,23 @@ static void start_rec(void)
 
     audio_pipeline_run(hdl_ap);
 
+    char *wake_mode = config_get_char("wake_mode", DEFAULT_WAKE_MODE);
+    int wakenet_mode = -1;
+    if (strcmp(wake_mode, "2CH_90") == 0) {
+        wakenet_mode = DET_MODE_2CH_90;
+    } else if (strcmp(wake_mode, "2CH_95") == 0) {
+        wakenet_mode = DET_MODE_2CH_95;
+    } else if (strcmp(wake_mode, "1CH_90") == 0) {
+        wakenet_mode = DET_MODE_90;
+    } else if (strcmp(wake_mode, "1CH_95") == 0) {
+        wakenet_mode = DET_MODE_95;
+    } else if (strcmp(wake_mode, "3CH_90") == 0) {
+        wakenet_mode = DET_MODE_3CH_90;
+    } else if (strcmp(wake_mode, "3CH_95") == 0) {
+        wakenet_mode = DET_MODE_3CH_95;
+    }
+    free(wake_mode);
+
     afe_config_t cfg_afe = {
         .aec_init = true,
         .se_init = true,
@@ -563,20 +581,8 @@ static void start_rec(void)
 #elif defined(CONFIG_WILLOW_WAKE_VAD_MODE_4)
         .vad_mode = VAD_MODE_4,
 #endif
+        .wakenet_mode = wakenet_mode,
         .wakenet_model_name = NULL,
-#if defined(CONFIG_WILLOW_WAKE_DET_MODE_2CH_90)
-        .wakenet_mode = DET_MODE_2CH_90,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_2CH_95)
-        .wakenet_mode = DET_MODE_2CH_95,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_90)
-        .wakenet_mode = DET_MODE_90,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_95)
-        .wakenet_mode = DET_MODE_95,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_3CH_90)
-        .wakenet_mode = DET_MODE_3CH_90,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_3CH_95)
-        .wakenet_mode = DET_MODE_3CH_95,
-#endif
         .afe_mode = SR_MODE_HIGH_PERF,
         .afe_perferred_core = 1,
         .afe_perferred_priority = 5,

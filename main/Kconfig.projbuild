@@ -69,29 +69,6 @@ config WILLOW_LCD_BRIGHTNESS
 
     menu "Advanced settings"
 
-        choice WILLOW_WAKE_MODE
-            prompt "Wake Word Recognition Operating Mode"
-            default WILLOW_WAKE_DET_MODE_2CH_90
-
-                config WILLOW_WAKE_DET_MODE_90
-                    bool "DET_MODE_90"
-
-                config WILLOW_WAKE_DET_MODE_95
-                    bool "DET_MODE_95"
-
-                config WILLOW_WAKE_DET_MODE_2CH_90
-                    bool "DET_MODE_2CH_90"
-
-                config WILLOW_WAKE_DET_MODE_2CH_95
-                    bool "DET_MODE_2CH_95"
-
-                config WILLOW_WAKE_DET_MODE_3CH_90
-                    bool "DET_MODE_3CH_90"
-
-                config WILLOW_WAKE_DET_MODE_3CH_95
-                    bool "DET_MODE_3CH_95"
-        endchoice
-
         choice WILLOW_WAKE_VAD_MODE
             prompt "Voice Activity Detection Mode"
             default WILLOW_WAKE_VAD_MODE_3
