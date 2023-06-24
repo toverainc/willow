@@ -536,17 +536,7 @@ static void start_rec(void)
         .voice_communication_init = false,
         .voice_communication_agc_init = false,
         .voice_communication_agc_gain = 15,
-#if defined(CONFIG_WILLOW_WAKE_VAD_MODE_0)
-        .vad_mode = VAD_MODE_0,
-#elif defined(CONFIG_WILLOW_WAKE_VAD_MODE_1)
-        .vad_mode = VAD_MODE_1,
-#elif defined(CONFIG_WILLOW_WAKE_VAD_MODE_2)
-        .vad_mode = VAD_MODE_2,
-#elif defined(CONFIG_WILLOW_WAKE_VAD_MODE_3)
-        .vad_mode = VAD_MODE_3,
-#elif defined(CONFIG_WILLOW_WAKE_VAD_MODE_4)
-        .vad_mode = VAD_MODE_4,
-#endif
+        .vad_mode = config_get_int("vad_mode"),
         .wakenet_mode = wakenet_mode,
         .wakenet_model_name = NULL,
         .afe_mode = SR_MODE_HIGH_PERF,
