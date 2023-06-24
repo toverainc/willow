@@ -586,10 +586,8 @@ static void start_rec(void)
         .mn_language = ESP_MN_ENGLISH,
     };
 
-#ifdef CONFIG_WILLOW_RECORD_BUFFER
-    ESP_LOGI(TAG, "Using record buffer '%d'", CONFIG_WILLOW_RECORD_BUFFER);
-    cfg_srr.rb_size = CONFIG_WILLOW_RECORD_BUFFER * 1024;
-#endif
+    ESP_LOGI(TAG, "Using record buffer '%d'", config_get_int("record_buffer"));
+    cfg_srr.rb_size = config_get_int("record_buffer") * 1024;
 
     if (strcmp(config_get_char("speech_rec_mode"), "Multinet") == 0) {
         ESP_LOGI(TAG, "Using local multinet");

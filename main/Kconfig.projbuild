@@ -69,14 +69,6 @@ config WILLOW_LCD_BRIGHTNESS
 
     menu "Advanced settings"
 
-        config WILLOW_RECORD_BUFFER
-            int "Record buffer"
-            range 1 16
-            default 12
-            help
-                Custom record buffer for timing and latency
-                Users with a local WIS instance may want to try setting lower (10 or so)
-
         config WILLOW_STREAM_TIMEOUT
             int "Maximum speech duration"
             range 1 30
