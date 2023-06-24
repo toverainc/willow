@@ -69,13 +69,6 @@ config WILLOW_LCD_BRIGHTNESS
 
     menu "Advanced settings"
 
-        config WILLOW_STREAM_TIMEOUT
-            int "Maximum speech duration"
-            range 1 30
-            default 5
-            help
-                Stop speech recognition after N seconds after wake event to avoid endless stream when VAD END doesn't trigger.
-
         choice WILLOW_USE_CODEC
             prompt "Audio codec to use for speech recognition"
             default WILLOW_USE_PCM
