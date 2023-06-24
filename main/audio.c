@@ -44,6 +44,7 @@
 
 #define DEFAULT_AUDIO_RESPONSE_TYPE "None"
 #define DEFAULT_SPEECH_REC_MODE     "WIS"
+#define DEFAULT_VAD_TIMEOUT         300
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
 #define DEFAULT_WIS_URL             "https://infer.tovera.io/api/willow"
 
@@ -660,7 +661,7 @@ static void start_rec(void)
         .sr_iface = NULL,
         .wakeup_time = AUDIO_REC_DEF_WAKEUP_TM,
         .vad_start = AUDIO_REC_VAD_START_SPEECH_MS,
-        .vad_off = CONFIG_WILLOW_VAD_TIMEOUT,
+        .vad_off = config_get_int("vad_timeout", DEFAULT_VAD_TIMEOUT),
         .wakeup_end = 1,
         .encoder_handle = NULL,
         .encoder_iface = NULL,
