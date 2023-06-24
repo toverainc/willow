@@ -69,26 +69,6 @@ config WILLOW_LCD_BRIGHTNESS
 
     menu "Advanced settings"
 
-        choice WILLOW_WAKE_VAD_MODE
-            prompt "Voice Activity Detection Mode"
-            default WILLOW_WAKE_VAD_MODE_3
-
-                config WILLOW_WAKE_VAD_MODE_0
-                    bool "VAD_MODE_0"
-
-                config WILLOW_WAKE_VAD_MODE_1
-                    bool "VAD_MODE_1"
-
-                config WILLOW_WAKE_VAD_MODE_2
-                    bool "VAD_MODE_2"
-
-                config WILLOW_WAKE_VAD_MODE_3
-                    bool "VAD_MODE_3"
-
-                config WILLOW_WAKE_VAD_MODE_4
-                    bool "VAD_MODE_4"
-        endchoice
-
         config WILLOW_ETHERNET
         depends on ETH_SPI_ETHERNET_W5500
         bool "Ethernet support"
