@@ -255,7 +255,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 lv_label_set_text_static(lbl_ln3, "Say local command...");
             } else if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
                 lv_label_set_text_static(lbl_ln3, "Say command...");
-                reset_timer(hdl_sess_timer, CONFIG_WILLOW_STREAM_TIMEOUT * 1000 * 1000, false);
+                reset_timer(hdl_sess_timer, config_get_int("stream_timeout") * 1000 * 1000, false);
             } else {
                 return ESP_ERR_INVALID_ARG;
             }
