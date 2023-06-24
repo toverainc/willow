@@ -5,6 +5,7 @@
 #include "input_key_service.h"
 #include "periph_button.h"
 
+#include "config.h"
 #include "shared.h"
 
 static const char *TAG = "WILLOW/INPUT";
@@ -31,7 +32,7 @@ static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev,
             };
 
             es7210_adc_init(&cfg_ahc);
-            es7210_adc_set_gain(CONFIG_WILLOW_MIC_GAIN);
+            es7210_adc_set_gain(config_get_int("mic_gain"));
         }
     }
 
