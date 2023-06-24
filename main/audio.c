@@ -43,6 +43,7 @@
 #include "generated_cmd_multinet.h"
 
 #define DEFAULT_AUDIO_RESPONSE_TYPE "None"
+#define DEFAULT_RECORD_BUFFER       12
 #define DEFAULT_SPEECH_REC_MODE     "WIS"
 #define DEFAULT_VAD_TIMEOUT         300
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
@@ -611,10 +612,8 @@ static void start_rec(void)
         .mn_language = ESP_MN_ENGLISH,
     };
 
-#ifdef CONFIG_WILLOW_RECORD_BUFFER
-    ESP_LOGI(TAG, "Using record buffer '%d'", CONFIG_WILLOW_RECORD_BUFFER);
-    cfg_srr.rb_size = CONFIG_WILLOW_RECORD_BUFFER * 1024;
-#endif
+    ESP_LOGI(TAG, "Using record buffer '%d'", config_get_int("record_buffer", DEFAULT_RECORD_BUFFER));
+    cfg_srr.rb_size = config_get_int("record_buffer", DEFAULT_RECORD_BUFFER) * 1024;
 
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     if (strcmp(speech_rec_mode, "Multinet") == 0) {
