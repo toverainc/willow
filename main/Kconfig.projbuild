@@ -69,26 +69,6 @@ config WILLOW_LCD_BRIGHTNESS
 
     menu "Advanced settings"
 
-        choice WILLOW_USE_CODEC
-            prompt "Audio codec to use for speech recognition"
-            default WILLOW_USE_PCM
-
-            config WILLOW_USE_PCM
-                bool "PCM"
-                help
-                    High bandwidth but very fast
-
-            config WILLOW_USE_AMRWB
-                bool "AMR-WB"
-                help
-                    AMR-WB is a very low bitrate codec
-
-            config WILLOW_USE_WAV
-                bool "WAV"
-                help
-                    Industry standard WAV file
-        endchoice
-
         choice WILLOW_WAKE_MODE
             prompt "Wake Word Recognition Operating Mode"
             default WILLOW_WAKE_DET_MODE_2CH_90
