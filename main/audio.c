@@ -513,6 +513,21 @@ static void start_rec(void)
 
     audio_pipeline_run(hdl_ap);
 
+    int wakenet_mode = -1;
+    if (strcmp(config_get_char("wake_mode"), "2CH_90") == 0) {
+        wakenet_mode = DET_MODE_2CH_90;
+    } else if (strcmp(config_get_char("wake_mode"), "2CH_95") == 0) {
+        wakenet_mode = DET_MODE_2CH_95;
+    } else if (strcmp(config_get_char("wake_mode"), "1CH_90") == 0) {
+        wakenet_mode = DET_MODE_90;
+    } else if (strcmp(config_get_char("wake_mode"), "1CH_95") == 0) {
+        wakenet_mode = DET_MODE_95;
+    } else if (strcmp(config_get_char("wake_mode"), "3CH_90") == 0) {
+        wakenet_mode = DET_MODE_3CH_90;
+    } else if (strcmp(config_get_char("wake_mode"), "3CH_95") == 0) {
+        wakenet_mode = DET_MODE_3CH_95;
+    }
+
     afe_config_t cfg_afe = {
         .aec_init = true,
         .se_init = true,
@@ -532,20 +547,8 @@ static void start_rec(void)
 #elif defined(CONFIG_WILLOW_WAKE_VAD_MODE_4)
         .vad_mode = VAD_MODE_4,
 #endif
+        .wakenet_mode = wakenet_mode,
         .wakenet_model_name = NULL,
-#if defined(CONFIG_WILLOW_WAKE_DET_MODE_2CH_90)
-        .wakenet_mode = DET_MODE_2CH_90,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_2CH_95)
-        .wakenet_mode = DET_MODE_2CH_95,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_90)
-        .wakenet_mode = DET_MODE_90,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_95)
-        .wakenet_mode = DET_MODE_95,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_3CH_90)
-        .wakenet_mode = DET_MODE_3CH_90,
-#elif defined(CONFIG_WILLOW_WAKE_DET_MODE_3CH_95)
-        .wakenet_mode = DET_MODE_3CH_95,
-#endif
         .afe_mode = SR_MODE_HIGH_PERF,
         .afe_perferred_core = 1,
         .afe_perferred_priority = 5,
