@@ -186,7 +186,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to add output stream to ESP Audio");
     }
-    esp_audio_vol_set(hdl_ea, CONFIG_WILLOW_VOLUME);
+    esp_audio_vol_set(hdl_ea, config_get_int("speaker_volume"));
     ESP_LOGI(TAG, "audio player initialized");
 }
 
@@ -701,7 +701,7 @@ void init_audio(void)
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-    audio_hal_set_volume(hdl_audio_board->audio_hal, CONFIG_WILLOW_VOLUME);
+    audio_hal_set_volume(hdl_audio_board->audio_hal, config_get_int("speaker_volume"));
     init_audio_response();
     init_session_timer();
     if (strcmp(config_get_char("speech_rec_mode"), "WIS") == 0) {
