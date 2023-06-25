@@ -70,10 +70,10 @@ void app_main(void)
     hdl_pset = esp_periph_set_init(&pcfg);
 
     init_system();
-    init_display();
-    init_lvgl_display();
     init_spiffs_user();
     config_parse();
+    init_display();
+    init_lvgl_display();
     init_ui();
 
     ESP_ERROR_CHECK(esp_netif_init());

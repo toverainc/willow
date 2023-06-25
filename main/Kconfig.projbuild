@@ -53,13 +53,6 @@ config WILLOW_TIMEZONE
     help
         Willow device timezone
 
-config WILLOW_LCD_BRIGHTNESS
-    int "LCD Brightness"
-    range 0 1023
-    default 700
-    help
-        LCD Brightness from 0-1023
-
     menu "Advanced settings"
 
         config WILLOW_ETHERNET

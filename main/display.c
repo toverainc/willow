@@ -3,25 +3,39 @@
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 
+#include "config.h"
 #include "shared.h"
-
-#ifdef CONFIG_ESP32_S3_BOX_LITE_BOARD
-#define BL_DUTY_OFF 1023
-#define BL_DUTY_ON  BL_DUTY_OFF - CONFIG_WILLOW_LCD_BRIGHTNESS
-#else
-#define BL_DUTY_OFF 0
-#define BL_DUTY_ON  CONFIG_WILLOW_LCD_BRIGHTNESS
-#endif
+#include "system.h"
 
 static const char *TAG = "WILLOW/DISPLAY";
+static int bl_duty_off;
+static int bl_duty_on;
 
 esp_err_t init_display(void)
 {
     ESP_LOGD(TAG, "initializing display");
 
+    switch (hw_type) {
+        case WILLOW_HW_ESP32_S3_BOX_LITE:
+            bl_duty_off = 1023;
+            bl_duty_on = bl_duty_off - config_get_int("lcd_brightness");
+            break;
+        case WILLOW_HW_MAX:
+            ESP_LOGW(TAG, "unsupported hardware");
+            __attribute__((fallthrough));
+        case WILLOW_HW_UNSUPPORTED:
+            __attribute__((fallthrough));
+        case WILLOW_HW_ESP32_S3_BOX:
+            bl_duty_off = 0;
+            bl_duty_on = config_get_int("lcd_brightness");
+            break;
+    }
+
+    ESP_LOGD(TAG, "bl_duty_on=%d bl_duty_off=%d", bl_duty_on, bl_duty_off);
+
     const ledc_channel_config_t cfg_bl_channel = {
         .channel = LEDC_CHANNEL_1,
-        .duty = CONFIG_WILLOW_LCD_BRIGHTNESS,
+        .duty = bl_duty_on,
         .gpio_num = GPIO_NUM_45,
         .hpoint = 0,
         .intr_type = LEDC_INTR_DISABLE,
@@ -70,8 +84,8 @@ esp_err_t init_display(void)
 void display_set_backlight(const bool on)
 {
     if (on) {
-        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, BL_DUTY_ON, 0);
+        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, bl_duty_on, 0);
     } else {
-        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, BL_DUTY_OFF, 0);
+        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, bl_duty_off, 0);
     }
 }
