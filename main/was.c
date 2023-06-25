@@ -1,12 +1,18 @@
 #include "cJSON.h"
 #include "esp_log.h"
+#include "esp_lvgl_port.h"
 #include "esp_transport_ws.h"
 #include "esp_websocket_client.h"
+#include "lvgl.h"
+#include "nvs_flash.h"
 
 #include "config.h"
+#include "display.h"
 #include "network.h"
 #include "ota.h"
+#include "slvgl.h"
 #include "system.h"
+#include "timer.h"
 #include "was.h"
 
 static const char *TAG = "WILLOW/WAS";
@@ -35,6 +41,78 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     ESP_LOGI(TAG, "found config in WebSocket message: %s", config);
                     config_write(config);
                     goto cleanup;
+                }
+
+                cJSON *json_nvs = cJSON_GetObjectItemCaseSensitive(cjson, "nvs");
+                if (cJSON_IsObject(json_nvs)) {
+                    char *nvs = cJSON_Print(json_nvs);
+                    esp_err_t ret = ESP_OK;
+                    nvs_handle_t hdl_nvs;
+
+                    ESP_LOGI(TAG, "found nvs in WebSocket message: %s", nvs);
+
+                    cJSON *json_was = cJSON_GetObjectItemCaseSensitive(json_nvs, "WAS");
+                    if (cJSON_IsObject(json_was)) {
+                        ESP_LOGD(TAG, "found WAS in nvs message");
+                        ret = nvs_open("WAS", NVS_READWRITE, &hdl_nvs);
+                        if (ret != ESP_OK) {
+                            ESP_LOGE(TAG, "failed to open NVS namespace WAS");
+                            goto cleanup;
+                        }
+                        cJSON *json_was_url = cJSON_GetObjectItemCaseSensitive(json_was, "URL");
+                        if (cJSON_IsString(json_was_url) && json_was_url->valuestring != NULL) {
+                            ESP_LOGD(TAG, "found WAS URL in nvs message");
+                            ret = nvs_set_str(hdl_nvs, "URL", json_was_url->valuestring);
+                            if (ret != ESP_OK) {
+                                ESP_LOGE(TAG, "failed to set URL in NVS namespace WAS");
+                                goto cleanup;
+                            }
+                        }
+                    }
+
+                    cJSON *json_wifi = cJSON_GetObjectItemCaseSensitive(json_nvs, "WIFI");
+                    if (cJSON_IsObject(json_wifi)) {
+                        ESP_LOGD(TAG, "found WIFI in nvs message");
+                        ret = nvs_open("WIFI", NVS_READWRITE, &hdl_nvs);
+                        if (ret != ESP_OK) {
+                            ESP_LOGE(TAG, "failed to open NVS namespace WIFI");
+                            goto cleanup;
+                        }
+                        cJSON *json_wifi_psk = cJSON_GetObjectItemCaseSensitive(json_wifi, "PSK");
+                        if (cJSON_IsString(json_wifi_psk) && json_wifi_psk->valuestring != NULL) {
+                            ESP_LOGD(TAG, "found WIFI PSK in nvs message");
+                            ret = nvs_set_str(hdl_nvs, "PSK", json_wifi_psk->valuestring);
+                            if (ret != ESP_OK) {
+                                ESP_LOGE(TAG, "failed to set PSK in NVS namespace WIFI");
+                                goto cleanup;
+                            }
+                        }
+                        cJSON *json_wifi_ssid = cJSON_GetObjectItemCaseSensitive(json_wifi, "SSID");
+                        if (cJSON_IsString(json_wifi_ssid) && json_wifi_ssid->valuestring != NULL) {
+                            ESP_LOGD(TAG, "found WIFI SSID in nvs message");
+                            ret = nvs_set_str(hdl_nvs, "SSID", json_wifi_ssid->valuestring);
+                            if (ret != ESP_OK) {
+                                ESP_LOGE(TAG, "failed to set SSID in NVS namespace WIFI");
+                                goto cleanup;
+                            }
+                        }
+                    }
+
+                    nvs_commit(hdl_nvs);
+
+                    ESP_LOGI(TAG, "restarting to apply NVS changes");
+                    lvgl_port_lock(0);
+                    lv_label_set_text_static(lbl_ln3, "NVS updated.");
+                    lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
+                    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                    lvgl_port_unlock();
+                    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
+                    display_set_backlight(true);
+                    restart_delayed();
                 }
 
                 cJSON *json_cmd = cJSON_GetObjectItemCaseSensitive(cjson, "cmd");
