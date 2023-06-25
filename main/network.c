@@ -13,6 +13,7 @@
 
 #define DEFAULT_NTP_CONFIG "Host"
 #define DEFAULT_NTP_HOST   "pool.ntp.org"
+#define DEFAULT_TIMEZONE   "America/Menominee"
 
 #define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6
@@ -55,7 +56,9 @@ void set_hostname(esp_mac_type_t emt)
 esp_err_t init_sntp(void)
 {
     ESP_LOGI(TAG, "initializing SNTP client");
-    setenv("TZ", CONFIG_WILLOW_TIMEZONE, 1);
+    char *timezone = config_get_char("timezone", DEFAULT_TIMEZONE);
+    setenv("TZ", timezone, 1);
+    free(timezone);
     tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
 
