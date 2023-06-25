@@ -52,7 +52,7 @@ void set_hostname(esp_mac_type_t emt)
 esp_err_t init_sntp(void)
 {
     ESP_LOGI(TAG, "initializing SNTP client");
-    setenv("TZ", CONFIG_WILLOW_TIMEZONE, 1);
+    setenv("TZ", config_get_char("timezone"), 1);
     tzset();
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
 

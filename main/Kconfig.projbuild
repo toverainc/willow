@@ -47,12 +47,6 @@ choice WILLOW_WAKE_WORD
             Say Hi Lexin to wake Willow
 endchoice
 
-config WILLOW_TIMEZONE
-    string "Timezone"
-    default "UTC+5"
-    help
-        Willow device timezone
-
     menu "Advanced settings"
 
         config WILLOW_ETHERNET
