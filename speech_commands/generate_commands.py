@@ -14,43 +14,35 @@ entity_types_str = str(entity_types)
 
 tag = "MULTINET: Generate speech commands:"
 
-print(f'{tag} Attempting to fetch your {entity_types_str} entities from Home Assistant...')
-
 willow_path = os.getenv('WILLOW_PATH')
 
 willow_config = f'{willow_path}/sdkconfig'
 
-ha_tls = False
-
 file = open(willow_config, 'r')
 lines = file.readlines()
 for line in lines:
-    if 'CONFIG_HOMEASSISTANT_HOST=' in line:
-        ha_host = line.replace('CONFIG_HOMEASSISTANT_HOST=', '')
-        ha_host = ha_host.strip('\n')
-        ha_host = ha_host.replace('\"', '')
-
-    if 'CONFIG_HOMEASSISTANT_PORT=' in line:
-        ha_port = line.replace('CONFIG_HOMEASSISTANT_PORT=', '')
-        ha_port = ha_port.strip('\n')
-
-    if 'CONFIG_HOMEASSISTANT_TLS=' in line:
-        ha_tls = line.replace('CONFIG_HOMEASSISTANT_TLS=', '')
-        ha_tls = ha_tls.strip('\n')
-
-    if 'CONFIG_HOMEASSISTANT_TOKEN=' in line:
-        ha_token = line.replace('CONFIG_HOMEASSISTANT_TOKEN=', '')
-        ha_token = ha_token.strip('\n')
-        ha_token = ha_token.replace('\"', '')
+    if 'CONFIG_WILLOW_WAS_URL=' in line:
+        was_url = line.replace('CONFIG_WILLOW_WAS_URL=', '')
+        was_url = was_url.strip('\n')
+        was_url = was_url.replace('\"', '')
 
 file.close()
 
-if ha_tls == 'y':
-    ha_url_scheme = "https"
-else:
-    ha_url_scheme = "http"
+# sdkconfig has WebSocket URL
+was_url = re.sub("^ws", "http", was_url)
+was_url = re.sub("/ws$", "", was_url)
 
-ha_uri = f"{ha_url_scheme}://{ha_host}:{ha_port}"
+was_ha_url = f"{was_url}/api/ha_url"
+was_token_url = f"{was_url}/api/ha_token"
+
+print(f"Fetching Home Assistant URL from WAS on {was_url}")
+
+resp = get(was_ha_url)
+ha_url = resp.text
+ha_url = f"{ha_url}/api/states"
+
+ha_token = get(was_token_url)
+ha_token = ha_token.text
 
 # Basic sanity checking
 if ha_token is None:
@@ -60,13 +52,14 @@ if ha_token is None:
 # Construct auth header value
 auth = f'Bearer {ha_token}'
 
-url = f"{ha_uri}/api/states"
 headers = {
     "Authorization": auth,
     "content-type": "application/json",
 }
 
-response = get(url, headers=headers)
+print(f'{tag} Attempting to fetch your {entity_types_str} entities from Home Assistant... ({ha_url})')
+
+response = get(ha_url, headers=headers)
 entities = response.json()
 
 # Define re to remove anything but alphabet and spaces - multinet doesn't support them and too lazy to make them words
