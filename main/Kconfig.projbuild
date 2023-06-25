@@ -53,13 +53,6 @@ config WILLOW_TIMEZONE
     help
         Willow device timezone
 
-config WILLOW_VOLUME
-    int "Speaker volume"
-    range 0 100
-    default 60
-    help
-        Audio level for playback from 0-100
-
 config WILLOW_LCD_BRIGHTNESS
     int "LCD Brightness"
     range 0 1023
