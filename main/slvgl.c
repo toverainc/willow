@@ -8,6 +8,7 @@
 #include "lvgl.h"
 #include "periph_lcd.h"
 
+#include "audio.h"
 #include "display.h"
 #include "shared.h"
 #include "timer.h"
