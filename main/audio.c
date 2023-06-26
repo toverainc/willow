@@ -24,9 +24,9 @@
 #include "spiffs_stream.h"
 #include "wav_encoder.h"
 
+#include "audio.h"
 #include "config.h"
 #include "display.h"
-#include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 #include "ui.h"
