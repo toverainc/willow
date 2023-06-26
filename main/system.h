@@ -5,7 +5,15 @@ enum willow_hw_t {
     WILLOW_HW_MAX, // keep this last
 };
 
+enum willow_state {
+    STATE_INIT = 0,
+    STATE_NVS_OK,
+    STATE_CONFIG_OK,
+    STATE_READY,
+};
+
 enum willow_hw_t hw_type;
+enum willow_state state;
 
 const char *str_hw_type(int id);
 void init_system(void);

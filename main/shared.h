@@ -6,14 +6,5 @@
 #define DEFAULT_MIC_GAIN          14
 #define DEFAULT_SPEECH_REC_MODE  "WIS"
 
-enum willow_state {
-    STATE_INIT = 0,
-    STATE_NVS_OK,
-    STATE_CONFIG_OK,
-    STATE_READY,
-};
-
-enum willow_state state;
-
 esp_lcd_panel_handle_t hdl_lcd;
 esp_periph_set_handle_t hdl_pset;
