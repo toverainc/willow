@@ -10,7 +10,7 @@
 
 #include "audio.h"
 #include "display.h"
-#include "shared.h"
+#include "system.h"
 #include "timer.h"
 
 static const char *TAG = "WILLOW/LVGL";

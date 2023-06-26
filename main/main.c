@@ -13,7 +13,6 @@
 #include "input.h"
 #include "log.h"
 #include "network.h"
-#include "shared.h"
 #include "slvgl.h"
 #include "system.h"
 #include "tasks.h"

@@ -3,7 +3,6 @@
 #include "esp_wifi.h"
 #include "lvgl.h"
 #include "sdkconfig.h"
-#include "shared.h"
 #include "slvgl.h"
 
 #include "driver/spi_master.h"

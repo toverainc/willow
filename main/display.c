@@ -5,7 +5,6 @@
 
 #include "config.h"
 #include "display.h"
-#include "shared.h"
 #include "system.h"
 
 static const char *TAG = "WILLOW/DISPLAY";

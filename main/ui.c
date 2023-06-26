@@ -3,7 +3,6 @@
 #include "esp_lvgl_port.h"
 
 #include "config.h"
-#include "shared.h"
 #include "slvgl.h"
 
 static const char *TAG = "WILLOW/UI";

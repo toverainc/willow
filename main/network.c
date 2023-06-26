@@ -8,8 +8,8 @@
 
 #include "config.h"
 #include "network.h"
-#include "shared.h"
 #include "slvgl.h"
+#include "system.h"
 
 #define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6

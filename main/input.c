@@ -6,7 +6,7 @@
 #include "periph_button.h"
 
 #include "config.h"
-#include "shared.h"
+#include "system.h"
 
 static const char *TAG = "WILLOW/INPUT";
 
