@@ -4,7 +4,7 @@
 #include "esp_lvgl_port.h"
 
 #include "config.h"
-#include "shared.h"
+#include "display.h"
 #include "system.h"
 
 #define DEFAULT_LCD_BRIGHTNESS 700
