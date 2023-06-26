@@ -3,8 +3,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
+#include "audio.h"
 #include "display.h"
-#include "shared.h"
 #include "tasks.h"
 #include "timer.h"
 
