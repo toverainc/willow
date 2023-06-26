@@ -6,8 +6,8 @@
 #include "esp_lvgl_port.h"
 
 #include "../http.h"
+#include "audio.h"
 #include "config.h"
-#include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 
