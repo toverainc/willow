@@ -8,8 +8,8 @@
 
 #include "config.h"
 #include "network.h"
-#include "shared.h"
 #include "slvgl.h"
+#include "system.h"
 
 #define DEFAULT_NTP_CONFIG "Host"
 #define DEFAULT_NTP_HOST   "pool.ntp.org"
