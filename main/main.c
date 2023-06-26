@@ -130,10 +130,7 @@ void app_main(void)
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize Willow Application Server connection");
         if (ld == NULL) {
-            lvgl_port_lock(0);
-            lv_label_set_text_static(lbl_ln2, "Fatal error!");
-            lv_label_set_text_static(lbl_ln3, "WAS initialization failed.");
-            lvgl_port_unlock();
+            ui_pr_err("Fatal error!", "WAS initialization failed.");
         }
     }
 
@@ -147,10 +144,7 @@ void app_main(void)
 err_nvs:
     if (state < STATE_NVS_OK) {
         if (ld == NULL) {
-            lvgl_port_lock(0);
-            lv_label_set_text_static(lbl_ln2, "Fatal error!");
-            lv_label_set_text_static(lbl_ln3, "Failed to read NVS partition.");
-            lvgl_port_unlock();
+            ui_pr_err("Fatal error!", "Failed to read NVS partition.");
         }
         // wait "indefinitely"
         vTaskDelay(portMAX_DELAY);
