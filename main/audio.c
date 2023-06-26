@@ -696,6 +696,24 @@ static void at_read(void *data)
 void init_audio(void)
 {
     esp_err_t ret;
+    int gpio_level;
+
+    gpio_level = gpio_get_level(GPIO_NUM_1);
+    if (gpio_level == 0) {
+        ESP_LOGW(TAG, "mute is activated, please unmute to continue startup");
+        if (ld == NULL) {
+            ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
+        } else {
+            lvgl_port_lock(0);
+            lv_label_set_text_static(lbl_ln3, "Mute activated!");
+            lv_label_set_text_static(lbl_ln4, "Unmute to continue.");
+            lvgl_port_unlock();
+        }
+        while (gpio_get_level(GPIO_NUM_1) == 0) {
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+    }
+
     audio_board_handle_t hdl_audio_board = audio_board_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
