@@ -139,6 +139,8 @@ void app_main(void)
 
     if (!config_valid) {
         request_config();
+        // wait "indefinitely"
+        vTaskDelay(portMAX_DELAY);
     }
 
 // we jump over WAS initialization was without Wi-Fi this will never work
