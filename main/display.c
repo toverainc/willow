@@ -4,6 +4,7 @@
 #include "esp_lvgl_port.h"
 
 #include "config.h"
+#include "display.h"
 #include "shared.h"
 #include "system.h"
 
