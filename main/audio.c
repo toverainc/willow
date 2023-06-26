@@ -29,6 +29,7 @@
 #include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
+#include "ui.h"
 
 #include "endpoint/hass.h"
 #include "endpoint/openhab.h"
@@ -704,10 +705,7 @@ void init_audio(void)
         if (ld == NULL) {
             ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
         } else {
-            lvgl_port_lock(0);
-            lv_label_set_text_static(lbl_ln3, "Mute activated!");
-            lv_label_set_text_static(lbl_ln4, "Unmute to continue.");
-            lvgl_port_unlock();
+            ui_pr_err("Mute activated!", "Unmute to continue.");
         }
         while (gpio_get_level(GPIO_NUM_1) == 0) {
             vTaskDelay(1000 / portTICK_PERIOD_MS);
