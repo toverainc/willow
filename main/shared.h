@@ -1,5 +1,4 @@
 #include "esp_lvgl_port.h"
-#include "esp_netif.h"
 #include "esp_peripherals.h"
 
 #define DEFAULT_COMMAND_ENDPOINT "Home Assistant"
