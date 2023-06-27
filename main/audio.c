@@ -46,10 +46,12 @@
 #define DEFAULT_VAD_MODE            3
 #define DEFAULT_VAD_TIMEOUT         300
 #define DEFAULT_WAKE_MODE           "2CH_90"
+#define DEFAULT_WAKE_WORD           "hiesp"
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
 #define DEFAULT_WIS_URL             "https://infer.tovera.io/api/willow"
 
 #define MULTINET_TWDT   30
+#define STR_WAKE_LEN    25
 #define WIS_URL_TTS_ARG "?speaker=CLB&text="
 
 QueueHandle_t q_rec;
@@ -469,6 +471,7 @@ static esp_err_t init_ap_to_api(void)
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
     cfg_hs.event_handle = hdl_ev_hs;
     cfg_hs.type = AUDIO_STREAM_WRITER;
+    cfg_hs.user_agent = WILLOW_USER_AGENT;
     hdl_ae_hs = http_stream_init(&cfg_hs);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
@@ -593,6 +596,7 @@ static void start_rec(void)
     // E (5727) AFE_SR: sample_rate only support 16000, please modify it!
     // cfg_srr.afe_cfg.pcm_config.sample_rate = CFG_AUDIO_SR_SAMPLE_RATE;
 
+    char *wake_word = config_get_char("wake_word", DEFAULT_WAKE_WORD);
     recorder_sr_cfg_t cfg_srr = {
         .afe_cfg = cfg_afe,
         .input_order = INPUT_ORDER_DEFAULT(),
@@ -606,6 +610,7 @@ static void start_rec(void)
         .rb_size = 12 * 1024, // default is 6 * 1024
         .partition_label = "model",
         .mn_language = ESP_MN_ENGLISH,
+        .wn_wakeword = wake_word,
     };
 
     ESP_LOGI(TAG, "Using record buffer '%d'", config_get_int("record_buffer", DEFAULT_RECORD_BUFFER));
@@ -666,6 +671,7 @@ static void start_rec(void)
         cfg_ar.encoder_handle = recorder_encoder_create(&recorder_encoder_cfg, &cfg_ar.encoder_iface);
     }
     free(audio_codec);
+    free(wake_word);
     hdl_ar = audio_recorder_create(&cfg_ar);
 }
 
@@ -737,6 +743,7 @@ static void at_read(void *data)
 void init_audio(void)
 {
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
+    char *wake_word = config_get_char("wake_word", DEFAULT_WAKE_WORD);
     esp_err_t ret;
     int gpio_level;
 
@@ -774,15 +781,26 @@ void init_audio(void)
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(&hdl_at, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
 
-#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
-    char *wake_help = "Say 'Hi ESP' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
-    char *wake_help = "Say 'Alexa' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN)
-    char *wake_help = "Say 'Hi Lexin' to start!";
-#else
-    char *wake_help = "Ready!";
+    char wake_help[STR_WAKE_LEN] = "";
+    if (strcmp(wake_word, "hiesp") == 0) {
+#if defined(CONFIG_SR_WN_WN9_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP_MULTI)
+        strncpy(wake_help, "Say 'Hi ESP' to start!", STR_WAKE_LEN);
 #endif
+    } else if (strcmp(wake_word, "alexa") == 0) {
+#if defined(CONFIG_SR_WN_WN9_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA_MULTI)
+        strncpy(wake_help, "Say 'Alexa' to start!", STR_WAKE_LEN);
+#endif
+    } else if (strcmp(wake_word, "hilexin") == 0) {
+#if defined(CONFIG_SR_WN_WN9_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN_MULTI)
+        strncpy(wake_help, "Say 'Hi Lexin' to start!", STR_WAKE_LEN);
+#endif
+    }
+
+    if (strlen(wake_help) == 0) {
+        ESP_LOGE(TAG, "selected wake word (%s) not supported", wake_word);
+        strncpy(wake_help, "Ready!", STR_WAKE_LEN);
+    }
+    free(wake_word);
 
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
