@@ -44,29 +44,6 @@ index f8a449b..f0272f3 100644
      }
      return ESP_OK;
  #else
-@@ -531,8 +542,21 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
-     memcpy(recorder_sr->input_order, cfg->input_order, DAT_CH_MAX);
-
-     recorder_sr->models = esp_srmodel_init(recorder_sr->partition_label);
--    char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, NULL);
-+// Belts and suspenders
-+#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) && defined(CONFIG_SR_WN_WN9_HIESP_MULTI)
-+        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, "hiesp");
-+#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) && defined(CONFIG_SR_WN_WN9_ALEXA_MULTI)
-+        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, "alexa");
-+#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) && defined(CONFIG_SR_WN_WN9_HILEXIN_MULTI)
-+        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, "hilexin");
-+#else
-+    #ifdef CONFIG_WILLOW_WAKE_WORD
-+        ESP_LOGW(TAG, "Wakenet model not defined or unknown - using random");
-+    #endif
-+        char *wn_name = esp_srmodel_filter(recorder_sr->models, ESP_WN_PREFIX, NULL);
-+#endif
-     AUDIO_NULL_CHECK(TAG, wn_name, goto _failed);
-+    ESP_LOGI(TAG, "Selected wakenet model is '%s'", wn_name);
-     cfg->afe_cfg.wakenet_model_name = wn_name;
-     recorder_sr->afe_handle = esp_afe->create_from_config(&cfg->afe_cfg);
-     AUDIO_NULL_CHECK(TAG, recorder_sr->afe_handle, goto _failed);
 @@ -547,10 +571,9 @@ recorder_sr_handle_t recorder_sr_create(recorder_sr_cfg_t *cfg, recorder_sr_ifac
          char *mn_name = esp_srmodel_filter(recorder_sr->models, ESP_MN_PREFIX, recorder_sr->mn_language);
          AUDIO_NULL_CHECK(TAG, mn_name, goto _failed);
@@ -79,12 +56,3 @@ index f8a449b..f0272f3 100644
      }
  #endif
      recorder_sr->events = xEventGroupCreate();
-@@ -592,7 +615,7 @@ esp_err_t recorder_sr_reset_speech_cmd(recorder_sr_handle_t handle, char *comman
-
-     esp_mn_commands_clear();
-
--    uint8_t cmd_id = 0;
-+    uint16_t cmd_id = 0;
-     char *cmd_str = NULL;
-     char *phrase = NULL;
-     strcpy(buf, command_str);
