@@ -145,11 +145,6 @@ check_deps() {
     fi
 }
 
-do_patch() {
-    cd "$WILLOW_PATH"
-    cat patches/*.patch | patch -p0
-}
-
 generate_speech_commands() {
     rm -rf build/srmodels
     /usr/bin/python3 speech_commands/generate_commands.py
@@ -183,7 +178,7 @@ install() {
     mkdir -p deps
     cd deps
     # Setup ADF
-    git clone -b "$ADF_VER" https://github.com/espressif/esp-adf.git
+    git clone -b "$ADF_VER" https://github.com/toverainc/esp-adf.git
     cd $ADF_PATH
     git submodule update --init components/esp-adf-libs
 
@@ -196,7 +191,6 @@ install() {
     cd $WILLOW_PATH
     cp sdkconfig.willow sdkconfig
     idf.py reconfigure
-    do_patch
 }
 
 destroy() {
