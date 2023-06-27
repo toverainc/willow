@@ -1,0 +1,90 @@
+---
+name: build-dist
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  push:
+
+# we cannot use on workflow_run because build-container only runs when changes are made to Dockerfile or .github/workflows/build-container.yml
+# so the first time we run workflows for a new branch this workflow will fail because there will not be a container image with the right tag yet
+
+jobs:
+  metadata:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: extract metadata
+        id: metadata
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+    outputs:
+      tags: ${{ steps.metadata.outputs.tags }}
+
+  build-willow-dist:
+    runs-on: ubuntu-22.04
+    needs: metadata
+    # cannot depend on jobs in other workflows
+    # The workflow is not valid. .github/workflows/build-dist.yml (Line: 12, Col: 3): The workflow must contain at least one job with no dependencies.
+    # needs: build-container
+    container:
+      # apparently using env here doesn't work - works fine for build-container - WTF github
+      # The workflow is not valid. .github/workflows/build-dist.yml (Line: 15, Col: 14): Unrecognized named-value: 'env'. Located at position 1 within expression: env.REGISTRY
+      # image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      #
+      # ${{ github.ref_name }} = feature/was - / not valid in Docker tag
+      #
+      # using outputs from docker/metadata-action is ugly because it can be multiple tags
+      image: ${{ needs.metadata.outputs.tags }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+      volumes:
+        - "${{github.workspace}}:/willow"
+    # https://github.com/actions/runner/issues/878#issuecomment-1248930921
+    defaults:
+      run:
+        working-directory: /willow
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: ls -al
+        run: ls -al
+      # fatal: detected dubious ownership in repository at '/willow'
+      - name: id
+        run: id
+      # ./utils.sh: line 193: idf.py: command not found
+      # - name: . $IDF_PATH/export.sh
+      #  run: . "$IDF_PATH/export.sh"
+      #  need to run it in the same step as utils.sh bloody hell
+      - name: env
+        run: env
+      - name: pwd
+        run: pwd
+      # need to run with bash to avoid this error:
+      # /opt/esp/idf/export.sh: [[: not found
+      - name: ./utils.sh setup
+        run: ( . "$IDF_PATH/export.sh"; ./utils.sh setup )
+        shell: bash
+      - name: ./utils.sh build
+        run: ( . "$IDF_PATH/export.sh"; ./utils.sh build )
+        shell: bash
+      - name: ./utils.sh dist
+        run: ( . "$IDF_PATH/export.sh"; ./utils.sh dist )
+        shell: bash
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: willow-dist.bin
+          path: /willow/build/willow-dist.bin
+      - uses: actions/upload-artifact@v3
+        with:
+          name: willow-partitions
+          path: |
+            /willow/build/*.bin
+            /willow/build/srmodels/srmodels.bin
+            /willow/partitions_willow.csv
+            /willow/sdkconfig
+            !/willow/build/willow-dist.bin
