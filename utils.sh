@@ -246,7 +246,7 @@ fullclean)
 build)
     check_container
     check_deps
-    generate_speech_commands
+    [ "$CI" ] || generate_speech_commands
     WILLOW_SDKCONFIG_SANITY_CHECKS=1 idf.py build
 ;;
 
