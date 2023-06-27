@@ -35,7 +35,9 @@
 #include "endpoint/openhab.h"
 #include "endpoint/rest.h"
 
+#if defined(WILLOW_SUPPORT_MULTINET)
 #include "generated_cmd_multinet.h"
+#endif
 
 #define DEFAULT_AUDIO_CODEC         "PCM"
 #define DEFAULT_AUDIO_RESPONSE_TYPE "None"
@@ -213,7 +215,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
 {
     char *speech_rec_mode = NULL;
     int msg = -1;
+#if defined(WILLOW_SUPPORT_MULTINET)
     int command_id = 0;
+#endif
 
     switch (are) {
         case AUDIO_REC_VAD_END:
@@ -288,6 +292,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
         default:
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
+#if defined(WILLOW_SUPPORT_MULTINET)
                 // Catch all for local commands
                 command_id = are;
                 char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
@@ -315,6 +320,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
                 lvgl_port_unlock();
                 reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
+#else
+                ESP_LOGE(TAG, "multinet not supported but enabled in config");
+#endif
             } else {
                 ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are);
             }
@@ -618,11 +626,15 @@ static void start_rec(void)
 
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     if (strcmp(speech_rec_mode, "Multinet") == 0) {
+#if defined(WILLOW_SUPPORT_MULTINET)
         ESP_LOGI(TAG, "Using local multinet");
         ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
         esp_task_wdt_init(MULTINET_TWDT, CONFIG_TASK_WDT_PANIC ? true : false);
         cfg_srr.multinet_init = true;
         cfg_srr.rb_size = 6 * 1024;
+#else
+        ESP_LOGE(TAG, "multinet not supported but enabled in config");
+#endif
     }
     free(speech_rec_mode);
 

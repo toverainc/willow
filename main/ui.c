@@ -86,7 +86,11 @@ void init_ui(void)
         lv_obj_set_width(lbl_ln2, 320);
 
         if (strcmp(speech_rec_mode, "Multinet") == 0) {
+#if defined(WILLOW_SUPPORT_MULTINET)
             lv_label_set_text_static(lbl_ln3, "Starting up (local)...");
+#else
+            lv_label_set_text_static(lbl_ln3, "Multinet not supported!");
+#endif
         } else if (strcmp(speech_rec_mode, "WIS") == 0) {
             lv_label_set_text_static(lbl_ln3, "Starting up (server)...");
         }
