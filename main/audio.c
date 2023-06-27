@@ -38,6 +38,7 @@
 #include "generated_cmd_multinet.h"
 
 #define MULTINET_TWDT   30
+#define STR_WAKE_LEN    25
 #define WIS_URL_TTS_ARG "?speaker=CLB&text="
 
 QueueHandle_t q_rec;
@@ -437,6 +438,7 @@ static esp_err_t init_ap_to_api(void)
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
     cfg_hs.event_handle = hdl_ev_hs;
     cfg_hs.type = AUDIO_STREAM_WRITER;
+    cfg_hs.user_agent = WILLOW_USER_AGENT;
     hdl_ae_hs = http_stream_init(&cfg_hs);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
@@ -570,6 +572,7 @@ static void start_rec(void)
         .rb_size = 12 * 1024, // default is 6 * 1024
         .partition_label = "model",
         .mn_language = ESP_MN_ENGLISH,
+        .wn_wakeword = config_get_char("wake_word"),
     };
 
     ESP_LOGI(TAG, "Using record buffer '%d'", config_get_int("record_buffer"));
@@ -732,15 +735,25 @@ void init_audio(void)
     q_rec = xQueueCreate(3, sizeof(int));
     audio_thread_create(&hdl_at, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
 
-#if defined(CONFIG_WILLOW_WAKE_WORD_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP)
-    char *wake_help = "Say 'Hi ESP' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA)
-    char *wake_help = "Say 'Alexa' to start!";
-#elif defined(CONFIG_WILLOW_WAKE_WORD_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN)
-    char *wake_help = "Say 'Hi Lexin' to start!";
-#else
-    char *wake_help = "Ready!";
+    char wake_help[STR_WAKE_LEN] = "";
+    if (strcmp(config_get_char("wake_word"), "hiesp") == 0) {
+#if defined(CONFIG_SR_WN_WN9_HIESP) || defined(CONFIG_SR_WN_WN9_HIESP_MULTI)
+        strncpy(wake_help, "Say 'Hi ESP' to start!", STR_WAKE_LEN);
 #endif
+    } else if (strcmp(config_get_char("wake_word"), "alexa") == 0) {
+#if defined(CONFIG_SR_WN_WN9_ALEXA) || defined(CONFIG_SR_WN_WN9_ALEXA_MULTI)
+        strncpy(wake_help, "Say 'Alexa' to start!", STR_WAKE_LEN);
+#endif
+    } else if (strcmp(config_get_char("wake_word"), "hilexin") == 0) {
+#if defined(CONFIG_SR_WN_WN9_HILEXIN) || defined(CONFIG_SR_WN_WN9_HILEXIN_MULTI)
+        strncpy(wake_help, "Say 'Hi Lexin' to start!", STR_WAKE_LEN);
+#endif
+    }
+
+    if (strlen(wake_help) == 0) {
+        ESP_LOGE(TAG, "selected wake word (%s) not supported", config_get_char("wake_word"));
+        strncpy(wake_help, "Ready!", STR_WAKE_LEN);
+    }
 
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
