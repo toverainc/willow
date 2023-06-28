@@ -6,7 +6,11 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - build-container
+    types:
+      - completed
 
 # we cannot use on workflow_run because build-container only runs when changes are made to Dockerfile or .github/workflows/build-container.yml
 # so the first time we run workflows for a new branch this workflow will fail because there will not be a container image with the right tag yet

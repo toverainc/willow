@@ -1,5 +1,5 @@
 ---
-name: build willow-build container
+name: build-container
 
 
 env:
@@ -8,9 +8,6 @@ env:
 
 on:
   push:
-    paths:
-      - '.github/workflows/build-container.yml'
-      - 'Dockerfile'
 
 jobs:
   build-container:
