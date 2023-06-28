@@ -83,6 +83,8 @@ jobs:
         run: env
       - name: pwd
         run: pwd
+      - name: add /willow to git safe directories
+        run: git config --global --add safe.directory /willow
       # need to run with bash to avoid this error:
       # /opt/esp/idf/export.sh: [[: not found
       - name: ./utils.sh setup
