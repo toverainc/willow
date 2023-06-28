@@ -13,7 +13,7 @@ jobs:
   build_container:
     runs-on: ubuntu-22.04
     outputs:
-      tags: ${{ steps.metadata.outputs.tags }}
+      json: ${{ steps.metadata.outputs.json }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -30,6 +30,9 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=ref,event=branch
 
       - name: build container
         uses: docker/build-push-action@v4
@@ -41,7 +44,7 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
 
       - name: debug
-        run: echo "${{ steps.metadata.outputs.json }}"
+        run: echo "${{ fromJSON(steps.metadata.outputs.json).tags[0] }}"
 
       - name: fail
         run: exit
@@ -50,10 +53,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: build_container
     container:
-      # ${{ github.ref_name }} = feature/was - / not valid in Docker tag
-      #
-      # using outputs from docker/metadata-action is ugly because it can be multiple tags
-      image: ${{ needs.build_container.outputs.tags }}
+      image: ${{ fromJSON(needs.build_container.outputs.json).tags[0] }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
