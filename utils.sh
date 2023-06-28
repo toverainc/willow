@@ -35,12 +35,7 @@ if [ -f /.dockerenv ]; then
 fi
 
 # Get Willow version
-export WILLOW_VERSION=$(git rev-parse --short HEAD)
-
-# Append dirty if local changes
-if ! git diff --quiet; then
-    WILLOW_VERSION="$WILLOW_VERSION-dirty"
-fi
+export WILLOW_VERSION=$(git describe --always --dirty --tags)
 
 # Test for local environment file and use any overrides
 if [ -r .env ]; then
