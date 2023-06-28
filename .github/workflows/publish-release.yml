@@ -1,0 +1,33 @@
+---
+name: publish release
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  workflow_run:
+    workflows:
+      - build-dist
+    types:
+      - completed
+
+jobs:
+  publish-release:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: download willow-dist.bin artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: willow-dist.bin
+          path: willow-dist.bin.zip
+
+      - name: unzip artifact
+        run: unzip willow-dist.bin.zip
+
+      - name: create release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: false
+          artifacts: "willow-dist.bin"
