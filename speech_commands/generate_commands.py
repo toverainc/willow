@@ -30,88 +30,18 @@ file.close()
 
 # sdkconfig has WebSocket URL
 was_url = re.sub("^ws", "http", was_url)
-was_url = re.sub("/ws$", "", was_url)
+was_url = re.sub("/ws$", "/api/multinet", was_url)
 
-was_ha_url = f"{was_url}/api/ha_url"
-was_token_url = f"{was_url}/api/ha_token"
-
-print(f"Fetching Home Assistant URL from WAS on {was_url}")
-
-resp = get(was_ha_url)
-ha_url = resp.text
-ha_url = f"{ha_url}/api/states"
-
-ha_token = get(was_token_url)
-ha_token = ha_token.text
-
-# Basic sanity checking
-if ha_token is None:
-    print('ERROR: Could not get Home Assistant token from Willow Configuration')
-    sys.exit(1)
-
-# Construct auth header value
-auth = f'Bearer {ha_token}'
-
-headers = {
-    "Authorization": auth,
-    "content-type": "application/json",
-}
-
-print(f'{tag} Attempting to fetch your {entity_types_str} entities from Home Assistant... ({ha_url})')
-
-response = get(ha_url, headers=headers)
-entities = response.json()
-
-# Define re to remove anything but alphabet and spaces - multinet doesn't support them and too lazy to make them words
-pattern = r'[^A-Za-z ]'
-
-devices = []
-
-for type in entity_types:
-    for entity in entities:
-        entity_id = entity['entity_id']
-
-        if entity_id.startswith(type):
-            attr = entity.get('attributes')
-            friendly_name = attr.get('friendly_name')
-            if friendly_name is None:
-                # in case of blank or misconfigured HA entities
-                continue
-            numbers = re.search(r'(\d{1,})', friendly_name)
-            if numbers:
-                for number in numbers.groups():
-                    friendly_name = friendly_name.replace(number, f" {num2words(int(number))} ")
-            # Just in case so we don't blow up multinet
-            friendly_name = friendly_name.replace('_',' ')
-            friendly_name = re.sub(pattern, '', friendly_name)
-            friendly_name = ' '.join(friendly_name.split())
-            friendly_name = friendly_name.upper()
-            # ESP_MN_MAX_PHRASE_LEN=63
-            # "TURN OFF " = 9
-            # "400 " = 4
-            # hitting W (79508) AFE_SR: ERROR! rb_out slow!!! with a command of 62 characters
-            # possibly ESP_MN_MAX_PHRASE_LEN includes ID and space - let's play safe
-            if len(friendly_name) > 63 - 9 - 4:
-                print(f"Turn off command for {friendly_name} will be longer than ESP_MN_MAX_PHRASE_LEN, dropping this entity")
-                continue
-            # Add device
-            if friendly_name not in devices:
-                devices.append(friendly_name)
-
-# Make the devices unique
-devices = [*set(devices)]
+response = get(was_url)
+commands_json = response.json()
 
 # Start index
 index = 0
 
 commands = []
-for device in devices:
+for command in commands_json:
     index = index + 1
-    on = (f'{index} TURN ON {device}')
-    index = index + 1
-    off = (f'{index} TURN OFF {device}')
-    commands.append(on)
-    commands.append(off)
+    commands.append(f"{index} {command}")
 
 if index >= max_commands:
     print(f'WARNING: Multinet supports a maximum of {max_commands} commands and you have {index}')
@@ -134,12 +64,8 @@ multinet_header.write('char *cmd_multinet[] = {\n')
 # Different indexes
 multinet_header.write(f'\t\"DUMMY\",\n')
 
-for device in devices:
-    device = string.capwords(device)
-    on = f'Turn on {device}'
-    off = f'Turn off {device}'
-    multinet_header.write(f'\t\"{on}.\",\n')
-    multinet_header.write(f'\t\"{off}.\",\n')
+for command in commands_json:
+    multinet_header.write(f'\t\"{command}.\",\n')
 
 multinet_header.write('};\n\n')
 multinet_header.write(f'int cmd_multinet_max = {index};\n')
