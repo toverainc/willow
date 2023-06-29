@@ -7,7 +7,10 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 on:
+  pull_request:
   push:
+    tag:
+      - '*'
 
 jobs:
   build_container:
@@ -32,6 +35,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=tag
+            type=ref,event=pr
             type=ref,event=branch
 
       - name: build container
