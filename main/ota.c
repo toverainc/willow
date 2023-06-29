@@ -171,10 +171,6 @@ err:
 
 void ota_start(char *url)
 {
-    deinit_audio();
-    deinit_hass();
-    deinit_was();
-
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
     lvgl_port_lock(0);
     lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
@@ -186,5 +182,10 @@ void ota_start(char *url)
     lvgl_port_unlock();
     display_set_backlight(true);
 
+    deinit_audio();
+    deinit_hass();
+    deinit_was();
+
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     xTaskCreate(&ota_task, "ota_task", 8192, url, 5, NULL);
 }
