@@ -50,9 +50,6 @@ jobs:
       - name: debug
         run: echo "${{ fromJSON(steps.metadata.outputs.json).tags[0] }}"
 
-      - name: fail
-        run: exit
-
   build-willow-dist:
     runs-on: ubuntu-22.04
     needs: build_container
