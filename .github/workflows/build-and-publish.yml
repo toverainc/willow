@@ -51,6 +51,11 @@ jobs:
         run: echo "${{ fromJSON(steps.metadata.outputs.json).tags[0] }}"
 
   build-willow-dist:
+    strategy:
+      matrix:
+        device:
+          - ESP32_S3_BOX
+          - ESP32_S3_BOX_LITE
     runs-on: ubuntu-22.04
     needs: build_container
     container:
@@ -64,6 +69,9 @@ jobs:
     defaults:
       run:
         working-directory: /willow
+    env:
+      dist_filename: "willow-dist-${{ matrix.device }}.bin"
+      partitions_filename: "willow-partitions-${{ matrix.device }}"
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -91,6 +99,8 @@ jobs:
       - name: ./utils.sh setup
         run: ( . "$IDF_PATH/export.sh"; ./utils.sh setup )
         shell: bash
+      - name: append device type to sdkconfig
+        run: echo "CONFIG_${{ matrix.device }}_BOARD=y" >> sdkconfig
       - name: ./utils.sh build
         run: ( . "$IDF_PATH/export.sh"; ./utils.sh build )
         shell: bash
@@ -101,31 +111,35 @@ jobs:
       - name: upload willow-dist.bin artifact
         uses: actions/upload-artifact@v3
         with:
-          name: willow-dist.bin
-          path: /willow/build/willow-dist.bin
+          name: "${{ env.dist_filename }}"
+          path: "/willow/build/${{ env.dist_filename }}"
       - name: upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: willow-partitions
+          name: "${{ env.partitions_filename }}"
           path: |
             /willow/build/*.bin
             /willow/build/srmodels/srmodels.bin
             /willow/partitions_willow.csv
             /willow/sdkconfig
-            !/willow/build/willow-dist.bin
+            !/willow/build/${{ env.dist_filename }}
 
   publish-release:
     if: github.ref_type == 'tag'
     runs-on: ubuntu-22.04
     needs: build-willow-dist
     steps:
-      - name: download willow-dist.bin artifact
+      - name: download artifacts
         uses: actions/download-artifact@v3
-        with:
-          name: willow-dist.bin
+
+      - name: pwd
+        run: pwd
+
+      - name: find -ls
+        run: find -ls
 
       - name: create release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: false
-          artifacts: "willow-dist.bin"
+          artifacts: "willow-dist-*/willow-dist-*.bin"
