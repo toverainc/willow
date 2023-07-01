@@ -44,4 +44,4 @@ All with hardware you can order today from Amazon, Adafruit, The Pi Hut, Mouser,
 
 ## Getting Started
 
-Visit official documentation on [https://willow.wiki](https://willow.wiki).
+Visit official documentation on [https://heywillow.io](heywillow.io).
