@@ -1,4 +1,5 @@
 #include "cJSON.h"
+#include <stdbool.h>
 
 bool config_valid;
 cJSON *wc;

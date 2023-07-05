@@ -62,7 +62,7 @@ void app_main(void)
     state = STATE_INIT;
     esp_err_t ret;
 
-    init_logging();
+    esp_log_level_set("*", ESP_LOG_DEBUG);
     ESP_LOGI(TAG, "Starting up! Please wait...");
 
     esp_periph_config_t pcfg = DEFAULT_ESP_PERIPH_SET_CONFIG();
@@ -71,6 +71,7 @@ void app_main(void)
     init_system();
     init_spiffs_user();
     config_parse();
+    init_logging();
     init_display();
     init_lvgl_display();
     init_ui();
