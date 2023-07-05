@@ -22,6 +22,7 @@
 #include "recorder_sr.h"
 #include "sdkconfig.h"
 #include "spiffs_stream.h"
+#include "wav_decoder.h"
 #include "wav_encoder.h"
 
 #include "audio.h"
@@ -41,7 +42,7 @@
 
 #define MULTINET_TWDT   30
 #define STR_WAKE_LEN    25
-#define WIS_URL_TTS_ARG "?speaker=CLB&text="
+#define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
 QueueHandle_t q_rec;
 bool recording = false;
@@ -56,14 +57,14 @@ static int total_write = 0;
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/error.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/error.wav", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
 static void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.flac", 0);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.wav", 0);
     gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
@@ -140,6 +141,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
 
     audio_decoder_t ad[] = {
         DEFAULT_ESP_FLAC_DECODER_CONFIG(),
+        DEFAULT_ESP_WAV_DECODER_CONFIG(),
     };
 
     esp_decoder_cfg_t cfg_dec = {
@@ -154,7 +156,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
     ret = esp_audio_codec_lib_add(hdl_ea, AUDIO_CODEC_TYPE_DECODER,
                                   esp_decoder_init(&cfg_dec, ad, sizeof(ad) / sizeof(audio_decoder_t)));
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to add FLAC decoder to ESP Audio");
+        ESP_LOGE(TAG, "failed to add decoder to ESP Audio");
     }
 
     i2s_stream_cfg_t cfg_is = {
