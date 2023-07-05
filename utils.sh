@@ -361,6 +361,10 @@ torture)
     done
 ;;
 
+log)
+    tio -l "build/willow-console.log" -b "$CONSOLE_BAUD" "$PORT"
+;;
+
 serve)
     do_dist
     cd "$WILLOW_PATH"/build
