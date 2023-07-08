@@ -382,6 +382,10 @@ convert-font)
         -r 0x20-0x20CF -o spiffs/ui/font.bin
 ;;
 
+backtrace|bt)
+    xtensa-esp32s3-elf-addr2line -e /willow/build/willow.elf "$@"
+;;
+
 *)
     echo "Uknown argument - passing directly to idf.py"
     check_container
