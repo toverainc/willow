@@ -383,6 +383,7 @@ convert-font)
 ;;
 
 backtrace|bt)
+    check_container
     xtensa-esp32s3-elf-addr2line -e /willow/build/willow.elf "$@"
 ;;
 
