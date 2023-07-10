@@ -367,7 +367,6 @@ static void hass_send_ws(const char *data)
 
     hir.has_speech = false;
     hir.ok = false;
-    memset(hir.speech, '\0', sizeof(hir.speech));
 
     cJSON *end_stage = cJSON_CreateString("intent");
     cJSON *id = cJSON_CreateNumber(tv_now.tv_sec);
