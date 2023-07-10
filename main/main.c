@@ -123,6 +123,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 xQueueSend(q_rec, &msg, 0);
                 break;
             }
+#ifdef CONFIG_WILLOW_CHIME_ON_WAKE
+            play_chime();
+#endif
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
             lvgl_port_lock(0);
             lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);

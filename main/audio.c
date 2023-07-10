@@ -155,3 +155,12 @@ void init_esp_audio(audio_board_handle_t hdl)
     esp_audio_vol_set(hdl_ea, CONFIG_WILLOW_VOLUME);
     ESP_LOGI(TAG, "audio player initialized");
 }
+
+#ifdef CONFIG_WILLOW_CHIME_ON_WAKE
+void play_chime(void)
+{
+    gpio_set_level(get_pa_enable_gpio(), 1);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/ui/success.flac", 0);
+    gpio_set_level(get_pa_enable_gpio(), 0);
+}
+#endif
