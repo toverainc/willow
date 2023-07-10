@@ -15,7 +15,6 @@
 #include "slvgl.h"
 #include "timer.h"
 
-#define HASS_SPEECH_MAX_LEN           64
 #define HASS_URI_COMPONENTS           "/api/components"
 #define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
 #define HASS_URI_WEBSOCKET            "/api/websocket"
@@ -101,7 +100,8 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                 cJSON *speech2 = cJSON_GetObjectItemCaseSensitive(plain, "speech");
                 if (cJSON_IsString(speech2) && speech2->valuestring != NULL && strlen(speech2->valuestring) > 0) {
                     hir.has_speech = true;
-                    strncpy(hir.speech, speech2->valuestring, HASS_SPEECH_MAX_LEN - 1);
+                    hir.speech = calloc(strlen(speech2->valuestring), sizeof(char));
+                    snprintf(hir.speech, strlen(speech2->valuestring), "%s", speech2->valuestring);
                 }
 
 no_speech:;
