@@ -12,3 +12,4 @@ serve
 target
 venv
 willow-dist.bin
+dependencies.lock
