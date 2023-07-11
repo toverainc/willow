@@ -118,6 +118,15 @@ esp_err_t init_lvgl_display(void)
 esp_err_t init_lvgl_touch(void)
 {
     esp_err_t ret = ESP_OK;
+
+    switch (hw_type) {
+        case WILLOW_HW_ESP32_S3_BOX:
+            break;
+        default:
+            ESP_LOGI(TAG, "%s does not have a touch screen, skipping init", str_hw_type(hw_type));
+            return ret;
+    }
+
     esp_lcd_touch_config_t cfg_lt = {
         .flags = {
             .mirror_x = true,
