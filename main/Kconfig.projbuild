@@ -218,6 +218,12 @@ choice WILLOW_NTP
             Override NTP server with host provided via DHCP
 endchoice
 
+config WILLOW_CHIME_ON_WAKE
+    bool "Play a chime when the wake word is recognised"
+    default n
+    help
+        Plays a chime tone when waking
+
 config WILLOW_NTP_HOST
     depends on WILLOW_NTP_USE_HOST
     string "Willow NTP host"
