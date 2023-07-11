@@ -183,6 +183,13 @@ config WILLOW_ENDPOINT_REST_AUTH_PASSWORD
     depends on WILLOW_ENDPOINT_REST_AUTH_BASIC
     string "Password for HTTP Basic Authentication"
 
+config WILLOW_ENDPOINT_REST_SPEECH_MAX_LEN
+    int "Generic REST endpoint max TTS length"
+    range 64 1024
+    default 64
+    help
+        Max characters in the spoken response from the REST endpoint
+
 config WILLOW_TIMEZONE
     string "Timezone"
     default "UTC+5"

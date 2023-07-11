@@ -1,5 +1,6 @@
 #include "audio_hal.h"
 #include "audio_thread.h"
+#include "cJSON.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
@@ -9,6 +10,9 @@
 #include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
+
+#define REST_SPEECH_MAX_LEN CONFIG_WILLOW_ENDPOINT_REST_SPEECH_MAX_LEN
+static char rest_speech[REST_SPEECH_MAX_LEN];
 
 void rest_send(const char *data)
 {
@@ -42,8 +46,22 @@ void rest_send(const char *data)
         ESP_LOGE(TAG, "failed to read HTTP POST response");
     }
 
-    if (ok) {
+    if (ok) { // if doing audio responses and have "message" in the REST response JSON then copy to war.fn_ok
+#if defined(CONFIG_WILLOW_AUDIO_RESPONSE_FS) || defined(CONFIG_WILLOW_AUDIO_RESPONSE_WIS_TTS)
+        cJSON *cjson = cJSON_Parse(body);
+        if (cJSON_IsObject(cjson)) {
+          cJSON *message = cJSON_GetObjectItemCaseSensitive(cjson, "message");
+          if (cJSON_IsString(message) && message->valuestring != NULL && strlen(message->valuestring) > 0) {
+              strncpy(rest_speech, message->valuestring, REST_SPEECH_MAX_LEN - 1);
+              war.fn_ok(rest_speech);
+          } else {
+              war.fn_ok("ok");
+          }
+        }
+        cJSON_Delete(cjson);
+#else
         war.fn_ok("ok");
+#endif
     } else {
         war.fn_err("error");
     }
