@@ -240,6 +240,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
             if (recording) {
+                recording = false;
                 msg = MSG_STOP;
                 xQueueSend(q_rec, &msg, 0);
                 break;
