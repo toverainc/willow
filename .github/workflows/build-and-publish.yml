@@ -143,3 +143,4 @@ jobs:
         with:
           allowUpdates: false
           artifacts: "willow-dist-*/willow-dist-*.bin"
+          prerelease: ${{ contains(github.ref, 'pre') }}
