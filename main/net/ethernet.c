@@ -3,7 +3,6 @@
 #include "esp_wifi.h"
 #include "lvgl.h"
 #include "sdkconfig.h"
-#include "shared.h"
 #include "slvgl.h"
 
 #include "driver/spi_master.h"
@@ -26,6 +25,8 @@
         eth_module_config[num].phy_reset_gpio = WILLOW_ETHERNET_RST;                                                   \
         eth_module_config[num].phy_addr = WILLOW_ETHERNET_PHY;                                                         \
     } while (0)
+
+static const char *TAG = "WILLOW/ETHERNET";
 
 typedef struct {
     uint8_t spi_cs_gpio;
@@ -81,6 +82,7 @@ esp_err_t init_ethernet(void)
 
     // Start Ethernet
     lvgl_port_lock(0);
+    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
     lv_label_set_text_static(lbl_ln4, "Connecting to Ethernet ...");
     lvgl_port_unlock();
 

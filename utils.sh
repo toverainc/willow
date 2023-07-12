@@ -10,7 +10,7 @@ export CONSOLE_BAUD=2000000 # Subject to change
 
 export DOCKER_IMAGE="willow:latest"
 export DOCKER_NAME="willow-build"
-export DIST_FILE="serve/willow-dist.bin"
+export DIST_FILE="build/${dist_filename:-willow-dist.bin}"
 export SERVE_PORT="10000"
 
 # ESP-SR Componenent ver hash
@@ -35,13 +35,16 @@ if [ -f /.dockerenv ]; then
 fi
 
 # Get Willow version
-export WILLOW_VERSION=$(git rev-parse --short HEAD)
+export WILLOW_VERSION=$(git describe --always --dirty --tags)
 
 # Test for local environment file and use any overrides
 if [ -r .env ]; then
     echo "Using configuration overrides from .env file"
     . .env
 fi
+
+# Always print Willow version
+echo "Willow build version: $WILLOW_VERSION"
 
 check_port() {
     if [ ! $PORT ]; then
@@ -137,22 +140,29 @@ check_deps() {
     fi
 }
 
-do_patch() {
-    cd "$WILLOW_PATH"
-    cat patches/*.patch | patch -p0
+generate_speech_commands() {
+    rm -rf build/srmodels
+    /usr/bin/python3 speech_commands/generate_commands.py
+
+    if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
+        echo "Linking custom speech commands"
+        ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
+            "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
+    fi
 }
 
-generate_speech_commands() {
-    if `grep -q 'CONFIG_WILLOW_USE_MULTINET=y' sdkconfig`; then
-        rm -rf build/srmodels
-        /usr/bin/python3 speech_commands/generate_commands.py
-
-        if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
-            echo "Linking custom speech commands"
-            ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
-                "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
-        fi
-    fi
+generate_nvs() {
+    SSID=$(grep CONFIG_WIFI_SSID sdkconfig | cut -d'=' -f2 | tr -d '"')
+    PASSWORD=$(grep CONFIG_WIFI_PASSWORD sdkconfig | cut -d'=' -f2 | tr -d '"')
+    WAS_URL=$(grep CONFIG_WILLOW_WAS_URL sdkconfig | cut -d'=' -f2 | tr -d '"')
+    echo -n "key,type,encoding,value
+WAS,namespace,,
+URL,data,string,$WAS_URL
+WIFI,namespace,,
+PSK,data,string,$PASSWORD
+SSID,data,string,$SSID" > build/nvs.csv
+    /opt/esp/idf/components/nvs_flash/nvs_partition_generator/nvs_partition_gen.py generate \
+        --version 2 build/nvs.csv build/nvs.bin 0x24000
 }
 
 install() {
@@ -163,7 +173,7 @@ install() {
     mkdir -p deps
     cd deps
     # Setup ADF
-    git clone -b "$ADF_VER" https://github.com/espressif/esp-adf.git
+    git clone -b "$ADF_VER" https://github.com/toverainc/esp-adf.git
     cd $ADF_PATH
     git submodule update --init components/esp-adf-libs
 
@@ -176,15 +186,14 @@ install() {
     cd $WILLOW_PATH
     cp sdkconfig.willow sdkconfig
     idf.py reconfigure
-    do_patch
 }
 
 destroy() {
-    sudo rm -rf build/* deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
+    sudo rm -rf build/* serve deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
 }
 
 # Just in case
-mkdir -p flags serve
+mkdir -p flags
 
 check_flag() {
     FLAG="$1"
@@ -237,7 +246,7 @@ fullclean)
 build)
     check_container
     check_deps
-    generate_speech_commands
+    [ "$CI" ] || generate_speech_commands
     WILLOW_SDKCONFIG_SANITY_CHECKS=1 idf.py build
 ;;
 
@@ -280,6 +289,8 @@ dist)
     check_esptool
     check_build_host
     do_dist
+    generate_nvs
+    dd conv=notrunc bs=1 if=build/nvs.bin of="$DIST_FILE" seek=$((0x9000))
 ;;
 
 flash-dist|dist-flash)
@@ -289,6 +300,7 @@ flash-dist|dist-flash)
     fi
     check_port
     check_esptool
+    check_build_host
     check_flag "erase-flash"
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
         --flash_mode dio --flash_freq 80m --flash_size 16MB 0x0 "$WILLOW_PATH/$DIST_FILE"
@@ -349,9 +361,13 @@ torture)
     done
 ;;
 
+log)
+    tio -l "build/willow-console.log" -b "$CONSOLE_BAUD" "$PORT"
+;;
+
 serve)
     do_dist
-    cd "$WILLOW_PATH"/serve
+    cd "$WILLOW_PATH"/build
     echo "Serving your Willow dist firmare image - go to http://[YOUR HOST IP]:$SERVE_PORT"
     python3 -m http.server "$SERVE_PORT"
 ;;

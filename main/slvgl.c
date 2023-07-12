@@ -8,8 +8,12 @@
 #include "lvgl.h"
 #include "periph_lcd.h"
 
-#include "shared.h"
+#include "audio.h"
+#include "display.h"
+#include "system.h"
 #include "timer.h"
+
+static const char *TAG = "WILLOW/LVGL";
 
 // this is absolutely horrendous but lvgl_port_esp32 requires esp_lcd_panel_io_handle_t and esp-adf does not expose this
 typedef struct periph_lcd {
@@ -32,7 +36,7 @@ typedef struct periph_lcd {
 
 esp_lcd_panel_handle_t hdl_lcd = NULL;
 lv_disp_t *ld;
-lv_obj_t *btn_cancel, *lbl_btn_cancel, *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4;
+lv_obj_t *btn_cancel, *lbl_btn_cancel, *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4, *lbl_ln5;
 
 static periph_lcd_t *lcdp;
 
@@ -53,7 +57,7 @@ void cb_scr(lv_event_t *ev)
 
         case LV_EVENT_PRESSED:
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
-            ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, CONFIG_WILLOW_LCD_BRIGHTNESS, 0);
+            display_set_backlight(true);
             break;
 
         default:
@@ -114,6 +118,16 @@ esp_err_t init_lvgl_display(void)
 esp_err_t init_lvgl_touch(void)
 {
     esp_err_t ret = ESP_OK;
+
+    switch (hw_type) {
+        case WILLOW_HW_ESP32_S3_BOX:
+            init_lvgl_touch();
+            break;
+        default:
+            ESP_LOGI(TAG, "%s does not have a touch screen, skipping init", str_hw_type(hw_type));
+            return ret;
+    }
+
     esp_lcd_touch_config_t cfg_lt = {
         .flags = {
             .mirror_x = true,

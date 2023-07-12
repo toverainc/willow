@@ -10,21 +10,16 @@
 #include "sdkconfig.h"
 
 #include "../http.h"
-#include "shared.h"
+#include "audio.h"
+#include "config.h"
 #include "slvgl.h"
 #include "timer.h"
 
 #define HASS_URI_COMPONENTS           "/api/components"
 #define HASS_URI_CONVERSATION_PROCESS "/api/conversation/process"
 #define HASS_URI_WEBSOCKET            "/api/websocket"
-#define STRLEN(s)                     strlen(s)
+#define STR_SCHEME_LEN                6
 #define URL_CLEN                      (8 + 1 + 5 + 1) // https:// + : + $PORT + NULL terminator
-
-#ifdef CONFIG_HOMEASSISTANT_TLS
-#define HOMEASSISTANT_TLS true
-#else
-#define HOMEASSISTANT_TLS false
-#endif
 
 struct hass_intent_response {
     bool has_speech;
@@ -35,12 +30,18 @@ struct hass_intent_response {
 static struct hass_intent_response hir;
 
 static bool has_assist_pipeline = false;
+static const char *TAG = "WILLOW/HASS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
+
+static void init_hass_ws_client(void);
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
 {
     esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)ev_data;
     switch (id_ev) {
+        case WEBSOCKET_EVENT_CONNECTED:
+            ESP_LOGI(TAG, "WebSocket connected");
+            break;
         case WEBSOCKET_EVENT_DATA:
             if (data->op_code == WS_TRANSPORT_OPCODES_TEXT) {
                 char *json = NULL;
@@ -120,18 +121,17 @@ end:
                 ESP_LOGI(TAG, "received run-end event on WebSocket: %s", json);
 
                 lvgl_port_lock(0);
-                lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
-                lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
+                lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
                 if (hir.has_speech) {
-                    lv_label_set_text_static(lbl_ln3, "Response:");
-                    lv_label_set_text(lbl_ln4, hir.speech);
+                    lv_label_set_text_static(lbl_ln4, "Response:");
+                    lv_label_set_text(lbl_ln5, hir.speech);
                     hir.ok ? war.fn_ok(hir.speech) : war.fn_err(hir.speech);
                     free(hir.speech);
                 } else {
-                    lv_label_set_text_static(lbl_ln3, "Command status:");
-                    lv_label_set_text(lbl_ln4, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
+                    lv_label_set_text_static(lbl_ln4, "Command status:");
+                    lv_label_set_text(lbl_ln5, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
                     hir.ok ? war.fn_ok("success") : war.fn_err("error");
                 }
                 lvgl_port_unlock();
@@ -143,6 +143,13 @@ cleanup:
                 free(resp);
             }
             break;
+        case WEBSOCKET_EVENT_DISCONNECTED:
+            ESP_LOGI(TAG, "WebSocket disconnected");
+            break;
+        case WEBSOCKET_EVENT_CLOSED:
+            ESP_LOGI(TAG, "WebSocket closed");
+            init_hass_ws_client();
+            break;
         default:
             ESP_LOGI(TAG, "WS event ID: %d", id_ev);
             break;
@@ -151,19 +158,21 @@ cleanup:
 
 static void hass_get_url(char **url, const char *path, const bool ws)
 {
+    char scheme[STR_SCHEME_LEN];
     int len_url = 0;
-#if HOMEASSISTANT_TLS
-    char *scheme = ws ? "wss" : "https";
-#else
-    char *scheme = ws ? "ws" : "http";
-#endif
 
-    len_url = URL_CLEN + STRLEN(CONFIG_HOMEASSISTANT_HOST) + strlen(path);
+    if (config_get_bool("hass_tls")) {
+        strncpy(scheme, ws ? "wss" : "https", STR_SCHEME_LEN);
+    } else {
+        strncpy(scheme, ws ? "ws" : "http", STR_SCHEME_LEN);
+    }
+
+    len_url = URL_CLEN + strlen(config_get_char("hass_host")) + strlen(path);
     if (path != NULL) {
         len_url += strlen(path);
     }
     *url = calloc(sizeof(char), len_url);
-    snprintf(*url, len_url, "%s://%s:%d%s", scheme, CONFIG_HOMEASSISTANT_HOST, CONFIG_HOMEASSISTANT_PORT,
+    snprintf(*url, len_url, "%s://%s:%d%s", scheme, config_get_char("hass_host"), config_get_int("hass_port"),
              path ? path : "");
 
     ESP_LOGI(TAG, "HASS URL: %s", *url);
@@ -182,6 +191,7 @@ static void init_hass_ws_client(void)
         .buffer_size = 4096,
         .path = HASS_URI_WEBSOCKET,
         .uri = url,
+        .user_agent = WILLOW_USER_AGENT,
     };
 
     hdl_wc = esp_websocket_client_init(&cfg_wc);
@@ -195,9 +205,9 @@ static void init_hass_ws_client(void)
         return;
     }
 
-    len_auth = strlen(CONFIG_HOMEASSISTANT_TOKEN) + 34;
+    len_auth = strlen(config_get_char("hass_token")) + 34;
     auth = calloc(sizeof(char), len_auth);
-    snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", CONFIG_HOMEASSISTANT_TOKEN);
+    snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", config_get_char("hass_token"));
 
     // we must not send the terminating null byte
     ret = esp_websocket_client_send_text(hdl_wc, auth, len_auth - 1, 2000 / portTICK_PERIOD_MS);
@@ -209,8 +219,8 @@ static void init_hass_ws_client(void)
 
 static esp_err_t hass_set_http_auth(const esp_http_client_handle_t hdl_hc)
 {
-    char *hdr_auth = calloc(sizeof(char), 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN));
-    snprintf(hdr_auth, 8 + strlen(CONFIG_HOMEASSISTANT_TOKEN), "Bearer %s", CONFIG_HOMEASSISTANT_TOKEN);
+    char *hdr_auth = calloc(sizeof(char), 8 + strlen(config_get_char("hass_token")));
+    snprintf(hdr_auth, 8 + strlen(config_get_char("hass_token")), "Bearer %s", config_get_char("hass_token"));
     esp_err_t ret = esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to set authorization header: %s", esp_err_to_name(ret));
@@ -303,16 +313,15 @@ static void hass_post(const char *data)
 
 http_error:
     lvgl_port_lock(0);
-    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
     lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 120);
-    lv_obj_remove_event_cb(lbl_ln3, cb_btn_cancel);
+    lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
     if (http_status == 200) {
-        lv_label_set_text_static(lbl_ln3, "Command status:");
-        lv_label_set_text(lbl_ln4, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
+        lv_label_set_text_static(lbl_ln4, "Command status:");
+        lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
     } else {
-        lv_label_set_text_static(lbl_ln3, "Error contacting HASS:");
-        lv_label_set_text_fmt(lbl_ln4, "#ff0000 HTTP %d", http_status);
+        lv_label_set_text_static(lbl_ln4, "Error contacting HASS:");
+        lv_label_set_text_fmt(lbl_ln5, "#ff0000 HTTP %d", http_status);
     }
 
     lvgl_port_unlock();
@@ -397,4 +406,22 @@ void init_hass(void)
     if (has_assist_pipeline) {
         init_hass_ws_client();
     }
+}
+
+void hass_deinit_task(void *data)
+{
+    ESP_LOGI(TAG, "stopping WebSocket client");
+    esp_err_t ret = esp_websocket_client_destroy(hdl_wc);
+
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to stop WebSocket client: %s", esp_err_to_name(ret));
+    }
+    vTaskDelete(NULL);
+}
+
+void deinit_hass(void)
+{
+    // needs to be done in a task to avoid this error:
+    // WEBSOCKET_CLIENT: Client cannot be stopped from websocket task
+    xTaskCreate(&hass_deinit_task, "hass_deinit_task", 4096, NULL, 5, NULL);
 }
