@@ -219,6 +219,7 @@ static void send_hello(void)
 {
     char *json;
     const char *hostname;
+    uint8_t mac[6];
     esp_err_t ret;
 
     if (!esp_websocket_client_is_connected(hdl_wc)) {
@@ -232,12 +233,27 @@ static void send_hello(void)
         return;
     }
 
+    ret = esp_efuse_mac_get_default(mac);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to get MAC address from EFUSE");
+        return;
+    }
+
     cJSON *cjson = cJSON_CreateObject();
     cJSON *hello = cJSON_CreateObject();
+    cJSON *mac_arr = cJSON_CreateArray();
+
+    for (int i = 0; i < 6; i++) {
+        cJSON_AddItemToArray(mac_arr, cJSON_CreateNumber(mac[i]));
+    }
+
     if (cJSON_AddStringToObject(hello, "hostname", hostname) == NULL) {
         goto cleanup;
     }
     if (cJSON_AddStringToObject(hello, "hw_type", str_hw_type(hw_type)) == NULL) {
+        goto cleanup;
+    }
+    if (!cJSON_AddItemToObject(hello, "mac_addr", mac_arr)) {
         goto cleanup;
     }
     if (!cJSON_AddItemToObject(cjson, "hello", hello)) {
