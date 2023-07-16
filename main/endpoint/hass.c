@@ -12,6 +12,7 @@
 #include "../http.h"
 #include "audio.h"
 #include "config.h"
+#include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 
@@ -125,21 +126,29 @@ end:
                 json = cJSON_Print(cjson);
                 ESP_LOGI(TAG, "received run-end event on WebSocket: %s", json);
 
-                lvgl_port_lock(0);
-                lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
                 if (hir.has_speech) {
-                    lv_label_set_text_static(lbl_ln4, "Response:");
-                    lv_label_set_text(lbl_ln5, hir.speech);
                     hir.ok ? war.fn_ok(hir.speech) : war.fn_err(hir.speech);
-                    free(hir.speech);
                 } else {
-                    lv_label_set_text_static(lbl_ln4, "Command status:");
-                    lv_label_set_text(lbl_ln5, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
                     hir.ok ? war.fn_ok("success") : war.fn_err("error");
                 }
-                lvgl_port_unlock();
+
+                if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
+                    if (hir.has_speech) {
+                        lv_label_set_text_static(lbl_ln4, "Response:");
+                        lv_label_set_text(lbl_ln5, hir.speech);
+                    } else {
+                        lv_label_set_text_static(lbl_ln4, "Command status:");
+                        lv_label_set_text(lbl_ln5, hir.ok ? "#008000 Success!" : "#ff0000 Error!");
+                    }
+                    lvgl_port_unlock();
+                }
+
+                if (hir.has_speech) {
+                    free(hir.speech);
+                }
 
                 reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 
@@ -325,19 +334,20 @@ static void hass_post(const char *data)
     }
 
 http_error:
-    lvgl_port_lock(0);
-    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
-    if (http_status == 200) {
-        lv_label_set_text_static(lbl_ln4, "Command status:");
-        lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
-    } else {
-        lv_label_set_text_static(lbl_ln4, "Error contacting HASS:");
-        lv_label_set_text_fmt(lbl_ln5, "#ff0000 HTTP %d", http_status);
-    }
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
+        if (http_status == 200) {
+            lv_label_set_text_static(lbl_ln4, "Command status:");
+            lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 No Matching HA Intent");
+        } else {
+            lv_label_set_text_static(lbl_ln4, "Error contacting HASS:");
+            lv_label_set_text_fmt(lbl_ln5, "#ff0000 HTTP %d", http_status);
+        }
 
-    lvgl_port_unlock();
+        lvgl_port_unlock();
+    }
 
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
     free(body);

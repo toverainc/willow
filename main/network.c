@@ -8,6 +8,7 @@
 
 #include "config.h"
 #include "network.h"
+#include "shared.h"
 #include "slvgl.h"
 #include "system.h"
 
@@ -90,10 +91,11 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
     esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
 
     // Start wifi
-    lvgl_port_lock(0);
-    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text_static(lbl_ln4, "Connecting to Wi-Fi ...");
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_static(lbl_ln4, "Connecting to Wi-Fi ...");
+        lvgl_port_unlock();
+    }
 
     esp_periph_start(hdl_pset, hdl_pwifi);
     set_hostname(ESP_MAC_WIFI_STA);

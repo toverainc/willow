@@ -8,6 +8,7 @@
 #include "../http.h"
 #include "audio.h"
 #include "config.h"
+#include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 
@@ -66,18 +67,22 @@ end:
         war.fn_err("error");
     }
 
-    lvgl_port_lock(0);
-    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text_static(lbl_ln4, "Command status:");
-    lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
     if (strlen(body) > 1) {
         ESP_LOGI(TAG, "REST response: %s", body);
-        lv_label_set_text(lbl_ln5, body);
-    } else {
-        lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 Error");
     }
-    lvgl_port_unlock();
+
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_static(lbl_ln4, "Command status:");
+        lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
+        if (strlen(body) > 1) {
+            lv_label_set_text(lbl_ln5, body);
+        } else {
+            lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 Error");
+        }
+        lvgl_port_unlock();
+    }
 
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 

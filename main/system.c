@@ -6,6 +6,7 @@
 #include "lvgl.h"
 #include "sdkconfig.h"
 
+#include "shared.h"
 #include "slvgl.h"
 #include "system.h"
 
@@ -52,11 +53,12 @@ void restart_delayed(void)
 
     ESP_LOGI(TAG, "restarting after %d seconds", delay);
 
-    lvgl_port_lock(0);
-    lv_label_set_text_fmt(lbl_ln4, "Restarting in %ds", delay);
-    lv_obj_align(lbl_ln4, LV_ALIGN_TOP_MID, 0, 120);
-    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_label_set_text_fmt(lbl_ln4, "Restarting in %ds", delay);
+        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_MID, 0, 120);
+        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lvgl_port_unlock();
+    }
 
     delay *= 1000;
     vTaskDelay(delay / portTICK_PERIOD_MS);
