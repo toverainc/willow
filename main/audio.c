@@ -28,6 +28,7 @@
 #include "audio.h"
 #include "config.h"
 #include "display.h"
+#include "shared.h"
 #include "slvgl.h"
 #include "timer.h"
 #include "ui.h"
@@ -246,11 +247,13 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
             war.fn_err("unrecognized command");
-            lvgl_port_lock(0);
-            lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+            if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
 
-            lv_label_set_text(lbl_ln4, "#ff0000 Unrecognized Command");
-            lvgl_port_unlock();
+                lv_label_set_text(lbl_ln4, "#ff0000 Unrecognized Command");
+                lvgl_port_unlock();
+            }
+
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
             break;
         case AUDIO_REC_WAKEUP_END:
@@ -266,29 +269,33 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 break;
             }
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
-            lvgl_port_lock(0);
-            lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
-            if (strcmp(speech_rec_mode, "Multinet") == 0) {
-                lv_label_set_text_static(lbl_ln3, "Say local command...");
-            } else if (strcmp(speech_rec_mode, "WIS") == 0) {
-                lv_label_set_text_static(lbl_ln3, "Say command...");
+
+            if (strcmp(speech_rec_mode, "WIS") == 0) {
                 reset_timer(hdl_sess_timer, config_get_int("stream_timeout", DEFAULT_STREAM_TIMEOUT) * 1000 * 1000,
                             false);
-            } else {
-                free(speech_rec_mode);
-                return ESP_ERR_INVALID_ARG;
+            }
+            if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+
+                if (strcmp(speech_rec_mode, "Multinet") == 0) {
+                    lv_label_set_text_static(lbl_ln3, "Say local command...");
+                } else if (strcmp(speech_rec_mode, "WIS") == 0) {
+                    lv_label_set_text_static(lbl_ln3, "Say command...");
+                } else {
+                    return ESP_ERR_INVALID_ARG;
+                }
+
+                lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
+                lvgl_port_unlock();
             }
             free(speech_rec_mode);
-
-            lv_obj_add_event_cb(btn_cancel, cb_btn_cancel, LV_EVENT_PRESSED, NULL);
-            lvgl_port_unlock();
             display_set_backlight(true);
             break;
         default:
@@ -313,14 +320,15 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 free(json);
 
                 ESP_LOGI(TAG, "Got local command ID: '%d'", command_id);
-                lvgl_port_lock(0);
-                lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                    lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
 
-                lv_label_set_text_static(lbl_ln1, "I heard command:");
-                lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
-                lvgl_port_unlock();
+                    lv_label_set_text_static(lbl_ln1, "I heard command:");
+                    lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
+                    lvgl_port_unlock();
+                }
                 reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 #else
                 ESP_LOGE(TAG, "multinet not supported but enabled in config");
@@ -408,10 +416,11 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             if (http_status != 200) {
                 if (http_status == 406) {
                     ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
-                    lvgl_port_lock(0);
-                    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-                    lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
-                    lvgl_port_unlock();
+                    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                        lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
+                        lvgl_port_unlock();
+                    }
                     war.fn_err("Unauthorized Speaker");
                 }
                 ESP_LOGE(TAG, "WIS returned HTTP error: %d", http_status);
@@ -441,22 +450,23 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
             cJSON *speaker_status = cJSON_GetObjectItemCaseSensitive(cjson, "speaker_status");
 
-            lvgl_port_lock(0);
-            lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-            if (cJSON_IsString(speaker_status) && speaker_status->valuestring != NULL) {
-                lv_label_set_text(lbl_ln1, speaker_status->valuestring);
-            } else {
-                lv_label_set_text(lbl_ln1, "I heard:");
+            if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                if (cJSON_IsString(speaker_status) && speaker_status->valuestring != NULL) {
+                    lv_label_set_text(lbl_ln1, speaker_status->valuestring);
+                } else {
+                    lv_label_set_text(lbl_ln1, "I heard:");
+                }
+                if (cJSON_IsString(text) && text->valuestring != NULL) {
+                    lv_label_set_text(lbl_ln2, text->valuestring);
+                } else {
+                    lv_label_set_text(lbl_ln2, buf);
+                }
+                lvgl_port_unlock();
             }
-            if (cJSON_IsString(text) && text->valuestring != NULL) {
-                lv_label_set_text(lbl_ln2, text->valuestring);
-            } else {
-                lv_label_set_text(lbl_ln2, buf);
-            }
-            lvgl_port_unlock();
 
             cJSON_Delete(cjson);
 
@@ -819,15 +829,16 @@ void init_audio(void)
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
     } else {
-        lvgl_port_lock(0);
-        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
-        lv_obj_set_width(lbl_ln5, 320);
-        lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
-        lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_SCROLL);
-        lv_label_set_text(lbl_ln3, wake_help);
+        if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
+            lv_obj_set_width(lbl_ln5, 320);
+            lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
+            lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_SCROLL);
+            lv_label_set_text(lbl_ln3, wake_help);
 
-        lvgl_port_unlock();
+            lvgl_port_unlock();
+        }
     }
 }
 

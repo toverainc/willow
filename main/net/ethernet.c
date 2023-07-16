@@ -8,6 +8,8 @@
 #include "driver/spi_master.h"
 #include "esp_eth.h"
 
+#include "shared.h"
+
 #define WILLOW_ETHERNET_CS        10
 #define WILLOW_ETHERNET_INT       14
 #define WILLOW_ETHERNET_RST       9
@@ -81,10 +83,11 @@ esp_err_t init_ethernet(void)
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
     // Start Ethernet
-    lvgl_port_lock(0);
-    lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text_static(lbl_ln4, "Connecting to Ethernet ...");
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_static(lbl_ln4, "Connecting to Ethernet ...");
+        lvgl_port_unlock();
+    }
 
     // Create instance(s) of esp-netif for SPI Ethernet(s)
     esp_netif_inherent_config_t esp_netif_config = ESP_NETIF_INHERENT_DEFAULT_ETH();

@@ -12,6 +12,7 @@
 #include "config.h"
 #include "display.h"
 #include "endpoint/hass.h"
+#include "shared.h"
 #include "slvgl.h"
 #include "system.h"
 #include "timer.h"
@@ -131,15 +132,16 @@ close:
     fclose(f);
 
     ESP_LOGI(TAG, "%s updated, restarting", CONFIG_PATH);
-    lvgl_port_lock(0);
-    lv_label_set_text_static(lbl_ln3, "Config updated.");
-    lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
-    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_label_set_text_static(lbl_ln3, "Config updated.");
+        lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
+        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+        lvgl_port_unlock();
+    }
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
     display_set_backlight(true);
     restart_delayed();
