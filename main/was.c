@@ -129,6 +129,12 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                             ESP_LOGI(TAG, "OTA URL: %s", ota_url);
                             ota_start(ota_url);
                         }
+                        goto cleanup;
+                    }
+
+                    if (strcmp(json_cmd->valuestring, "restart") == 0) {
+                        ESP_LOGI(TAG, "restart command received. restart");
+                        restart_delayed();
                     }
                 }
 
