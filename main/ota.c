@@ -11,6 +11,7 @@
 #include "display.h"
 #include "endpoint/hass.h"
 #include "http.h"
+#include "shared.h"
 #include "slvgl.h"
 #include "system.h"
 #include "timer.h"
@@ -153,18 +154,20 @@ void ota_task(void *data)
     }
 
     ESP_LOGI(TAG, "OTA completed, restarting");
-    lvgl_port_lock(0);
-    lv_label_set_text_static(lbl_ln3, "OTA update done");
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_label_set_text_static(lbl_ln3, "OTA update done");
+        lvgl_port_unlock();
+    }
     restart_delayed();
 err:
     esp_ota_abort(hdl_ota);
     esp_http_client_close(hdl_hc);
     esp_http_client_cleanup(hdl_hc);
     ESP_LOGI(TAG, "OTA failed, restarting");
-    lvgl_port_lock(0);
-    lv_label_set_text_static(lbl_ln3, "OTA update failed");
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_label_set_text_static(lbl_ln3, "OTA update failed");
+        lvgl_port_unlock();
+    }
     restart_delayed();
     vTaskDelete(NULL);
 }
@@ -172,14 +175,15 @@ err:
 void ota_start(char *url)
 {
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
-    lvgl_port_lock(0);
-    lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text_static(lbl_ln3, "Starting OTA update");
-    lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-    lvgl_port_unlock();
+    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_static(lbl_ln3, "Starting OTA update");
+        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+        lvgl_port_unlock();
+    }
     display_set_backlight(true);
 
     deinit_audio();
