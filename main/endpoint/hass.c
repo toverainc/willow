@@ -197,7 +197,7 @@ static void init_hass_ws_client(void)
     hass_get_url(&url, HASS_URI_WEBSOCKET, true);
 
     const esp_websocket_client_config_t cfg_wc = {
-        .buffer_size = 4096,
+        .buffer_size = 16384,
         .path = HASS_URI_WEBSOCKET,
         .uri = url,
         .user_agent = WILLOW_USER_AGENT,
