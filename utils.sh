@@ -14,7 +14,7 @@ export DIST_FILE="build/${dist_filename:-willow-dist.bin}"
 export SERVE_PORT="10000"
 
 # ESP-SR Componenent ver hash
-ESP_SR_VER="138a685"
+ESP_SR_VER="3690f88"
 
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
