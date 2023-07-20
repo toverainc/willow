@@ -79,15 +79,13 @@ static void cb_ea(esp_audio_state_t *state, void *data)
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/error.wav", 0);
-    gpio_set_level(get_pa_enable_gpio(), 0);
+    esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, "spiffs://spiffs/user/audio/error.wav", 0);
 }
 
 static void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
-    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.wav", 0);
-    gpio_set_level(get_pa_enable_gpio(), 0);
+    esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, "spiffs://spiffs/user/audio/success.wav", 0);
 }
 
 static void play_audio_wis_tts(void *data)
@@ -103,9 +101,7 @@ static void play_audio_wis_tts(void *data)
     free(wis_tts_url);
     gpio_set_level(get_pa_enable_gpio(), 1);
     ESP_LOGI(TAG, "Using WIS TTS URL '%s'", url);
-    esp_audio_sync_play(hdl_ea, url, 0);
-    ESP_LOGI(TAG, "WIS TTS playback finished");
-    gpio_set_level(get_pa_enable_gpio(), 0);
+    esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, url, 0);
     free(url);
 }
 
