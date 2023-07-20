@@ -68,6 +68,14 @@ static bool stream_to_api = false;
 static const char *TAG = "WILLOW/AUDIO";
 static int total_write = 0;
 
+static void cb_ea(esp_audio_state_t *state, void *data)
+{
+    ESP_LOGD(TAG, "ESP Audio Event received: %d", state->status);
+    if (state->status > AUDIO_STATUS_RUNNING) {
+        gpio_set_level(get_pa_enable_gpio(), 0);
+    }
+}
+
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
@@ -127,7 +135,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
     q_ea = xQueueCreate(3, sizeof(esp_audio_state_t));
     esp_audio_cfg_t cfg_ea = {
         .cb_ctx = NULL,
-        .cb_func = NULL,
+        .cb_func = cb_ea,
         .component_select = ESP_AUDIO_COMPONENT_SELECT_DEFAULT,
         .evt_que = q_ea,
         .in_stream_buf_size = 10 * 1024,
