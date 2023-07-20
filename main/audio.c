@@ -589,8 +589,8 @@ static void start_rec(void)
     free(wake_mode);
 
     afe_config_t cfg_afe = {
-        .aec_init = true,
-        .se_init = true,
+        .aec_init = config_get_bool("aec", true),
+        .se_init = config_get_bool("bss", true),
         .vad_init = true,
         .wakenet_init = true,
         .voice_communication_init = false,
