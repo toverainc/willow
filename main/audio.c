@@ -58,7 +58,7 @@
 #define STR_WAKE_LEN    25
 #define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
-QueueHandle_t q_rec;
+QueueHandle_t q_ea, q_rec;
 bool recording = false;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap, hdl_ap_to_api;
@@ -124,11 +124,12 @@ static void init_audio_response(void)
 static void init_esp_audio(audio_board_handle_t hdl)
 {
     audio_err_t ret = ESP_OK;
+    q_ea = xQueueCreate(3, sizeof(esp_audio_state_t));
     esp_audio_cfg_t cfg_ea = {
         .cb_ctx = NULL,
         .cb_func = NULL,
         .component_select = ESP_AUDIO_COMPONENT_SELECT_DEFAULT,
-        .evt_que = NULL,
+        .evt_que = q_ea,
         .in_stream_buf_size = 10 * 1024,
         .out_stream_buf_size = 4 * 1024,
         .prefer_type = ESP_AUDIO_PREFER_MEM,
