@@ -789,7 +789,6 @@ void init_audio(void)
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
-    audio_hal_set_volume(hdl_audio_board->audio_hal, config_get_int("speaker_volume", DEFAULT_SPEAKER_VOLUME));
     init_audio_response();
     init_session_timer();
     if (strcmp(speech_rec_mode, "WIS") == 0) {
@@ -798,6 +797,7 @@ void init_audio(void)
     free(speech_rec_mode);
     init_esp_audio(hdl_audio_board);
     start_rec();
+    audio_hal_set_volume(hdl_audio_board->audio_hal, config_get_int("speaker_volume", DEFAULT_SPEAKER_VOLUME));
     es7210_adc_set_gain(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
