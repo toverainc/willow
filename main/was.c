@@ -41,6 +41,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     char *config = cJSON_Print(json_config);
                     ESP_LOGI(TAG, "found config in WebSocket message: %s", config);
                     config_write(config);
+                    cJSON_free(config);
                     goto cleanup;
                 }
 
@@ -51,6 +52,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     nvs_handle_t hdl_nvs;
 
                     ESP_LOGI(TAG, "found nvs in WebSocket message: %s", nvs);
+                    cJSON_free(nvs);
 
                     cJSON *json_was = cJSON_GetObjectItemCaseSensitive(json_nvs, "WAS");
                     if (cJSON_IsObject(json_was)) {
@@ -215,6 +217,7 @@ void request_config(void)
     json = cJSON_Print(cjson);
 
     ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
     if (ret < 0) {
         ESP_LOGE(TAG, "failed to send WAS get_config message");
     }
@@ -271,6 +274,7 @@ static void send_hello(void)
     json = cJSON_Print(cjson);
 
     ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
     if (ret < 0) {
         ESP_LOGE(TAG, "failed to send WAS hello message");
     }

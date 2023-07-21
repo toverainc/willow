@@ -125,6 +125,7 @@ no_speech:;
 end:
                 json = cJSON_Print(cjson);
                 ESP_LOGI(TAG, "received run-end event on WebSocket: %s", json);
+                cJSON_free(json);
 
                 if (hir.has_speech) {
                     hir.ok ? war.fn_ok(hir.speech) : war.fn_err(hir.speech);
@@ -331,6 +332,7 @@ static void hass_post(const char *data)
     cJSON_Delete(cjson);
     if (json != NULL) {
         ESP_LOGI(TAG, "HTTP POST response body:\n%s", json);
+        cJSON_free(json);
     }
 
 http_error:
@@ -408,6 +410,7 @@ static void hass_send_ws(const char *data)
     ESP_LOGI(TAG, "sending command to Home Assistant via WebSocket: %s", string);
 
     ret = esp_websocket_client_send_text(hdl_wc, string, strlen(string), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(string);
     if (ret < 0) {
         ESP_LOGE(TAG, "failed to send command via WebSocket client");
     }
