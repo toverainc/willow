@@ -110,6 +110,7 @@ void config_parse(void)
     json = cJSON_Print(wc);
     ESP_LOGI(TAG, "parsed config file:");
     printf("%s\n", json);
+    cJSON_free(json);
 
 cleanup:
     free(config);
