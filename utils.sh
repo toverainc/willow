@@ -110,8 +110,7 @@ do_term() {
 check_build_host() {
     if [ "$BUILD_HOST_PATH" ]; then
         echo "Copying build from defined remote build host and path $BUILD_HOST_PATH"
-        rm -rf build
-        rsync -az --exclude esp-idf "$BUILD_HOST_PATH/build" .
+        rsync -r --delete --exclude esp-idf "$BUILD_HOST_PATH/build" .
     fi
 }
 
@@ -356,13 +355,41 @@ torture)
 
     for i in `seq 1 $TORTURE_LOOPS`; do
         echo -n "Running loop $i at" `date +"%H:%M:%S"`
-        ffplay -nodisp -hide_banner -loglevel error -autoexit -i "$TORTURE_PLAY"
-        sleep $TORTURE_DELAY
+        if `grep -q Raspberry /proc/cpuinfo`; then
+            aplay -q "$TORTURE_PLAY"
+        else
+            ffplay -nodisp -hide_banner -loglevel error -autoexit -i "$TORTURE_PLAY"
+        fi
+    echo
+    sleep $TORTURE_DELAY
     done
 ;;
 
 log)
-    tio -l "build/willow-console.log" -b "$CONSOLE_BAUD" "$PORT"
+    if [ ! $2 ]; then
+        echo "Need port"
+        exit 1
+    else
+        LOG_PORT="$2"
+        LOG_DEVICE="/dev/tty$LOG_PORT"
+    fi
+
+    FILE="tt-$LOG_PORT.log"
+
+    DIR="build"
+    echo "Logging device $LOG_DEVICE torture to $DIR/$FILE"
+    tio -l "$DIR"/"$FILE" -b "$CONSOLE_BAUD" "$LOG_DEVICE"
+;;
+
+reset)
+    check_esptool
+    if [ ! $2 ]; then
+        echo "Need port"
+        exit 1
+    else
+        PORT=/dev/tty"$2"
+    fi
+    esptool.py --chip esp32s3 --port "$PORT" --after hard_reset --no-stub run
 ;;
 
 serve)
