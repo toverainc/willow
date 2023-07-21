@@ -252,7 +252,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             // Multinet timeout
             ESP_LOGI(TAG, "AUDIO_REC_COMMAND_DECT");
             war.fn_err("unrecognized command");
-            if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+            if (lvgl_port_lock(lvgl_lock_timeout)) {
                 lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
 
                 lv_label_set_text(lbl_ln4, "#ff0000 Unrecognized Command");
@@ -281,7 +281,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 reset_timer(hdl_sess_timer, config_get_int("stream_timeout", DEFAULT_STREAM_TIMEOUT) * 1000 * 1000,
                             false);
             }
-            if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+            if (lvgl_port_lock(lvgl_lock_timeout)) {
                 lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
@@ -325,7 +325,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 free(json);
 
                 ESP_LOGI(TAG, "Got local command ID: '%d'", command_id);
-                if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                if (lvgl_port_lock(lvgl_lock_timeout)) {
                     lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                     lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                     lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
@@ -421,7 +421,7 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             if (http_status != 200) {
                 if (http_status == 406) {
                     ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
-                    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                    if (lvgl_port_lock(lvgl_lock_timeout)) {
                         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                         lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
                         lvgl_port_unlock();
@@ -455,7 +455,7 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
             cJSON *speaker_status = cJSON_GetObjectItemCaseSensitive(cjson, "speaker_status");
 
-            if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+            if (lvgl_port_lock(lvgl_lock_timeout)) {
                 lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
@@ -834,7 +834,7 @@ void init_audio(void)
     if (ld == NULL) {
         ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
     } else {
-        if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        if (lvgl_port_lock(lvgl_lock_timeout)) {
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
             lv_obj_set_width(lbl_ln5, 320);
