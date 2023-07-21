@@ -9,9 +9,12 @@
 #include "periph_lcd.h"
 
 #include "audio.h"
+#include "config.h"
 #include "display.h"
 #include "system.h"
 #include "timer.h"
+
+#define DEFAULT_LOCK_TIMEOUT 500
 
 static const char *TAG = "WILLOW/LVGL";
 
@@ -35,6 +38,7 @@ typedef struct periph_lcd {
 } periph_lcd_t;
 
 esp_lcd_panel_handle_t hdl_lcd = NULL;
+int lvgl_lock_timeout;
 lv_disp_t *ld;
 lv_obj_t *btn_cancel, *lbl_btn_cancel, *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4, *lbl_ln5;
 
@@ -68,6 +72,7 @@ void cb_scr(lv_event_t *ev)
 esp_err_t init_lvgl_display(void)
 {
     esp_err_t ret = ESP_OK;
+    lvgl_lock_timeout = config_get_int("lvgl_lock_timeout", DEFAULT_LOCK_TIMEOUT);
     const lvgl_port_cfg_t cfg_lp = ESP_LVGL_PORT_INIT_CONFIG();
     ret = lvgl_port_init(&cfg_lp);
     if (ret != ESP_OK) {

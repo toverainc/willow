@@ -154,7 +154,7 @@ void ota_task(void *data)
     }
 
     ESP_LOGI(TAG, "OTA completed, restarting");
-    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_label_set_text_static(lbl_ln3, "OTA update done");
         lvgl_port_unlock();
     }
@@ -164,7 +164,7 @@ err:
     esp_http_client_close(hdl_hc);
     esp_http_client_cleanup(hdl_hc);
     ESP_LOGI(TAG, "OTA failed, restarting");
-    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_label_set_text_static(lbl_ln3, "OTA update failed");
         lvgl_port_unlock();
     }
@@ -175,7 +175,7 @@ err:
 void ota_start(char *url)
 {
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
-    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);

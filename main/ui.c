@@ -15,7 +15,7 @@ void init_ui(void)
     } else {
         char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
 
-        if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+        if (lvgl_port_lock(lvgl_lock_timeout)) {
             lv_obj_t *scr_act = lv_disp_get_scr_act(ld);
             lv_obj_t *lbl_hdr = lv_label_create(scr_act);
             btn_cancel = lv_btn_create(scr_act);
@@ -104,7 +104,7 @@ void init_ui(void)
 
 void ui_pr_err(char *ln3, char *ln4)
 {
-    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);

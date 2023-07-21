@@ -132,7 +132,7 @@ end:
                     hir.ok ? war.fn_ok("success") : war.fn_err("error");
                 }
 
-                if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+                if (lvgl_port_lock(lvgl_lock_timeout)) {
                     lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                     lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
                     lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
@@ -334,7 +334,7 @@ static void hass_post(const char *data)
     }
 
 http_error:
-    if (lvgl_port_lock(LVGL_LOCK_TIMEOUT)) {
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
         lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
