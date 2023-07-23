@@ -83,6 +83,8 @@ void rest_send(const char *data)
         lvgl_port_unlock();
     }
 
+    ESP_LOGI(TAG, "min_free_iram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL));
+    ESP_LOGI(TAG, "min_free_spiram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_SPIRAM));
     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
 
     free(body);

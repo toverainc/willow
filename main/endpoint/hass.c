@@ -355,6 +355,9 @@ http_error:
     free(body);
 
     free(url);
+
+    ESP_LOGI(TAG, "min_free_iram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL));
+    ESP_LOGI(TAG, "min_free_spiram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_SPIRAM));
 }
 
 static void hass_send_ws(const char *data)
@@ -415,6 +418,8 @@ static void hass_send_ws(const char *data)
         ESP_LOGE(TAG, "failed to send command via WebSocket client");
     }
     cJSON_Delete(cjson);
+    ESP_LOGI(TAG, "min_free_iram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL));
+    ESP_LOGI(TAG, "min_free_spiram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_SPIRAM));
 }
 
 void hass_send(const char *data)

@@ -198,6 +198,10 @@ err_nvs:
 #ifdef CONFIG_WILLOW_DEBUG_TIMERS
         (esp_timer_dump(stdout));
 #endif
+        ESP_LOGI(TAG, "min_free_iram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL));
+        ESP_LOGI(TAG, "min_free_spiram: %d", heap_caps_get_minimum_free_size(MALLOC_CAP_SPIRAM));
         vTaskDelay(5000 / portTICK_PERIOD_MS);
+        ESP_LOGI(TAG, "checking heap integrity");
+        heap_caps_check_integrity(MALLOC_CAP_SPIRAM, true);
     }
 }
