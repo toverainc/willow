@@ -59,7 +59,7 @@
 #define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
 QueueHandle_t q_ea, q_rec;
-bool recording = false;
+volatile bool recording = false;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap, hdl_ap_to_api;
 static audio_rec_handle_t hdl_ar = NULL;
