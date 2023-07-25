@@ -1,7 +1,3 @@
-#include "esp_lvgl_port.h"
-
 #define DEFAULT_COMMAND_ENDPOINT "Home Assistant"
 #define DEFAULT_MIC_GAIN          14
 #define DEFAULT_SPEECH_REC_MODE  "WIS"
-
-esp_lcd_panel_handle_t hdl_lcd;

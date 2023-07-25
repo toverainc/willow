@@ -1,4 +1,3 @@
-extern esp_lcd_panel_handle_t hdl_lcd;
 extern lv_disp_t *ld;
 extern lv_obj_t *btn_cancel, *lbl_btn_cancel, *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4, *lbl_ln5;
 
