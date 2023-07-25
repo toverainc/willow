@@ -236,6 +236,12 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_VAD_START:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_START");
+            if (recording) {
+                break;
+            } else {
+                recording = true;
+            }
+
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
                 msg = MSG_START_LOCAL;
@@ -268,11 +274,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
-            if (recording) {
-                msg = MSG_STOP;
-                xQueueSend(q_rec, &msg, 0);
-                break;
-            }
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
@@ -751,9 +752,11 @@ static void at_read(void *data)
             // printf("at_read() audio_recorder_data_read()\n");
             ret = audio_recorder_data_read(hdl_ar, buf, len, portMAX_DELAY);
             if (ret <= 0) {
-                printf("at_read() ret leq 0\n");
-                delay = portMAX_DELAY;
-                stream_to_api = false;
+                ESP_LOGD(TAG, "audio_recorder_data_read returned 0");
+                // delay = portMAX_DELAY;
+                // stream_to_api = false;
+            } else {
+                raw_stream_write(hdl_ae_rs_to_api, buf, ret);
             }
             // calling raw_stream_read twice on the same audio element "cuts" the audio in half
             // we end up sending 1 fragment to AFE and another to the API
@@ -764,7 +767,6 @@ static void at_read(void *data)
             //     return;
             // }
             // printf("at_read() raw_stream_write()\n");
-            raw_stream_write(hdl_ae_rs_to_api, buf, ret);
         }
     }
 
