@@ -37,6 +37,10 @@
 #include "endpoint/openhab.h"
 #include "endpoint/rest.h"
 
+#if !defined(CONFIG_TASK_WDT_PANIC)
+#define CONFIG_TASK_WDT_PANIC 10
+#endif
+
 #if defined(WILLOW_SUPPORT_MULTINET)
 #include "generated_cmd_multinet.h"
 #endif
