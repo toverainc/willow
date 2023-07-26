@@ -71,6 +71,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                                 goto cleanup;
                             }
                         }
+                        nvs_commit(hdl_nvs);
                     }
 
                     cJSON *json_wifi = cJSON_GetObjectItemCaseSensitive(json_nvs, "WIFI");
@@ -99,9 +100,8 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                                 goto cleanup;
                             }
                         }
+                        nvs_commit(hdl_nvs);
                     }
-
-                    nvs_commit(hdl_nvs);
 
                     ESP_LOGI(TAG, "restarting to apply NVS changes");
                     if (lvgl_port_lock(lvgl_lock_timeout)) {
