@@ -55,7 +55,7 @@ esp_err_t init_display(void)
 
     int ret = ESP_OK;
 
-    hdl_lcd = audio_board_lcd_init(hdl_pset, NULL);
+    hdl_lcd = (esp_lcd_panel_handle_t)audio_board_lcd_init(hdl_pset, NULL);
     ret = esp_lcd_panel_disp_off(hdl_lcd, false);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to turn of display: %s", esp_err_to_name(ret));
