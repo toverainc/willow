@@ -278,6 +278,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
+            if (recording) {
+                break;
+            }
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
