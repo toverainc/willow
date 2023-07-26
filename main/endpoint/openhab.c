@@ -61,6 +61,7 @@ void openhab_send(const char *data)
     }
 
 end:
+    free(url);
     if (ok) {
         war.fn_ok("ok");
     } else {
