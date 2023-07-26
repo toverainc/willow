@@ -223,6 +223,7 @@ static void init_hass_ws_client(void)
     const esp_websocket_client_config_t cfg_wc = {
         .buffer_size = 16384,
         .path = HASS_URI_WEBSOCKET,
+        .task_stack = 6 * 1024, // default 4 * 1024
         .uri = url,
         .user_agent = WILLOW_USER_AGENT,
     };
