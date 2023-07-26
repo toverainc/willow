@@ -844,8 +844,8 @@ void init_audio(void)
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
             lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 120);
             lv_obj_set_width(lbl_ln5, 320);
-            lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_SCROLL);
-            lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_SCROLL);
+            lv_label_set_long_mode(lbl_ln1, LV_LABEL_LONG_CLIP);
+            lv_label_set_long_mode(lbl_ln5, LV_LABEL_LONG_CLIP);
             lv_label_set_text(lbl_ln3, wake_help);
 
             lvgl_port_unlock();
