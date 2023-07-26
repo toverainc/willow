@@ -43,14 +43,28 @@ static void init_hass_ws_client(void);
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
 {
-    esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)ev_data;
     switch (id_ev) {
         case WEBSOCKET_EVENT_CONNECTED:
             ESP_LOGI(TAG, "WebSocket connected");
             break;
         case WEBSOCKET_EVENT_DATA:
+            if (ev_data == NULL) {
+                ESP_LOGW(TAG, "WEBSOCKET_EVENT_DATA: ev_data == NULL");
+                break;
+            }
+            esp_websocket_event_data_t *data = (esp_websocket_event_data_t *)ev_data;
+
             if (data->op_code == WS_TRANSPORT_OPCODES_TEXT) {
                 char *json = NULL;
+
+                if (data->data_ptr == NULL) {
+                    ESP_LOGW(TAG, "WEBSOCKET_EVENT_DATA: data->data_ptr == NULL");
+                    break;
+                }
+                if (data->data_len <= 0) {
+                    ESP_LOGW(TAG, "WEBSOCKET_EVENT_DATA: data->data_len <= 0");
+                    break;
+                }
                 char *resp = strndup((char *)data->data_ptr, data->data_len);
 
                 ESP_LOGD(TAG, "received text data on WebSocket: %s", resp);
