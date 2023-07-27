@@ -730,7 +730,6 @@ static void at_read(void *data)
                     audio_pipeline_wait_for_stop(hdl_ap_to_api);
                     audio_pipeline_reset_ringbuffer(hdl_ap_to_api);
                     audio_pipeline_reset_elements(hdl_ap_to_api);
-                    audio_pipeline_terminate(hdl_ap_to_api);
                     audio_pipeline_run(hdl_ap_to_api);
                     stream_to_api = true;
                     // this confirms that the URL is still set correctly
