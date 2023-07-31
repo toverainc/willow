@@ -367,7 +367,7 @@ convert-font)
 ;;
 
 *)
-    echo "Uknown argument - passing directly to idf.py"
+    echo "Unknown argument - passing directly to idf.py"
     check_container
     idf.py "$@"
 ;;
