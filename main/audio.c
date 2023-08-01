@@ -140,7 +140,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
         .evt_que = q_ea,
         .in_stream_buf_size = 10 * 1024,
         .out_stream_buf_size = 4 * 1024,
-        .prefer_type = ESP_AUDIO_PREFER_MEM,
+        .prefer_type = ESP_AUDIO_PREFER_SPEED,
         .resample_rate = 16000,
         .task_prio = 6,
         .task_stack = 4 * 1024,
