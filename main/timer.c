@@ -21,6 +21,7 @@ static void cb_session_timer(void *data)
 {
     if (recording) {
         ESP_LOGI(TAG, "session timer expired - forcing end stream");
+        audio_recorder_trigger_stop(hdl_ar);
         int msg = MSG_STOP;
         xQueueSend(q_rec, &msg, 0);
     }

@@ -2,7 +2,6 @@
 #include "audio_hal.h"
 #include "audio_mem.h"
 #include "audio_pipeline.h"
-#include "audio_recorder.h"
 #include "audio_thread.h"
 #include "board.h"
 #include "es7210.h"
@@ -63,10 +62,10 @@
 #define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
 QueueHandle_t q_ea, q_rec;
+audio_rec_handle_t hdl_ar = NULL;
 volatile bool recording = false;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap, hdl_ap_to_api;
-static audio_rec_handle_t hdl_ar = NULL;
 static audio_thread_t hdl_at = NULL;
 static bool stream_to_api = false;
 static const char *TAG = "WILLOW/AUDIO";
