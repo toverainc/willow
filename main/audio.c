@@ -861,15 +861,22 @@ void init_audio(void)
 
 void deinit_audio(void)
 {
+    if (hdl_ar != NULL) {
+        audio_recorder_destroy(hdl_ar);
+    }
     if (hdl_at != NULL) {
         vTaskDelete(hdl_at);
     }
     if (hdl_ap != NULL) {
         audio_pipeline_stop(hdl_ap);
+        audio_pipeline_wait_for_stop(hdl_ap);
+        audio_pipeline_terminate(hdl_ap);
     }
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     if (strcmp(speech_rec_mode, "WIS") && hdl_ap_to_api != NULL) {
         audio_pipeline_stop(hdl_ap_to_api);
+        audio_pipeline_wait_for_stop(hdl_ap_to_api);
+        audio_pipeline_terminate(hdl_ap_to_api);
     }
     free(speech_rec_mode);
     if (hdl_ea != NULL) {
