@@ -1,3 +1,4 @@
+#include "audio_recorder.h"
 #include "esp_audio.h"
 
 struct willow_audio_response {
@@ -11,6 +12,7 @@ typedef enum {
     MSG_START_LOCAL,
 } q_msg;
 
+audio_rec_handle_t hdl_ar;
 volatile bool recording;
 esp_audio_handle_t hdl_ea;
 extern QueueHandle_t q_rec;
