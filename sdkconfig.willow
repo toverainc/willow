@@ -537,7 +537,7 @@ CONFIG_ESP_IPC_ISR_ENABLE=y
 # LCD Peripheral Configuration
 #
 CONFIG_LCD_PANEL_IO_FORMAT_BUF_SIZE=32
-# CONFIG_LCD_RGB_ISR_IRAM_SAFE is not set
+CONFIG_LCD_RGB_ISR_IRAM_SAFE=y
 # end of LCD Peripheral Configuration
 # end of LCD and Touch Panel
 
