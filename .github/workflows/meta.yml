@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
+      image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -29,6 +30,13 @@ jobs:
               - 'Dockerfile'
               - 'container.gitconfig'
               - 'utils.sh'
+            image:
+              - 'CMakeLists.txt'
+              - 'main/**'
+              - 'partitions_willow.csv'
+              - 'sdkconfig.willow'
+              - 'spiffs/**'
+
 
   build_container:
     if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'true' }}
@@ -36,7 +44,7 @@ jobs:
     needs: trigger_workflow
 
   build_willow:
-    if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'false' }}
+    if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'false' && needs.trigger_workflow.outputs.image_any_changed == 'true' }}
     uses: ./.github/workflows/build-willow.yml
     needs: trigger_workflow
     with:
