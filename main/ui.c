@@ -82,7 +82,7 @@ void init_ui(void)
             lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
             lv_obj_align(lbl_ln4, LV_ALIGN_TOP_MID, 0, 120);
             lv_obj_align(lbl_ln5, LV_ALIGN_TOP_LEFT, 0, 150);
-            lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_CLIP);
+            lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
             lv_obj_set_width(lbl_ln2, 320);
 
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
