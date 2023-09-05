@@ -172,8 +172,9 @@ install() {
     mkdir -p deps
     cd deps
     # Setup ADF
-    git clone -b "$ADF_VER" https://github.com/toverainc/esp-adf.git
+    git clone https://github.com/toverainc/esp-adf.git
     cd $ADF_PATH
+    git checkout "$ADF_VER"
     git submodule update --init components/esp-adf-libs
 
     # Setup esp-sr
