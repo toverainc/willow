@@ -184,8 +184,7 @@ install() {
     git checkout "$ESP_SR_VER"
 
     cd $WILLOW_PATH
-    cp sdkconfig.willow sdkconfig
-    idf.py reconfigure
+    idf.py set-target "$PLATFORM"
 }
 
 destroy() {
