@@ -616,6 +616,7 @@ static void start_rec(void)
         .vad_mode = config_get_int("vad_mode", DEFAULT_VAD_MODE),
         .wakenet_mode = wakenet_mode,
         .wakenet_model_name = NULL,
+        .afe_linear_gain = 1.0,
         .afe_mode = SR_MODE_HIGH_PERF,
         .afe_perferred_core = 1,
         .afe_perferred_priority = 5,
