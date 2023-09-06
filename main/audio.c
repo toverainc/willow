@@ -186,6 +186,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
     }
 
     i2s_stream_cfg_t cfg_is = {
+        .buffer_len = I2S_STREAM_BUF_SIZE,
         .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
         .i2s_config = {
             .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
@@ -544,6 +545,7 @@ static void start_rec(void)
     }
 
     i2s_stream_cfg_t cfg_is = {
+        .buffer_len = I2S_STREAM_BUF_SIZE,
         .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
         .i2s_config = {
             .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
