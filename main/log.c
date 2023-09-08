@@ -12,6 +12,7 @@ void init_logging(void)
     esp_log_level_set("*", ESP_LOG_DEBUG);
 #else
     esp_log_level_set("*", ESP_LOG_ERROR);
+    esp_log_level_set("AUDIO_RECORDER", ESP_LOG_INFO);
     esp_log_level_set("PERIPH_WIFI", ESP_LOG_WARN);
 #endif
 
