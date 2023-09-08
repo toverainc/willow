@@ -285,6 +285,13 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             if (recording) {
                 break;
             }
+            float *wake_volume_ptr = (float *)data;
+            if (wake_volume_ptr == NULL) {
+                ESP_LOGI(TAG, "wake_volume_ptr is NULL");
+            } else {
+                float wake_volume = *wake_volume_ptr;
+                ESP_LOGI(TAG, "wake volume: %f", wake_volume);
+            }
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
