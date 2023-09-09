@@ -31,6 +31,7 @@
 #include "slvgl.h"
 #include "timer.h"
 #include "ui.h"
+#include "was.h"
 
 #include "endpoint/hass.h"
 #include "endpoint/openhab.h"
@@ -275,6 +276,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
             msg = MSG_STOP;
             xQueueSend(q_rec, &msg, 0);
+            send_wake_end();
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
@@ -287,6 +289,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             } else {
                 float wake_volume = *wake_volume_ptr;
                 ESP_LOGI(TAG, "wake volume: %f", wake_volume);
+                send_wake_start(wake_volume);
             }
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
 
