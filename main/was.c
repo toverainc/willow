@@ -282,3 +282,64 @@ static void send_hello(void)
 cleanup:
     cJSON_Delete(cjson);
 }
+
+void send_wake_start(float wake_volume)
+{
+    char *json;
+    esp_err_t ret;
+
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        ESP_LOGW(TAG, "Websocket not connected - skipping wake start");
+        return;
+    }
+
+    cJSON *cjson = cJSON_CreateObject();
+    cJSON *wake_start = cJSON_CreateObject();
+
+    if (!cJSON_AddNumberToObject(wake_start, "wake_volume", wake_volume)) {
+        goto cleanup;
+    }
+    if (!cJSON_AddItemToObject(cjson, "wake_start", wake_start)) {
+        goto cleanup;
+    }
+
+    json = cJSON_Print(cjson);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send WAS wake_start message");
+    }
+
+cleanup:
+    cJSON_Delete(cjson);
+}
+
+void send_wake_end(void)
+{
+    char *json;
+    esp_err_t ret;
+
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        ESP_LOGW(TAG, "Websocket not connected - skipping wake end");
+        return;
+    }
+
+    cJSON *cjson = cJSON_CreateObject();
+    cJSON *wake_end = cJSON_CreateObject();
+
+    if (!cJSON_AddItemToObject(cjson, "wake_end", wake_end)) {
+        goto cleanup;
+    }
+
+    json = cJSON_Print(cjson);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send WAS wake_end message");
+    }
+
+cleanup:
+    cJSON_Delete(cjson);
+}
