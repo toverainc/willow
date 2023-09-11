@@ -28,6 +28,8 @@ esp_err_t init_display(void)
         case WILLOW_HW_UNSUPPORTED:
             __attribute__((fallthrough));
         case WILLOW_HW_ESP32_S3_BOX:
+            __attribute__((fallthrough));
+        case WILLOW_HW_ESP32_S3_BOX_3:
             bl_duty_off = 0;
             bl_duty_on = config_get_int("lcd_brightness", DEFAULT_LCD_BRIGHTNESS);
             break;

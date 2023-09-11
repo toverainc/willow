@@ -126,6 +126,8 @@ esp_err_t init_lvgl_touch(void)
 
     switch (hw_type) {
         case WILLOW_HW_ESP32_S3_BOX:
+            __attribute__((fallthrough));
+        case WILLOW_HW_ESP32_S3_BOX_3:
             break;
         default:
             ESP_LOGI(TAG, "%s does not have a touch screen, skipping init", str_hw_type(hw_type));
