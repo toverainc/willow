@@ -63,9 +63,9 @@ void openhab_send(const char *data)
 end:
     free(url);
     if (ok) {
-        war.fn_ok("ok");
+        war.fn_ok("Success");
     } else {
-        war.fn_err("error");
+        war.fn_err("Error");
     }
 
     if (body != NULL && strlen(body) > 1) {
@@ -75,12 +75,12 @@ end:
     if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text_static(lbl_ln4, "Command status:");
         lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
+        lv_label_set_text_static(lbl_ln4, "Command status:");
         if (body != NULL && strlen(body) > 1) {
             lv_label_set_text(lbl_ln5, body);
         } else {
-            lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 Error");
+            lv_label_set_text(lbl_ln5, ok ? "Success!" : "Error");
         }
         lvgl_port_unlock();
     }
