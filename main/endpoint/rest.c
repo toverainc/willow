@@ -70,7 +70,7 @@ void rest_send(const char *data)
         }
     } else {
         ESP_LOGI(TAG, "REST failed");
-        war.fn_err("Something went wrong");
+        war.fn_err("Error");
     }
 
     if (lvgl_port_lock(lvgl_lock_timeout)) {
@@ -82,7 +82,7 @@ void rest_send(const char *data)
             lv_label_set_text(lbl_ln5, body);
         } else {
             lv_label_set_text_static(lbl_ln4, "Command status:");
-            lv_label_set_text(lbl_ln5, ok ? "#008000 Success!" : "#ff0000 Error");
+            lv_label_set_text(lbl_ln5, ok ? "Success!" : "Error");
         }
         lvgl_port_unlock();
     }
