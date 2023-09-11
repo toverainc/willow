@@ -453,6 +453,11 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             }
             buf[read_len] = 0;
             ESP_LOGI(TAG, "WIS HTTP Response = %s", (char *)buf);
+            if (lvgl_port_lock(lvgl_lock_timeout)) {
+                lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                lvgl_port_unlock();
+            }
             char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
             if (strcmp(command_endpoint, "Home Assistant") == 0) {
                 hass_send(buf);
@@ -470,8 +475,6 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             if (lvgl_port_lock(lvgl_lock_timeout)) {
                 lv_obj_clear_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                 lv_obj_clear_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-                lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                 if (cJSON_IsString(speaker_status) && speaker_status->valuestring != NULL) {
                     lv_label_set_text(lbl_ln1, speaker_status->valuestring);
                 } else {
