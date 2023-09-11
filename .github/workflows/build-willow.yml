@@ -18,6 +18,7 @@ jobs:
       matrix:
         device:
           - ESP32_S3_BOX
+          - ESP32_S3_BOX_3
           - ESP32_S3_BOX_LITE
     runs-on: ubuntu-22.04
     container:
