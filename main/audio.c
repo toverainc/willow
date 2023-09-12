@@ -283,6 +283,8 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             if (recording) {
                 break;
             }
+            // win by default so in case WAS multiwake handling goes wrong we act normally
+            multiwake_won = true;
             float *wake_volume_ptr = (float *)data;
             if (wake_volume_ptr == NULL) {
                 ESP_LOGI(TAG, "wake_volume_ptr is NULL");
@@ -759,7 +761,7 @@ static void at_read(void *data)
                     recording = false;
                     stream_to_api = false;
                     if (lvgl_port_lock(lvgl_lock_timeout)) {
-                        lv_label_set_text_static(lbl_ln3, "Thinking...");
+                        lv_label_set_text_static(lbl_ln3, multiwake_won ? "Thinking..." : "WOW Active - Exiting");
                         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
                         lvgl_port_unlock();
                     }
