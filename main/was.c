@@ -6,6 +6,7 @@
 #include "lvgl.h"
 #include "nvs_flash.h"
 
+#include "audio.h"
 #include "config.h"
 #include "display.h"
 #include "network.h"
@@ -36,6 +37,19 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                 char *resp = strndup((char *)data->data_ptr, data->data_len);
                 ESP_LOGI(TAG, "received text data on WebSocket: %s", resp);
                 cJSON *cjson = cJSON_Parse(resp);
+
+                // latency sensitive so handle this first
+                cJSON *json_wake_result = cJSON_GetObjectItemCaseSensitive(cjson, "wake_result");
+                if (cJSON_IsObject(json_wake_result)) {
+                    cJSON *won = cJSON_GetObjectItemCaseSensitive(json_wake_result, "won");
+                    if (won != NULL && cJSON_IsBool(won) && cJSON_IsFalse(won)) {
+                        ESP_LOGI(TAG, "lost wake race, stopping pipelines");
+                        multiwake_won = false;
+                        audio_recorder_trigger_stop(hdl_ar);
+                        goto cleanup;
+                    }
+                }
+
                 cJSON *json_config = cJSON_GetObjectItemCaseSensitive(cjson, "config");
                 if (cJSON_IsObject(json_config)) {
                     char *config = cJSON_Print(json_config);
