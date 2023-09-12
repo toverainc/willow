@@ -436,6 +436,10 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
 
         case HTTP_STREAM_FINISH_REQUEST:
             ESP_LOGI(TAG, "WIS HTTP client HTTP_STREAM_FINISH_REQUEST");
+            // bail out if we didn't win the multiwake race
+            if (!multiwake_won) {
+                goto pause;
+            }
             // Check status code
             int http_status = esp_http_client_get_status_code(http);
             if (http_status != 200) {
@@ -497,10 +501,11 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
             }
 
             cJSON_Delete(cjson);
+            free(buf);
 
+pause:
             audio_pipeline_pause(hdl_ap_to_api);
 
-            free(buf);
             return ESP_OK;
 
         default:
