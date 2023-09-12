@@ -275,10 +275,6 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
             msg = MSG_STOP;
             xQueueSend(q_rec, &msg, 0);
-            if (lvgl_port_lock(lvgl_lock_timeout)) {
-                lv_label_set_text_static(lbl_ln3, "Thinking...");
-                lvgl_port_unlock();
-            }
             break;
         case AUDIO_REC_WAKEUP_START:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
@@ -760,6 +756,7 @@ static void at_read(void *data)
                     recording = false;
                     stream_to_api = false;
                     if (lvgl_port_lock(lvgl_lock_timeout)) {
+                        lv_label_set_text_static(lbl_ln3, "Thinking...");
                         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
                         lvgl_port_unlock();
                     }
