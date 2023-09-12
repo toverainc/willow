@@ -13,6 +13,7 @@ typedef enum {
 } q_msg;
 
 audio_rec_handle_t hdl_ar;
+volatile bool multiwake_won;
 volatile bool recording;
 esp_audio_handle_t hdl_ea;
 extern QueueHandle_t q_rec;
