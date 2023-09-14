@@ -38,7 +38,7 @@ esp_err_t init_display(void)
     const ledc_channel_config_t cfg_bl_channel = {
         .channel = LEDC_CHANNEL_1,
         .duty = bl_duty_on,
-        .gpio_num = GPIO_NUM_45,
+        .gpio_num = LCD_CTRL_GPIO,
         .hpoint = 0,
         .intr_type = LEDC_INTR_DISABLE,
         .speed_mode = LEDC_LOW_SPEED_MODE,
