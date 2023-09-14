@@ -22,6 +22,7 @@ jobs:
           fetch-depth: 0
 
       - uses: tj-actions/changed-files@v37
+        if: ${{ github.ref_type != 'tag' }}
         id: changed_files_yaml
         with:
           files_yaml: |
@@ -37,9 +38,8 @@ jobs:
               - 'sdkconfig.willow'
               - 'spiffs/**'
 
-
   build_container:
-    if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'true' }}
+    if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'true' || github.ref_type == 'tag' }}
     uses: ./.github/workflows/build-container.yml
     needs: trigger_workflow
 
