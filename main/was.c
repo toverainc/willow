@@ -136,6 +136,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
 
                     if (strcmp(json_cmd->valuestring, "restart") == 0) {
                         ESP_LOGI(TAG, "restart command received. restart");
+                        display_set_backlight(true);
                         restart_delayed();
                     }
                 }
