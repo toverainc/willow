@@ -48,4 +48,4 @@ jobs:
     uses: ./.github/workflows/build-willow.yml
     needs: trigger_workflow
     with:
-      container-image: ghcr.io/toverainc/willow:main
+      container-image: ghcr.io/toverainc/willow:release-v0.1
