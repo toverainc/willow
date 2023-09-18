@@ -302,6 +302,11 @@ void send_wake_start(float wake_volume)
     char *json;
     esp_err_t ret;
 
+    // Silently return if multiwake is not enabled - defaults to not enabled
+    if (!config_get_bool("multiwake", false)) {
+        return;
+    }
+
     if (!esp_websocket_client_is_connected(hdl_wc)) {
         ESP_LOGW(TAG, "Websocket not connected - skipping wake start");
         return;
@@ -333,6 +338,11 @@ void send_wake_end(void)
 {
     char *json;
     esp_err_t ret;
+
+    // Silently return if multiwake is not enabled - defaults to not enabled
+    if (!config_get_bool("multiwake", false)) {
+        return;
+    }
 
     if (!esp_websocket_client_is_connected(hdl_wc)) {
         ESP_LOGW(TAG, "Websocket not connected - skipping wake end");
