@@ -74,16 +74,21 @@ jobs:
       - name: copy willow.bin to ota_filename
         run: cp /willow/build/willow.bin "/willow/build/${{ env.ota_filename }}"
 
-      - name: upload willow-dist.bin artifact
+      - name: calculate sha256sum for willow.bin
+        run: cd /willow/build &&sha256sum "${{ env.ota_filename }}" > "${{ env.ota_filename }}.sha256sum.txt"
+      - name: calculate sha256sum for willow-dist.bin
+        run: cd /willow/build && sha256sum "${{ env.dist_filename }}" > "${{ env.dist_filename }}.sha256sum.txt"
+
+      - name: upload willow-dist.bin artifacts
         uses: actions/upload-artifact@v3
         with:
           name: "${{ env.dist_filename }}"
-          path: "/willow/build/${{ env.dist_filename }}"
-      - name: upload willow-ota.bin artifact
+          path: "/willow/build/${{ env.dist_filename }}*"
+      - name: upload willow-ota.bin artifacts
         uses: actions/upload-artifact@v3
         with:
           name: "${{ env.ota_filename }}"
-          path: "/willow/build/${{ env.ota_filename }}"
+          path: "/willow/build/${{ env.ota_filename }}*"
       - name: upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -109,9 +114,12 @@ jobs:
       - name: find -ls
         run: find -ls
 
+      - name: create sha256sums.txt
+        run: find -type f -name '*.sha256sum.txt' -exec cat {} + | sort -u > sha256sums.txt
+
       - name: create release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: false
-          artifacts: "willow-dist-*/willow-dist-*.bin,willow-ota-*/willow-ota-*.bin"
+          artifacts: "sha256sums.txt,willow-dist-*/willow-dist-*.bin,willow-ota-*/willow-ota-*.bin"
           prerelease: ${{ contains(github.ref, 'pre') }}
