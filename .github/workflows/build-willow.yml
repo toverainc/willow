@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         device:
-          - ESP32_S3_BOX
-          - ESP32_S3_BOX_LITE
+          - ESP32-S3-BOX
+          - ESP32-S3-BOX-LITE
     runs-on: ubuntu-22.04
     container:
       image: ${{ inputs.container-image }}
@@ -63,7 +63,7 @@ jobs:
         run: ( . "$IDF_PATH/export.sh"; ./utils.sh setup )
         shell: bash
       - name: append device type to sdkconfig
-        run: echo "CONFIG_${{ matrix.device }}_BOARD=y" >> sdkconfig
+        run: echo "CONFIG_${{ matrix.device }}_BOARD=y" | sed 's/-/_/g' >> sdkconfig
       - name: ./utils.sh build
         run: ( . "$IDF_PATH/export.sh"; ./utils.sh build )
         shell: bash
