@@ -122,4 +122,4 @@ jobs:
         with:
           allowUpdates: false
           artifacts: "sha256sums.txt,willow-dist-*/willow-dist-*.bin,willow-ota-*/willow-ota-*.bin"
-          prerelease: ${{ contains(github.ref, 'pre') }}
+          prerelease: ${{ contains(github.ref, 'delete') || contains(github.ref, 'pre') }}
