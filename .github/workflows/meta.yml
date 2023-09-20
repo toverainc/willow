@@ -35,7 +35,7 @@ jobs:
               - 'CMakeLists.txt'
               - 'main/**'
               - 'partitions_willow.csv'
-              - 'sdkconfig.willow'
+              - 'sdkconfig.defaults'
               - 'spiffs/**'
 
   build_container:
