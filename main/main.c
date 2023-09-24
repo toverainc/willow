@@ -173,7 +173,7 @@ err_nvs:
     get_mac_address(); // should be on wifi by now; print the MAC
 #endif
 
-    const esp_app_desc_t *app_desc = esp_ota_get_app_description();
+    const esp_app_desc_t *app_desc = esp_app_get_description();
     ESP_LOGI(TAG, "Startup complete! Version: %s. Waiting for wake word.", app_desc->version);
 
     // if we reached this point, we can mark the current partition valid
