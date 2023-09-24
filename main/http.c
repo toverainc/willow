@@ -47,7 +47,8 @@ static esp_err_t http_do(const esp_http_client_handle_t hdl_hc, const esp_http_c
     n = esp_http_client_read_response(hdl_hc, *body, n);
     if (n >= 0) {
         *http_status = esp_http_client_get_status_code(hdl_hc);
-        ESP_LOGI(TAG, "HTTP status='%d' content_length='%d'", *http_status, esp_http_client_get_content_length(hdl_hc));
+        ESP_LOGI(TAG, "HTTP status='%d' content_length='%llu'", *http_status,
+                 esp_http_client_get_content_length(hdl_hc));
     }
     esp_http_client_cleanup(hdl_hc);
 

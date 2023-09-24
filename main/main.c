@@ -2,6 +2,7 @@
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_ota_ops.h"
+#include "esp_timer.h"
 #include "lvgl.h"
 #include "nvs_flash.h"
 #include "periph_spiffs.h"

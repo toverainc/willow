@@ -54,10 +54,10 @@ void restart_delayed(void)
         delay = 6;
     }
 
-    ESP_LOGI(TAG, "restarting after %d seconds", delay);
+    ESP_LOGI(TAG, "restarting after %lu seconds", delay);
 
     if (lvgl_port_lock(lvgl_lock_timeout)) {
-        lv_label_set_text_fmt(lbl_ln4, "Restarting in %d seconds", delay);
+        lv_label_set_text_fmt(lbl_ln4, "Restarting in %lu seconds", delay);
         lv_obj_align(lbl_ln4, LV_ALIGN_TOP_MID, 0, 120);
         lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         lvgl_port_unlock();

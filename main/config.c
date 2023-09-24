@@ -6,6 +6,7 @@
 #include "esp_lvgl_port.h"
 #include "esp_spiffs.h"
 #include "esp_system.h"
+#include "esp_timer.h"
 #include "lvgl.h"
 
 #include "audio.h"

@@ -10,6 +10,7 @@
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_task_wdt.h"
+#include "esp_timer.h"
 #include "filter_resample.h"
 #include "flac_decoder.h"
 #include "http_stream.h"
@@ -670,9 +671,15 @@ static void start_rec(void)
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     if (strcmp(speech_rec_mode, "Multinet") == 0) {
 #if defined(WILLOW_SUPPORT_MULTINET)
+        esp_task_wdt_config_t twdt_config = {
+            .timeout_ms = MULTINET_TWDT,
+            .idle_core_mask = 0,
+            .trigger_panic = CONFIG_TASK_WDT_PANIC ? true : false,
+        };
+
         ESP_LOGI(TAG, "Using local multinet");
         ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
-        esp_task_wdt_init(MULTINET_TWDT, CONFIG_TASK_WDT_PANIC ? true : false);
+        esp_task_wdt_init(&twdt_config);
         cfg_srr.multinet_init = true;
         cfg_srr.rb_size = 6 * 1024;
 #else
