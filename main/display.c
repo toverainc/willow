@@ -12,6 +12,7 @@
 static const char *TAG = "WILLOW/DISPLAY";
 static int bl_duty_off;
 static int bl_duty_on;
+enum willow_hw_t hw_type;
 
 esp_err_t init_display(void)
 {

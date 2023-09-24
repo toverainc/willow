@@ -35,6 +35,9 @@
 
 char was_url[2048];
 static const char *TAG = "WILLOW/MAIN";
+enum willow_state state;
+
+esp_periph_set_handle_t hdl_pset;
 
 static esp_err_t init_spiffs_user(void)
 {

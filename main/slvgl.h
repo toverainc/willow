@@ -1,6 +1,6 @@
 extern lv_disp_t *ld;
 extern lv_obj_t *btn_cancel, *lbl_btn_cancel, *lbl_ln1, *lbl_ln2, *lbl_ln3, *lbl_ln4, *lbl_ln5;
-int lvgl_lock_timeout;
+extern int lvgl_lock_timeout;
 
 void cb_btn_cancel(lv_event_t *);
 void cb_scr(lv_event_t *ev);

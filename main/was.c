@@ -22,6 +22,7 @@
 
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
+esp_netif_t *hdl_netif;
 
 static void send_hello(void);
 
