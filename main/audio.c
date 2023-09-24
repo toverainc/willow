@@ -65,6 +65,8 @@
 
 QueueHandle_t q_ea, q_rec;
 audio_rec_handle_t hdl_ar = NULL;
+esp_audio_handle_t hdl_ea = NULL;
+volatile bool multiwake_won = false;
 volatile bool recording = false;
 static audio_element_handle_t hdl_ae_hs, hdl_ae_rs_from_i2s, hdl_ae_rs_to_api = NULL;
 static audio_pipeline_handle_t hdl_ap, hdl_ap_to_api;
@@ -72,6 +74,7 @@ static audio_thread_t hdl_at = NULL;
 static bool stream_to_api = false;
 static const char *TAG = "WILLOW/AUDIO";
 static int total_write = 0;
+struct willow_audio_response war;
 
 static void cb_ea(esp_audio_state_t *state, void *data)
 {

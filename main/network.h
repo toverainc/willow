@@ -1,4 +1,4 @@
-esp_netif_t *hdl_netif;
+extern esp_netif_t *hdl_netif;
 
 esp_err_t init_sntp(void);
 esp_err_t init_wifi(const char *psk, const char *ssid);

@@ -12,12 +12,12 @@ typedef enum {
     MSG_START_LOCAL,
 } q_msg;
 
-audio_rec_handle_t hdl_ar;
-volatile bool multiwake_won;
-volatile bool recording;
-esp_audio_handle_t hdl_ea;
+extern audio_rec_handle_t hdl_ar;
+extern volatile bool multiwake_won;
+extern volatile bool recording;
+extern esp_audio_handle_t hdl_ea;
 extern QueueHandle_t q_rec;
-struct willow_audio_response war;
+extern struct willow_audio_response war;
 
 void deinit_audio(void);
 void init_audio(void);

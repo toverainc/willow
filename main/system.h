@@ -15,9 +15,9 @@ enum willow_state {
     STATE_READY,
 };
 
-enum willow_hw_t hw_type;
-enum willow_state state;
-esp_periph_set_handle_t hdl_pset;
+extern enum willow_hw_t hw_type;
+extern enum willow_state state;
+extern esp_periph_set_handle_t hdl_pset;
 
 const char *str_hw_type(int id);
 void init_system(void);
