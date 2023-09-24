@@ -5,6 +5,7 @@
 #include "esp_lcd_touch_tt21100.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
+#include "esp_timer.h"
 #include "lvgl.h"
 #include "periph_lcd.h"
 

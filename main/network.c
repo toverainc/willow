@@ -1,5 +1,6 @@
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
+#include "esp_mac.h"
 #include "esp_sntp.h"
 #include "esp_wifi.h"
 #include "lvgl.h"
@@ -24,7 +25,7 @@ uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 
 void cb_sntp(struct timeval *tv)
 {
-    ESP_LOGI(TAG, "SNTP client synchronized time to %lu", tv->tv_sec);
+    ESP_LOGI(TAG, "SNTP client synchronized time to %lld", tv->tv_sec);
 }
 
 void set_hostname(esp_mac_type_t emt)
@@ -61,21 +62,21 @@ esp_err_t init_sntp(void)
     setenv("TZ", timezone, 1);
     free(timezone);
     tzset();
-    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
 
     char *ntp_config = config_get_char("ntp_config", DEFAULT_NTP_CONFIG);
     if (strcmp(ntp_config, "DHCP") == 0) {
         ESP_LOGI(TAG, "Using DHCP SNTP server");
-        sntp_servermode_dhcp(1);
+        esp_sntp_servermode_dhcp(1);
     } else if (strcmp(ntp_config, "Host") == 0) {
         char *ntp_host = config_get_char("ntp_host", DEFAULT_NTP_HOST);
         ESP_LOGI(TAG, "Using configured SNTP server '%s'", ntp_host);
-        sntp_setservername(0, ntp_host);
+        esp_sntp_setservername(0, ntp_host);
         free(ntp_host);
     }
     free(ntp_config);
     sntp_set_time_sync_notification_cb(cb_sntp);
-    sntp_init();
+    esp_sntp_init();
 
     return ESP_OK;
 }

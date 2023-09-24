@@ -1,10 +1,12 @@
 #include "errno.h"
+#include "esp_app_format.h"
 #include "esp_err.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_ota_ops.h"
 #include "esp_task_wdt.h"
+#include "esp_timer.h"
 #include "lvgl.h"
 
 #include "audio.h"
@@ -40,7 +42,7 @@ void ota_task(void *data)
     pt_new = esp_ota_get_next_update_partition(NULL);
 
     if (pt_boot != pt_cur) {
-        ESP_LOGW(TAG, "boot partition (offset='0x%08x') does not match running partition (offset='0x%08x')",
+        ESP_LOGW(TAG, "boot partition (offset='0x%08lu') does not match running partition (offset='0x%08lu')",
                  pt_boot->address, pt_cur->address);
     }
 
@@ -114,7 +116,12 @@ void ota_task(void *data)
                     hdr_checked = true;
 
                     // OTA begin triggers TWDT due to partition erase taking a long time
-                    esp_task_wdt_init(30, true);
+                    esp_task_wdt_config_t ota_config = {
+                        .timeout_ms = 30000,
+                        .idle_core_mask = 0,
+                        .trigger_panic = true,
+                    };
+                    esp_task_wdt_init(&ota_config);
 
                     ESP_LOGI(TAG, "starting OTA");
                     // use OTA_SIZE_UNKNOWN to always fully erase the partition

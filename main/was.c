@@ -1,6 +1,9 @@
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
+#include "esp_mac.h"
+#include "esp_netif.h"
+#include "esp_timer.h"
 #include "esp_transport_ws.h"
 #include "esp_websocket_client.h"
 #include "lvgl.h"
@@ -178,7 +181,7 @@ cleanup:
             init_was();
             break;
         default:
-            ESP_LOGD(TAG, "unhandled WebSocket event - ID: %d", id_ev);
+            ESP_LOGD(TAG, "unhandled WebSocket event - ID: %lu", id_ev);
             break;
     }
 }

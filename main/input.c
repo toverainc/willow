@@ -43,7 +43,7 @@ static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev,
 esp_err_t init_buttons(void)
 {
     periph_button_cfg_t cfg_btn = {
-        .gpio_mask = GPIO_SEL_0 | GPIO_SEL_1, // BOOT/CONFIG | MUTE
+        .gpio_mask = GPIO_NUM_0 | GPIO_NUM_1, // BOOT/CONFIG | MUTE
     };
     esp_periph_handle_t hdl_btn = periph_button_init(&cfg_btn);
     if (hdl_btn == NULL) {

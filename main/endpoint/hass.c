@@ -4,6 +4,7 @@
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
+#include "esp_timer.h"
 #include "esp_transport_ws.h"
 #include "esp_websocket_client.h"
 #include "lvgl.h"
@@ -41,7 +42,7 @@ static esp_websocket_client_handle_t hdl_wc = NULL;
 
 static void init_hass_ws_client(void);
 
-static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
+static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int id_ev, const void *ev_data)
 {
     switch (id_ev) {
         case WEBSOCKET_EVENT_CONNECTED:
