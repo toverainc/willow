@@ -4,7 +4,7 @@ dependencies:
   espressif/nghttp: "^1.52.0"
   espressif/esp_lcd_touch_tt21100: "*"
   espressif/esp_lvgl_port: "^1.2.0"
-  espressif/esp-dsp: "^1.4.4"
+  espressif/esp-dsp: "^1.4.7"
   ## Required IDF version
   idf:
     version: ">=5.1.0"
