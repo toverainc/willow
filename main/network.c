@@ -2,9 +2,11 @@
 #include "esp_lvgl_port.h"
 #include "esp_mac.h"
 #include "esp_netif.h"
+#include "esp_netif_sntp.h"
 #include "esp_sntp.h"
 #include "esp_wifi.h"
 #include "lvgl.h"
+#include "lwip/ip_addr.h"
 #include "periph_wifi.h"
 #include "sdkconfig.h"
 
@@ -18,6 +20,10 @@
 #define DEFAULT_NTP_HOST   "pool.ntp.org"
 #define DEFAULT_TIMEZONE   "America/Menominee"
 
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN 48
+#endif
+
 #define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6
 
@@ -26,7 +32,19 @@ uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 
 void cb_sntp(struct timeval *tv)
 {
-    ESP_LOGI(TAG, "SNTP client synchronized time to %lld", tv->tv_sec);
+    for (uint8_t i = 0; i < CONFIG_LWIP_SNTP_MAX_SERVERS; ++i) {
+        if (esp_sntp_getservername(i)) {
+            ESP_LOGI(TAG, "SNTP client synchronized time to %lld from server %s", tv->tv_sec,
+                     esp_sntp_getservername(i));
+        } else {
+            // we have either IPv4 or IPv6 address, let's print it
+            char buff[INET6_ADDRSTRLEN];
+            ip_addr_t const *ip = esp_sntp_getserver(i);
+            if (ipaddr_ntoa_r(ip, buff, INET6_ADDRSTRLEN) != NULL) {
+                ESP_LOGI(TAG, "SNTP client synchronized time to %lld from server %s", tv->tv_sec, buff);
+            }
+        }
+    }
 }
 
 void set_hostname(esp_mac_type_t emt)
@@ -56,6 +74,7 @@ void set_hostname(esp_mac_type_t emt)
     }
 }
 
+// IDF5 WIP: Does not actually apply custom dynamic config values
 esp_err_t init_sntp(void)
 {
     ESP_LOGI(TAG, "initializing SNTP client");
@@ -63,12 +82,24 @@ esp_err_t init_sntp(void)
     setenv("TZ", timezone, 1);
     free(timezone);
     tzset();
-    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
+
+    esp_sntp_config_t esp_sntp_config = ESP_NETIF_SNTP_DEFAULT_CONFIG(DEFAULT_NTP_HOST);
+    esp_sntp_config.sync_cb = cb_sntp;
+    esp_sntp_config.index_of_first_server = 0;
+    esp_sntp_config.server_from_dhcp = false;
+    esp_sntp_config.start = false;
 
     char *ntp_config = config_get_char("ntp_config", DEFAULT_NTP_CONFIG);
     if (strcmp(ntp_config, "DHCP") == 0) {
         ESP_LOGI(TAG, "Using DHCP SNTP server");
         esp_sntp_servermode_dhcp(1);
+        esp_sntp_config.server_from_dhcp = true;
+        esp_sntp_config.renew_servers_after_new_IP = true;
+#ifdef CONFIG_WILLOW_ETHERNET
+        esp_sntp_config.ip_event_to_renew = IP_EVENT_ETH_GOT_IP;
+#else
+        esp_sntp_config.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
+#endif
     } else if (strcmp(ntp_config, "Host") == 0) {
         char *ntp_host = config_get_char("ntp_host", DEFAULT_NTP_HOST);
         ESP_LOGI(TAG, "Using configured SNTP server '%s'", ntp_host);
@@ -76,8 +107,9 @@ esp_err_t init_sntp(void)
         free(ntp_host);
     }
     free(ntp_config);
-    sntp_set_time_sync_notification_cb(cb_sntp);
-    esp_sntp_init();
+    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    esp_netif_sntp_init(&esp_sntp_config);
+    esp_netif_sntp_start();
 
     return ESP_OK;
 }
