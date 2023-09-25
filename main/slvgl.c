@@ -74,7 +74,8 @@ esp_err_t init_lvgl_display(void)
 {
     esp_err_t ret = ESP_OK;
     lvgl_lock_timeout = config_get_int("lvgl_lock_timeout", DEFAULT_LOCK_TIMEOUT);
-    const lvgl_port_cfg_t cfg_lp = ESP_LVGL_PORT_INIT_CONFIG();
+    lvgl_port_cfg_t cfg_lp = ESP_LVGL_PORT_INIT_CONFIG();
+    cfg_lp.task_affinity = 0;
     ret = lvgl_port_init(&cfg_lp);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize LVGL port: %s", esp_err_to_name(ret));
