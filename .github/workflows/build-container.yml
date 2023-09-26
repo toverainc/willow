@@ -3,16 +3,23 @@ name: build-container
 
 env:
   GH_TOKEN: ${{ github.token }}
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      container-image:
+        required: true
+        type: string
+      labels:
+        required: true
+        type: string
+      tags:
+        required: true
+        type: string
 
 jobs:
   build-container:
     runs-on: ubuntu-22.04
-    outputs:
-      json: ${{ steps.metadata.outputs.json }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -20,19 +27,9 @@ jobs:
       - name: login to ghcr.io
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: extract metadata
-        id: metadata
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=tag
-            type=ref,event=pr
-            type=ref,event=branch
 
       - name: build container
         uses: docker/build-push-action@v4
@@ -40,14 +37,11 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          labels: ${{ steps.metadata.outputs.labels }}
-          tags: ${{ steps.metadata.outputs.tags }}
-
-      - name: debug
-        run: echo "${{ fromJSON(steps.metadata.outputs.json).tags[0] }}"
+          labels: ${{ inputs.labels }}
+          tags: ${{ inputs.tags }}
 
   build-willow:
     uses: ./.github/workflows/build-willow.yml
     needs: build-container
     with:
-      container-image: ${{ fromJSON(needs.build-container.outputs.json).tags[0] }}
+      container-image: ${{ inputs.container-image }}
