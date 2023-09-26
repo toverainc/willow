@@ -817,7 +817,7 @@ void init_audio(void)
         if (ld == NULL) {
             ESP_LOGE(TAG, "lv_disp_t ld is NULL!!!!");
         } else {
-            ui_pr_err("Mute activated!", "Unmute to continue.");
+            ui_pr_err("Mute Activated", "Unmute to continue");
         }
         while (gpio_get_level(GPIO_NUM_1) == 0) {
             vTaskDelay(1000 / portTICK_PERIOD_MS);

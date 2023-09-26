@@ -119,7 +119,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
 
                     ESP_LOGI(TAG, "restarting to apply NVS changes");
                     if (lvgl_port_lock(lvgl_lock_timeout)) {
-                        lv_label_set_text_static(lbl_ln3, "NVS updated.");
+                        lv_label_set_text_static(lbl_ln3, "Connectivity Updated");
                         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
