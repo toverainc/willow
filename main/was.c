@@ -119,7 +119,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
 
                     ESP_LOGI(TAG, "restarting to apply NVS changes");
                     if (lvgl_port_lock(lvgl_lock_timeout)) {
-                        lv_label_set_text_static(lbl_ln3, "NVS updated.");
+                        lv_label_set_text_static(lbl_ln3, "Connectivity Updated");
                         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
                         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
@@ -150,6 +150,17 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
 
                     if (strcmp(json_cmd->valuestring, "restart") == 0) {
                         ESP_LOGI(TAG, "restart command received. restart");
+                        if (lvgl_port_lock(lvgl_lock_timeout)) {
+                            lv_label_set_text_static(lbl_ln3, "WAS Restart");
+                            lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+                            lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+                            lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                            lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
+                            lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+                            lvgl_port_unlock();
+                        }
+                        display_set_backlight(true);
                         restart_delayed();
                     }
                 }

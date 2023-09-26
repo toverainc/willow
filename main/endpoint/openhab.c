@@ -80,7 +80,7 @@ end:
         if (body != NULL && strlen(body) > 1) {
             lv_label_set_text(lbl_ln5, body);
         } else {
-            lv_label_set_text(lbl_ln5, ok ? "Success!" : "Error");
+            lv_label_set_text(lbl_ln5, ok ? "Success" : "Error");
         }
         lvgl_port_unlock();
     }

@@ -134,7 +134,7 @@ close:
 
     ESP_LOGI(TAG, "%s updated, restarting", CONFIG_PATH);
     if (lvgl_port_lock(lvgl_lock_timeout)) {
-        lv_label_set_text_static(lbl_ln3, "Config updated.");
+        lv_label_set_text_static(lbl_ln3, "Configuration Updated");
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
