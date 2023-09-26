@@ -76,44 +76,44 @@ void set_hostname(esp_mac_type_t emt)
     }
 }
 
-// IDF5 WIP: Does not actually apply custom dynamic config values
-esp_err_t init_sntp(void)
+static esp_err_t init_sntp(void)
 {
     ESP_LOGI(TAG, "initializing SNTP client");
+    esp_err_t ret = ESP_OK;
     char *timezone = config_get_char("timezone", DEFAULT_TIMEZONE);
     setenv("TZ", timezone, 1);
     free(timezone);
     tzset();
 
-    esp_sntp_config_t esp_sntp_config = ESP_NETIF_SNTP_DEFAULT_CONFIG(DEFAULT_NTP_HOST);
+    esp_sntp_config_t esp_sntp_config = ESP_NETIF_SNTP_DEFAULT_CONFIG_MULTIPLE(0, {});
     esp_sntp_config.sync_cb = cb_sntp;
-    esp_sntp_config.index_of_first_server = 0;
-    esp_sntp_config.server_from_dhcp = false;
+#ifdef CONFIG_WILLOW_ETHERNET
+    esp_sntp_config.ip_event_to_renew = IP_EVENT_ETH_GOT_IP;
+#else
+    esp_sntp_config.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
+#endif
+    esp_sntp_config.renew_servers_after_new_IP = true;
+    esp_sntp_config.server_from_dhcp = true;
     esp_sntp_config.start = false;
+    ret = esp_netif_sntp_init(&esp_sntp_config);
 
+    return ret;
+}
+
+static esp_err_t start_sntp(void)
+{
     char *ntp_config = config_get_char("ntp_config", DEFAULT_NTP_CONFIG);
     if (strcmp(ntp_config, "DHCP") == 0) {
         ESP_LOGI(TAG, "Using DHCP SNTP server");
         esp_sntp_servermode_dhcp(1);
-        esp_sntp_config.server_from_dhcp = true;
-        esp_sntp_config.renew_servers_after_new_IP = true;
-#ifdef CONFIG_WILLOW_ETHERNET
-        esp_sntp_config.ip_event_to_renew = IP_EVENT_ETH_GOT_IP;
-#else
-        esp_sntp_config.ip_event_to_renew = IP_EVENT_STA_GOT_IP;
-#endif
     } else if (strcmp(ntp_config, "Host") == 0) {
         char *ntp_host = config_get_char("ntp_host", DEFAULT_NTP_HOST);
         ESP_LOGI(TAG, "Using configured SNTP server '%s'", ntp_host);
         esp_sntp_setservername(0, ntp_host);
-        free(ntp_host);
     }
     free(ntp_config);
-    esp_sntp_setoperatingmode(SNTP_OPMODE_POLL);
-    esp_netif_sntp_init(&esp_sntp_config);
-    esp_netif_sntp_start();
 
-    return ESP_OK;
+    return esp_netif_sntp_start();
 }
 
 static void hdlr_ev(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
@@ -153,6 +153,8 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
         ESP_LOGE(TAG, "failed to initialize default event loop: %s", esp_err_to_name(ret));
         return ret;
     }
+
+    init_sntp();
 
     esp_netif_t *netif_wifi = esp_netif_create_default_wifi_sta();
     if (netif_wifi == NULL) {
@@ -214,6 +216,7 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
     (void)evb;
 
     vEventGroupDelete(hdl_evg);
+    start_sntp();
 
     ret = esp_wifi_set_ps(WIFI_PS_NONE);
     if (ret != ESP_OK) {

@@ -156,8 +156,6 @@ err_nvs:
         vTaskDelay(portMAX_DELAY);
     }
 
-    init_sntp();
-
     char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
     if (strcmp(command_endpoint, "Home Assistant") == 0) {
         init_hass();
