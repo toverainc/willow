@@ -682,7 +682,11 @@ static void start_rec(void)
 
         ESP_LOGI(TAG, "Using local multinet");
         ESP_LOGI(TAG, "cmd_multinet[] size: %u bytes", get_cmd_multinet_size());
+#if defined(CONFIG_ESP_TASK_WDT_INIT)
+        esp_task_wdt_reconfigure(&twdt_config);
+#else
         esp_task_wdt_init(&twdt_config);
+#endif
         cfg_srr.multinet_init = true;
         cfg_srr.rb_size = 6 * 1024;
 #else
