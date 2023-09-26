@@ -15,6 +15,9 @@ jobs:
     outputs:
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
       image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
+      metadata_json: ${{ steps.metadata.outputs.json }}
+      metadata_labels: ${{ steps.metadata.outputs.labels }}
+      metadata_tags: ${{ steps.metadata.outputs.tags }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -38,14 +41,31 @@ jobs:
               - 'sdkconfig.defaults'
               - 'spiffs/**'
 
+      - name: extract metadata
+        id: metadata
+        uses: docker/metadata-action@v4
+        with:
+          images: "ghcr.io/${{ github.repository }}"
+          tags: |
+            type=ref,event=tag
+            type=ref,event=pr
+            type=ref,event=branch
+
+      - name: debug
+        run: echo "${{ steps.metadata.outputs.json }}"
+
   build_container:
     if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'true' || github.ref_type == 'tag' }}
     uses: ./.github/workflows/build-container.yml
     needs: trigger_workflow
+    with:
+      container-image: ${{ fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] }}
+      labels: ${{ needs.trigger_workflow.outputs.metadata_labels }}
+      tags: ${{ needs.trigger_workflow.outputs.metadata_tags }}
 
   build_willow:
     if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'false' && needs.trigger_workflow.outputs.image_any_changed == 'true' }}
     uses: ./.github/workflows/build-willow.yml
     needs: trigger_workflow
     with:
-      container-image: ghcr.io/toverainc/willow:main
+      container-image: ${{ fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] }}
