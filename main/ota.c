@@ -121,7 +121,7 @@ void ota_task(void *data)
                         .idle_core_mask = 0,
                         .trigger_panic = true,
                     };
-                    esp_task_wdt_init(&ota_config);
+                    esp_task_wdt_reconfigure(&ota_config);
 
                     ESP_LOGI(TAG, "starting OTA");
                     // use OTA_SIZE_UNKNOWN to always fully erase the partition
