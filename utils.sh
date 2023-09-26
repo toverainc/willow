@@ -188,7 +188,7 @@ install() {
 }
 
 destroy() {
-    sudo rm -rf build/* serve deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
+    sudo rm -rf build serve deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
 }
 
 # Just in case
