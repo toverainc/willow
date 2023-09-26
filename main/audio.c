@@ -224,7 +224,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
     ESP_LOGI(TAG, "audio player initialized");
 }
 
-static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
+static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
 {
     char *speech_rec_mode = NULL;
     int msg = -1;
@@ -232,7 +232,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
     int command_id = 0;
 #endif
 
-    switch (are) {
+    switch (are->type) {
         case AUDIO_REC_VAD_END:
             ESP_LOGI(TAG, "AUDIO_REC_VAD_END");
             if (esp_timer_is_active(hdl_sess_timer)) {
@@ -285,14 +285,9 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             }
             // win by default so in case WAS multiwake handling goes wrong we act normally
             multiwake_won = true;
-            float *wake_volume_ptr = (float *)data;
-            if (wake_volume_ptr == NULL) {
-                ESP_LOGI(TAG, "wake_volume_ptr is NULL");
-            } else {
-                float wake_volume = *wake_volume_ptr;
-                ESP_LOGI(TAG, "wake volume: %f", wake_volume);
-                send_wake_start(wake_volume);
-            }
+            recorder_sr_wakeup_result_t *wake_data = are->event_data;
+            ESP_LOGI(TAG, "wake volume: %f", wake_data->data_volume);
+            send_wake_start(wake_data->data_volume);
             reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
@@ -328,7 +323,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
 #if defined(WILLOW_SUPPORT_MULTINET)
                 // Catch all for local commands
-                command_id = are;
+                command_id = are->type;
                 char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
                 char *json;
                 json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
@@ -359,7 +354,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t are, void *data)
                 ESP_LOGE(TAG, "multinet not supported but enabled in config");
 #endif
             } else {
-                ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are);
+                ESP_LOGI(TAG, "cb_ar_event: unhandled event: '%d'", are->type);
             }
             free(speech_rec_mode);
             break;
