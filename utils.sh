@@ -11,7 +11,6 @@ export CONSOLE_BAUD=2000000 # Subject to change
 export DOCKER_IMAGE="willow:latest"
 export DOCKER_NAME="willow-build"
 export DIST_FILE="build/${dist_filename:-willow-dist.bin}"
-export SERVE_PORT="10000"
 
 # ESP-SR Componenent ver hash
 ESP_SR_VER="c8bf7cd118c437b4ab41ccb37e4ad6b84a8a4fc4"
@@ -260,7 +259,7 @@ build-docker|docker-build)
 ;;
 
 docker)
-    docker run --rm -it -v "$PWD":/willow -e TERM -p "$SERVE_PORT":"$SERVE_PORT" --name "$DOCKER_NAME" \
+    docker run --rm -it -v "$PWD":/willow -e TERM --name "$DOCKER_NAME" \
         "$DOCKER_IMAGE" /bin/bash
 ;;
 
@@ -396,13 +395,6 @@ reset)
         PORT=/dev/tty"$2"
     fi
     esptool.py --chip esp32s3 --port "$PORT" --after hard_reset --no-stub run
-;;
-
-serve)
-    do_dist
-    cd "$WILLOW_PATH"/build
-    echo "Serving your Willow dist firmare image - go to http://[YOUR HOST IP]:$SERVE_PORT"
-    python3 -m http.server "$SERVE_PORT"
 ;;
 
 clang-format)
