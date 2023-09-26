@@ -246,6 +246,12 @@ build)
     check_container
     check_deps
     [ "$CI" ] || generate_speech_commands
+    if [ $2 ]; then
+        echo "Adding timestamp to dev build"
+        TS=$(date '+%d-%m-%Y_%H:%M:%S')
+        WILLOW_VERSION+="_$TS"
+
+    fi
     WILLOW_SDKCONFIG_SANITY_CHECKS=1 idf.py build
 ;;
 
