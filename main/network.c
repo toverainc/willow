@@ -7,7 +7,6 @@
 #include "esp_wifi.h"
 #include "lvgl.h"
 #include "lwip/ip_addr.h"
-#include "periph_wifi.h"
 #include "sdkconfig.h"
 
 #include "config.h"
@@ -27,6 +26,9 @@
 #define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6
 
+#define WIFI_BIT_CONNECTED BIT0
+
+static EventGroupHandle_t hdl_evg;
 static const char *TAG = "WILLOW/NETWORK";
 uint8_t mac_address[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 
@@ -114,15 +116,61 @@ esp_err_t init_sntp(void)
     return ESP_OK;
 }
 
+static void hdlr_ev(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
+{
+    // esp_err_t ret = ESP_OK;
+
+    if (ev_base == IP_EVENT && ev_id == IP_EVENT_STA_GOT_IP) {
+        ip_event_got_ip_t *ev_ip = (ip_event_got_ip_t *)data;
+        ESP_LOGI(TAG, "received IP: " IPSTR, IP2STR(&ev_ip->ip_info.ip));
+        xEventGroupSetBits(hdl_evg, WIFI_BIT_CONNECTED);
+        return;
+    }
+
+    if (ev_base == WIFI_EVENT && ev_id == WIFI_EVENT_STA_DISCONNECTED) {
+        ESP_LOGI(TAG, "disconnected from AP, retrying");
+        esp_wifi_connect();
+        return;
+    }
+
+    if (ev_base == WIFI_EVENT && ev_id == WIFI_EVENT_STA_START) {
+        ESP_LOGI(TAG, "WIFI_EVENT_STA_START");
+        return;
+    }
+
+    ESP_LOGI(TAG, "unhandled network event ev_id='%" PRId32 "'", ev_id);
+}
+
 #ifndef CONFIG_WILLOW_ETHERNET
 esp_err_t init_wifi(const char *psk, const char *ssid)
 {
     esp_err_t ret = ESP_OK;
-    periph_wifi_cfg_t cfg_pwifi = {
-        .ssid = ssid,
-        .password = psk,
-    };
-    esp_periph_handle_t hdl_pwifi = periph_wifi_init(&cfg_pwifi);
+
+    hdl_evg = xEventGroupCreate();
+
+    ret = esp_event_loop_create_default();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to initialize default event loop: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    esp_netif_t *netif_wifi = esp_netif_create_default_wifi_sta();
+    if (netif_wifi == NULL) {
+        ESP_LOGE(TAG, "failed to create Wi-Fi STA interface: %s", esp_err_to_name(ret));
+        return ESP_FAIL;
+    }
+
+    ret = esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &hdlr_ev, NULL);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to register IP event handler: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &hdlr_ev, NULL);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to register Wi-Fi event handler: %s", esp_err_to_name(ret));
+        return ret;
+    }
 
     // Start wifi
     if (lvgl_port_lock(lvgl_lock_timeout)) {
@@ -131,9 +179,41 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
         lvgl_port_unlock();
     }
 
-    esp_periph_start(hdl_pset, hdl_pwifi);
+    wifi_init_config_t cfg_wi = WIFI_INIT_CONFIG_DEFAULT();
+    ret = esp_wifi_init(&cfg_wi);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed initialize Wi-Fi: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    wifi_config_t cfg_wifi = {};
+    strlcpy((char *)cfg_wifi.sta.password, psk, sizeof(cfg_wifi.sta.password));
+    strlcpy((char *)cfg_wifi.sta.ssid, ssid, sizeof(cfg_wifi.sta.ssid));
+
     set_hostname(ESP_MAC_WIFI_STA);
-    periph_wifi_wait_for_connected(hdl_pwifi, portMAX_DELAY);
+
+    ret = esp_wifi_set_config(ESP_IF_WIFI_STA, &cfg_wifi);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to set Wi-Fi config: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = esp_wifi_start();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to start Wi-Fi: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = esp_wifi_connect();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to connect to Wi-Fi: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    EventBits_t evb = xEventGroupWaitBits(hdl_evg, WIFI_BIT_CONNECTED, pdFALSE, pdFALSE, portMAX_DELAY);
+    (void)evb;
+
+    vEventGroupDelete(hdl_evg);
 
     ret = esp_wifi_set_ps(WIFI_PS_NONE);
     if (ret != ESP_OK) {
