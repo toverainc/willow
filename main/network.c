@@ -148,12 +148,6 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
 
     hdl_evg = xEventGroupCreate();
 
-    ret = esp_event_loop_create_default();
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to initialize default event loop: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
     init_sntp();
 
     esp_netif_t *netif_wifi = esp_netif_create_default_wifi_sta();
