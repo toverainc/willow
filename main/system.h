@@ -19,6 +19,8 @@ extern enum willow_hw_t hw_type;
 extern enum willow_state state;
 extern esp_periph_set_handle_t hdl_pset;
 
+extern volatile bool restarting;
+
 const char *str_hw_type(int id);
 void init_system(void);
 void restart_delayed(void);
