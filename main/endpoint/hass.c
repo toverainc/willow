@@ -384,6 +384,7 @@ static void hass_send_ws(const char *data)
 
     cJSON *cjson = cJSON_Parse(data);
     cJSON *text = cJSON_GetObjectItemCaseSensitive(cjson, "text");
+    cJSON *text_ = NULL;
 
     cJSON *ws_input = cJSON_CreateObject();
     if (ws_input == NULL) {
@@ -391,10 +392,10 @@ static void hass_send_ws(const char *data)
     }
 
     if (cJSON_IsString(text) && text->valuestring != NULL) {
-        cJSON_AddItemToObject(ws_input, "text", text);
+        cJSON_AddItemToObjectCS(ws_input, "text", text);
     } else {
-        cJSON *text_ = cJSON_CreateString(data);
-        cJSON_AddItemToObject(ws_input, "text", text_);
+        text_ = cJSON_CreateStringReference(data);
+        cJSON_AddItemToObjectCS(ws_input, "text", text_);
     }
 
     cJSON *ws_data = cJSON_CreateObject();
@@ -410,18 +411,29 @@ static void hass_send_ws(const char *data)
     hir.has_speech = false;
     hir.ok = false;
 
-    cJSON *end_stage = cJSON_CreateString("intent");
+    cJSON *end_stage = cJSON_CreateStringReference("intent");
     cJSON *id = cJSON_CreateNumber(tv_now.tv_sec);
-    cJSON *start_stage = cJSON_CreateString("intent");
-    cJSON *type = cJSON_CreateString("assist_pipeline/run");
+    cJSON *start_stage = cJSON_CreateStringReference("intent");
+    cJSON *type = cJSON_CreateStringReference("assist_pipeline/run");
 
-    cJSON_AddItemToObject(ws_data, "end_stage", end_stage);
-    cJSON_AddItemToObject(ws_data, "id", id);
-    cJSON_AddItemToObject(ws_data, "input", ws_input);
-    cJSON_AddItemToObject(ws_data, "start_stage", start_stage);
-    cJSON_AddItemToObject(ws_data, "type", type);
+    cJSON_AddItemToObjectCS(ws_data, "end_stage", end_stage);
+    cJSON_AddItemToObjectCS(ws_data, "id", id);
+    cJSON_AddItemToObjectCS(ws_data, "input", ws_input);
+    cJSON_AddItemToObjectCS(ws_data, "start_stage", start_stage);
+    cJSON_AddItemToObjectCS(ws_data, "type", type);
 
     char *string = cJSON_Print(ws_data);
+
+    cJSON_free(end_stage);
+    cJSON_free(id);
+    cJSON_free(start_stage);
+    cJSON_free(type);
+    cJSON_free(ws_data);
+    cJSON_free(ws_input);
+
+    if (text_ != NULL) {
+        cJSON_free(text_);
+    }
 
     ESP_LOGI(TAG, "sending command to Home Assistant via WebSocket: %s", string);
 

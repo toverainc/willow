@@ -53,6 +53,7 @@ void openhab_send(const char *data)
     ESP_LOGI(TAG, "sending '%s' to openHAB REST API on '%s'", text->valuestring, url);
 
     ret = http_post(hdl_hc, url, "text/plain", text->valuestring, &body, &http_status);
+    cJSON_Delete(cjson);
     if (ret == ESP_OK) {
         if (http_status >= 200 && http_status <= 299) {
             ok = true;

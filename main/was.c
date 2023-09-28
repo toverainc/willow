@@ -293,10 +293,10 @@ static void send_hello(void)
     if (cJSON_AddStringToObject(hello, "hw_type", str_hw_type(hw_type)) == NULL) {
         goto cleanup;
     }
-    if (!cJSON_AddItemToObject(hello, "mac_addr", mac_arr)) {
+    if (!cJSON_AddItemToObjectCS(hello, "mac_addr", mac_arr)) {
         goto cleanup;
     }
-    if (!cJSON_AddItemToObject(cjson, "hello", hello)) {
+    if (!cJSON_AddItemToObjectCS(cjson, "hello", hello)) {
         goto cleanup;
     }
 
@@ -333,7 +333,7 @@ void send_wake_start(float wake_volume)
     if (!cJSON_AddNumberToObject(wake_start, "wake_volume", wake_volume)) {
         goto cleanup;
     }
-    if (!cJSON_AddItemToObject(cjson, "wake_start", wake_start)) {
+    if (!cJSON_AddItemToObjectCS(cjson, "wake_start", wake_start)) {
         goto cleanup;
     }
 
@@ -367,7 +367,7 @@ void send_wake_end(void)
     cJSON *cjson = cJSON_CreateObject();
     cJSON *wake_end = cJSON_CreateObject();
 
-    if (!cJSON_AddItemToObject(cjson, "wake_end", wake_end)) {
+    if (!cJSON_AddItemToObjectCS(cjson, "wake_end", wake_end)) {
         goto cleanup;
     }
 
