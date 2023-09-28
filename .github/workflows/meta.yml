@@ -13,6 +13,7 @@ jobs:
     name: trigger workflow based on changed files
     runs-on: ubuntu-22.04
     outputs:
+      check_container_image: ${{ steps.check_container_image.outputs.result }}
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
       image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
       metadata_json: ${{ steps.metadata.outputs.json }}
@@ -51,8 +52,28 @@ jobs:
             type=ref,event=pr
             type=ref,event=branch
 
+      - name: extract tag name
+        id: tag
+        run: |
+          tag=${{ fromJSON(steps.metadata.outputs.json).tags[0] }}
+          echo "tag=${tag##*:}" >> $GITHUB_OUTPUT
+
       - name: debug
-        run: echo "${{ steps.metadata.outputs.json }}"
+        run: |
+          echo "${{ steps.metadata.outputs.json }}"
+          echo "${{ steps.tag.outputs.tag }}"
+
+      - uses: cloudposse/github-action-docker-image-exists@0.1.2
+        id: check_container_image
+        if: ${{ steps.changed_files_yaml.outputs.container_any_changed == 'false' && steps.changed_files_yaml.outputs.image_any_changed == 'true' }}
+        with:
+          image_name: "${{ github.repository }}"
+          registry: ghcr.io
+          tag: "${{ steps.tag.outputs.tag }}"
+
+      - name: debug
+        run: |
+          echo "${{ steps.check_container_image.outputs.result }}"
 
   build_container:
     if: ${{ needs.trigger_workflow.outputs.container_any_changed == 'true' || github.ref_type == 'tag' }}
@@ -68,4 +89,4 @@ jobs:
     uses: ./.github/workflows/build-willow.yml
     needs: trigger_workflow
     with:
-      container-image: ${{ fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] }}
+      container-image: ${{ needs.trigger_workflow.outputs.check_container_image && fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] || 'ghcr.io/toverainc/willow:main' }}
