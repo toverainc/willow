@@ -43,7 +43,9 @@ void ota_task(void *data)
     pt_new = esp_ota_get_next_update_partition(NULL);
 
     if (pt_boot != pt_cur) {
-        ESP_LOGW(TAG, "boot partition (offset='0x%08lu') does not match running partition (offset='0x%08lu')",
+        ESP_LOGW(TAG,
+                 "boot partition (offset='0x%08" PRIu32 "') does not match running partition (offset='0x%08" PRIu32
+                 "')",
                  pt_boot->address, pt_cur->address);
     }
 

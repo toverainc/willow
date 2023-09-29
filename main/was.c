@@ -343,7 +343,7 @@ cleanup:
             init_was();
             break;
         default:
-            ESP_LOGD(TAG, "unhandled WebSocket event - ID: %lu", id_ev);
+            ESP_LOGD(TAG, "unhandled WebSocket event - ID: %" PRIu32, id_ev);
             break;
     }
 }
