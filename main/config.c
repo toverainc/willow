@@ -119,9 +119,9 @@ cleanup:
 
 void config_write(const char *data)
 {
+    deinit_was();
     deinit_audio();
     deinit_hass();
-    deinit_was();
 
     FILE *f = fopen(CONFIG_PATH, "w");
     if (f == NULL) {
