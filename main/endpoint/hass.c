@@ -162,13 +162,13 @@ end:
                     lvgl_port_unlock();
                 }
 
-                reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
-
-cleanup:
                 if (hir.has_speech) {
                     free(hir.speech);
                 }
 
+                reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false);
+
+cleanup:
                 cJSON_Delete(cjson);
                 free(resp);
             }
