@@ -388,6 +388,7 @@ esp_err_t init_was(void)
     const esp_websocket_client_config_t cfg_wc = {
         .buffer_size = 4096,
         .reconnect_timeout_ms = WAS_RECONNECT_TIMEOUT_MS,
+        .task_stack = 6 * 1024, // default 4 * 1024
         .uri = was_url,
         .user_agent = WILLOW_USER_AGENT,
     };
