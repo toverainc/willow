@@ -25,8 +25,7 @@ static esp_websocket_client_handle_t hdl_wc = NULL;
 
 esp_netif_t *hdl_netif;
 
-static void send_goodbye(void);
-static void send_hello(void);
+static void send_hello_goodbye(const char *type);
 
 static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev, const void *ev_data)
 {
@@ -35,7 +34,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
     switch (id_ev) {
         case WEBSOCKET_EVENT_CONNECTED:
             ESP_LOGI(TAG, "WebSocket connected");
-            send_hello();
+            send_hello_goodbye("hello");
             break;
         case WEBSOCKET_EVENT_DATA:
             ESP_LOGV(TAG, "WebSocket data received");
@@ -207,7 +206,7 @@ void was_deinit_task(void *data)
 void deinit_was(void)
 {
     restarting = true;
-    send_goodbye();
+    send_hello_goodbye("goodbye");
     // needs to be done in a task to avoid this error:
     // WEBSOCKET_CLIENT: Client cannot be stopped from websocket task
     xTaskCreate(&was_deinit_task, "was_deinit_task", 4096, NULL, 5, NULL);
@@ -269,12 +268,14 @@ cleanup:
     cJSON_Delete(cjson);
 }
 
-static void send_hello(void)
+static void send_hello_goodbye(const char *type)
 {
     char *json;
     const char *hostname;
     uint8_t mac[6];
     esp_err_t ret;
+
+    ESP_LOGI(TAG, "sending WAS %s", type);
 
     if (!esp_websocket_client_is_connected(hdl_wc)) {
         esp_websocket_client_destroy(hdl_wc);
@@ -294,23 +295,23 @@ static void send_hello(void)
     }
 
     cJSON *cjson = cJSON_CreateObject();
-    cJSON *hello = cJSON_CreateObject();
+    cJSON *msg = cJSON_CreateObject();
     cJSON *mac_arr = cJSON_CreateArray();
 
     for (int i = 0; i < 6; i++) {
         cJSON_AddItemToArray(mac_arr, cJSON_CreateNumber(mac[i]));
     }
 
-    if (cJSON_AddStringToObject(hello, "hostname", hostname) == NULL) {
+    if (cJSON_AddStringToObject(msg, "hostname", hostname) == NULL) {
         goto cleanup;
     }
-    if (cJSON_AddStringToObject(hello, "hw_type", str_hw_type(hw_type)) == NULL) {
+    if (cJSON_AddStringToObject(msg, "hw_type", str_hw_type(hw_type)) == NULL) {
         goto cleanup;
     }
-    if (!cJSON_AddItemToObjectCS(hello, "mac_addr", mac_arr)) {
+    if (!cJSON_AddItemToObjectCS(msg, "mac_addr", mac_arr)) {
         goto cleanup;
     }
-    if (!cJSON_AddItemToObjectCS(cjson, "hello", hello)) {
+    if (!cJSON_AddItemToObjectCS(cjson, type, msg)) {
         goto cleanup;
     }
 
@@ -319,65 +320,7 @@ static void send_hello(void)
     ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
     cJSON_free(json);
     if (ret < 0) {
-        ESP_LOGE(TAG, "failed to send WAS hello message");
-    }
-
-cleanup:
-    cJSON_Delete(cjson);
-}
-
-static void send_goodbye(void)
-{
-    ESP_LOGI(TAG, "Sending WAS goodbye");
-    char *json;
-    const char *hostname;
-    uint8_t mac[6];
-    esp_err_t ret;
-
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
-        esp_websocket_client_destroy(hdl_wc);
-        init_was();
-    }
-
-    ret = esp_netif_get_hostname(hdl_netif, &hostname);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to get hostname");
-        return;
-    }
-
-    ret = esp_efuse_mac_get_default(mac);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to get MAC address from EFUSE");
-        return;
-    }
-
-    cJSON *cjson = cJSON_CreateObject();
-    cJSON *goodbye = cJSON_CreateObject();
-    cJSON *mac_arr = cJSON_CreateArray();
-
-    for (int i = 0; i < 6; i++) {
-        cJSON_AddItemToArray(mac_arr, cJSON_CreateNumber(mac[i]));
-    }
-
-    if (cJSON_AddStringToObject(goodbye, "hostname", hostname) == NULL) {
-        goto cleanup;
-    }
-    if (cJSON_AddStringToObject(goodbye, "hw_type", str_hw_type(hw_type)) == NULL) {
-        goto cleanup;
-    }
-    if (!cJSON_AddItemToObjectCS(goodbye, "mac_addr", mac_arr)) {
-        goto cleanup;
-    }
-    if (!cJSON_AddItemToObjectCS(cjson, "goodbye", goodbye)) {
-        goto cleanup;
-    }
-
-    json = cJSON_Print(cjson);
-
-    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
-    cJSON_free(json);
-    if (ret < 0) {
-        ESP_LOGE(TAG, "failed to send WAS goodbye message");
+        ESP_LOGE(TAG, "failed to send WAS %s message", type);
     }
 
 cleanup:
