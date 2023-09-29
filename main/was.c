@@ -134,6 +134,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     }
                     reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
                     display_set_backlight(true);
+                    deinit_was();
                     restart_delayed();
                 }
 
@@ -165,6 +166,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                             lvgl_port_unlock();
                         }
                         display_set_backlight(true);
+                        deinit_was();
                         restart_delayed();
                     }
                 }
