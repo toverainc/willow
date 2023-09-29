@@ -24,6 +24,10 @@
 
 #include "endpoint/hass.h"
 
+#ifdef CONFIG_MBEDTLS_SSL_PROTO_TLS1_3
+#include "psa/crypto.h"
+#endif
+
 #if defined(CONFIG_WILLOW_ETHERNET)
 #include "net/ethernet.h"
 #endif
@@ -125,6 +129,15 @@ void app_main(void)
         ESP_LOGE(TAG, "failed to open NVS namespace WAS: %s", esp_err_to_name(err));
         goto err_nvs;
     }
+
+#ifdef CONFIG_MBEDTLS_SSL_PROTO_TLS1_3
+    // initialize mbedtls PSA library after wifi to have entropy
+    psa_status_t status = psa_crypto_init();
+    if (status != PSA_SUCCESS) {
+        ESP_LOGE(TAG, "failed to initialize Mbed TLS PSA library, TLS will not work");
+    }
+#endif
+
     sz = sizeof(was_url);
     err = nvs_get_str(hdl_nvs, "URL", was_url, &sz);
     if (err != ESP_OK) {
