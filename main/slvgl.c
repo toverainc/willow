@@ -126,19 +126,9 @@ esp_err_t init_lvgl_display(void)
     return ret;
 }
 
-esp_err_t init_lvgl_touch(void)
+static esp_err_t init_tt21100(void)
 {
     esp_err_t ret = ESP_OK;
-
-    switch (hw_type) {
-        case WILLOW_HW_ESP32_S3_BOX:
-            __attribute__((fallthrough));
-        case WILLOW_HW_ESP32_S3_BOX_3:
-            break;
-        default:
-            ESP_LOGI(TAG, "%s does not have a touch screen, skipping init", str_hw_type(hw_type));
-            return ret;
-    }
 
     esp_lcd_touch_config_t cfg_lt = {
         .flags = {
@@ -182,6 +172,23 @@ esp_err_t init_lvgl_touch(void)
     lv_obj_t *oc = lv_img_create(lv_scr_act());
     lv_img_set_src(oc, &lv_img_hand_left);
     lv_indev_set_cursor(lt, oc);
+
+    return ret;
+}
+
+esp_err_t init_lvgl_touch(void)
+{
+    esp_err_t ret = ESP_OK;
+
+    switch (hw_type) {
+        case WILLOW_HW_ESP32_S3_BOX:
+            __attribute__((fallthrough));
+        case WILLOW_HW_ESP32_S3_BOX_3:
+            init_tt21100();
+            break;
+        default:
+            ESP_LOGI(TAG, "%s does not have a touch screen, skipping init", str_hw_type(hw_type));
+    }
 
     return ret;
 }
