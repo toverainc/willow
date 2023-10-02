@@ -84,6 +84,8 @@ int config_get_int(char *key, const int default_value)
     cJSON *val = cJSON_GetObjectItemCaseSensitive(wc, key);
     if (cJSON_IsNumber(val)) {
         ret = val->valueint;
+    } else {
+        ret = default_value;
     }
     return ret;
 }
