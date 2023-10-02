@@ -15,7 +15,7 @@ static int bl_duty_off;
 static int bl_duty_on;
 enum willow_hw_t hw_type;
 
-esp_err_t init_display_handle(void)
+static esp_err_t init_display_handle(void)
 {
     hdl_lcd = (esp_lcd_panel_handle_t)audio_board_lcd_init(hdl_pset, NULL);
     if (hdl_lcd == NULL) {
@@ -25,7 +25,7 @@ esp_err_t init_display_handle(void)
     }
 }
 
-esp_err_t init_display_bl(void)
+static esp_err_t init_display_bl(void)
 {
     ESP_LOGD(TAG, "initializing display");
 
@@ -108,4 +108,14 @@ void display_set_backlight(const bool on, const bool max)
         duty = bl_duty_off;
     }
     ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, duty, 0);
+}
+
+esp_err_t init_display(void)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret |= init_display_handle();
+    ret |= init_display_bl();
+
+    return ret;
 }
