@@ -240,6 +240,50 @@ esp_err_t init_was(void)
     return err;
 }
 
+esp_err_t was_send_endpoint(const char *data, bool nc_skip)
+{
+    cJSON *in = NULL, *out = NULL;
+    char *json = NULL;
+    esp_err_t ret = ESP_OK;
+
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        if (nc_skip) {
+            return ENOTCONN;
+        }
+        esp_websocket_client_destroy(hdl_wc);
+        init_was();
+    }
+
+    in = cJSON_Parse(data);
+    if (!cJSON_IsObject(in)) {
+        goto cleanup;
+    }
+
+    out = cJSON_CreateObject();
+    if (cJSON_AddStringToObject(out, "cmd", "endpoint") == NULL) {
+        ret = ESP_FAIL;
+        goto cleanup;
+    }
+
+    if (!cJSON_AddItemToObjectCS(out, "data", in)) {
+        ret = ESP_FAIL;
+        goto cleanup;
+    }
+
+    json = cJSON_Print(out);
+
+    cJSON_free(out);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send message to WAS");
+    }
+cleanup:
+    cJSON_Delete(in);
+    return ret;
+}
+
 void request_config(void)
 {
     cJSON *cjson = NULL;
