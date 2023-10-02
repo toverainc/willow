@@ -62,6 +62,8 @@ bool config_get_bool(char *key, const bool default_value)
     cJSON *val = cJSON_GetObjectItemCaseSensitive(wc, key);
     if (val != NULL && cJSON_IsBool(val)) {
         ret = cJSON_IsTrue(val) ? true : false;
+    } else {
+        ret = default_value;
     }
     return ret;
 }
