@@ -328,12 +328,15 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
 #if defined(WILLOW_SUPPORT_MULTINET)
                 // Catch all for local commands
                 command_id = are->type;
+                bool was_mode = config_get_bool("was_mode", DEFAULT_WAS_MODE);
                 char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
                 char *json;
                 json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
                 snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
                          lookup_cmd_multinet(command_id));
-                if (strcmp(command_endpoint, "Home Assistant") == 0) {
+                if (was_mode) {
+                    was_send_endpoint(json, false);
+                } else if (strcmp(command_endpoint, "Home Assistant") == 0) {
                     hass_send(json);
                 } else if (strcmp(command_endpoint, "openHAB") == 0) {
                     openhab_send(lookup_cmd_multinet(command_id));
@@ -469,8 +472,11 @@ static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
                 lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                 lvgl_port_unlock();
             }
+            bool was_mode = config_get_bool("was_mode", DEFAULT_WAS_MODE);
             char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
-            if (strcmp(command_endpoint, "Home Assistant") == 0) {
+            if (was_mode) {
+                was_send_endpoint(buf, false);
+            } else if (strcmp(command_endpoint, "Home Assistant") == 0) {
                 hass_send(buf);
             } else if (strcmp(command_endpoint, "openHAB") == 0) {
                 openhab_send(buf);

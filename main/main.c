@@ -156,11 +156,14 @@ err_nvs:
         vTaskDelay(portMAX_DELAY);
     }
 
-    char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
-    if (strcmp(command_endpoint, "Home Assistant") == 0) {
-        init_hass();
+    bool was_mode = config_get_bool("was_mode", DEFAULT_WAS_MODE);
+    if (!was_mode) {
+        char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
+        if (strcmp(command_endpoint, "Home Assistant") == 0) {
+            init_hass();
+        }
+        free(command_endpoint);
     }
-    free(command_endpoint);
     init_buttons();
     init_input_key_service();
     init_audio();
