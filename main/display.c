@@ -15,7 +15,7 @@ static int bl_duty_off;
 static int bl_duty_on;
 enum willow_hw_t hw_type;
 
-esp_err_t init_display(void)
+esp_err_t init_display_bl(void)
 {
     ESP_LOGD(TAG, "initializing display");
 
