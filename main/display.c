@@ -15,6 +15,16 @@ static int bl_duty_off;
 static int bl_duty_on;
 enum willow_hw_t hw_type;
 
+esp_err_t init_display_handle(void)
+{
+    hdl_lcd = (esp_lcd_panel_handle_t)audio_board_lcd_init(hdl_pset, NULL);
+    if (hdl_lcd == NULL) {
+        return ESP_FAIL;
+    } else {
+        return ESP_OK;
+    }
+}
+
 esp_err_t init_display_bl(void)
 {
     ESP_LOGD(TAG, "initializing display");
@@ -61,7 +71,6 @@ esp_err_t init_display_bl(void)
 
     int ret = ESP_OK;
 
-    hdl_lcd = (esp_lcd_panel_handle_t)audio_board_lcd_init(hdl_pset, NULL);
     ret = esp_lcd_panel_disp_on_off(hdl_lcd, true);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to turn of display: %s", esp_err_to_name(ret));
