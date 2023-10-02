@@ -17,6 +17,7 @@ static const char *willow_hw_t[WILLOW_HW_MAX] = {
     [WILLOW_HW_ESP32_S3_BOX] = "ESP32-S3-BOX",
     [WILLOW_HW_ESP32_S3_BOX_LITE] = "ESP32-S3-BOX-Lite",
     [WILLOW_HW_ESP32_S3_BOX_3] = "ESP32-S3-BOX-3",
+    [WILLOW_HW_ESP32_S3_M5STACK_CORES3] = "M5STACK-CORES3",
 };
 
 volatile bool restarting = false;
@@ -37,6 +38,8 @@ static void set_hw_type(void)
     hw_type = WILLOW_HW_ESP32_S3_BOX_LITE;
 #elif defined(CONFIG_ESP32_S3_BOX_3_BOARD)
     hw_type = WILLOW_HW_ESP32_S3_BOX_3;
+#elif defined(CONFIG_ESP32_S3_M5STACK_CORE_S3)
+    hw_type = WILLOW_HW_ESP32_S3_M5STACK_CORES3;
 #else
     hw_type = WILLOW_HW_UNSUPPORTED;
 #endif

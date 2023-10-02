@@ -30,6 +30,7 @@
 #include "display.h"
 #include "shared.h"
 #include "slvgl.h"
+#include "system.h"
 #include "timer.h"
 #include "ui.h"
 #include "was.h"
@@ -840,6 +841,10 @@ void init_audio(void)
     esp_err_t ret;
     int gpio_level;
 
+    if (hw_type == WILLOW_HW_ESP32_S3_M5STACK_CORES3) {
+        goto skip_mute_check;
+    }
+
     gpio_level = gpio_get_level(GPIO_NUM_1);
     if (gpio_level == 0) {
         ESP_LOGW(TAG, "mute is activated, please unmute to continue startup");
@@ -849,8 +854,9 @@ void init_audio(void)
         }
     }
 
+skip_mute_check:
     hdl_audio_board = audio_board_init();
-    gpio_set_level(get_pa_enable_gpio(), 0);
+    // gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 

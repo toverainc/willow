@@ -40,6 +40,8 @@ static esp_err_t init_display_bl(void)
             __attribute__((fallthrough));
         case WILLOW_HW_UNSUPPORTED:
             __attribute__((fallthrough));
+        case WILLOW_HW_ESP32_S3_M5STACK_CORES3:
+            __attribute__((fallthrough));
         case WILLOW_HW_ESP32_S3_BOX:
             __attribute__((fallthrough));
         case WILLOW_HW_ESP32_S3_BOX_3:
@@ -115,7 +117,9 @@ esp_err_t init_display(void)
     esp_err_t ret = ESP_OK;
 
     ret |= init_display_handle();
-    ret |= init_display_bl();
+    if (hw_type != WILLOW_HW_ESP32_S3_M5STACK_CORES3) {
+        ret |= init_display_bl();
+    }
 
     return ret;
 }

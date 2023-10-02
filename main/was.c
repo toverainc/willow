@@ -501,14 +501,14 @@ static void identify_task(void *data)
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
     display_set_backlight(true, true);
     volume_set(90);
-    gpio_set_level(get_pa_enable_gpio(), 1);
+    // gpio_set_level(get_pa_enable_gpio(), 1);
 
     for (i = 0; i < 5; i++) {
         esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.wav", 0);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
-    gpio_set_level(get_pa_enable_gpio(), 0);
+    // gpio_set_level(get_pa_enable_gpio(), 0);
     volume_set(-1);
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
 

@@ -5,6 +5,7 @@ enum willow_hw_t {
     WILLOW_HW_ESP32_S3_BOX,
     WILLOW_HW_ESP32_S3_BOX_LITE,
     WILLOW_HW_ESP32_S3_BOX_3,
+    WILLOW_HW_ESP32_S3_M5STACK_CORES3,
     WILLOW_HW_MAX, // keep this last
 };
 

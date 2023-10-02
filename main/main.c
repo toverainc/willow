@@ -1,3 +1,6 @@
+#include "driver/i2c.h"
+#include "board.h"
+#include "es7210.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_netif.h"
@@ -62,6 +65,44 @@ static esp_err_t init_spiffs_user(void)
     ESP_LOGI(TAG, "SPIFFS mounted");
 
     return ret;
+}
+
+#define ACK_CHECK_EN 1
+static i2c_port_t i2c_port = I2C_NUM_0;
+
+#define I2C_MASTER_TX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
+#define I2C_MASTER_RX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
+#define WRITE_BIT I2C_MASTER_WRITE  /*!< I2C master write */
+static int do_i2cdetect_cmd()
+{
+    // i2c_driver_install(i2c_port, I2C_MODE_MASTER, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, ESP_INTR_FLAG_IRAM);
+    // i2c_master_driver_initialize();
+    uint8_t address;
+    printf("     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f\r\n");
+    for (int i = 0; i < 128; i += 16) {
+        printf("%02x: ", i);
+        for (int j = 0; j < 16; j++) {
+            fflush(stdout);
+            address = i + j;
+            i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+            i2c_master_start(cmd);
+            i2c_master_write_byte(cmd, (address << 1) | WRITE_BIT, ACK_CHECK_EN);
+            i2c_master_stop(cmd);
+            esp_err_t ret = i2c_master_cmd_begin(i2c_port, cmd, 50 / portTICK_PERIOD_MS);
+            i2c_cmd_link_delete(cmd);
+            if (ret == ESP_OK) {
+                printf("%02x ", address);
+            } else if (ret == ESP_ERR_TIMEOUT) {
+                printf("UU ");
+            } else {
+                printf("-- ");
+            }
+        }
+        printf("\r\n");
+    }
+
+    // i2c_driver_delete(i2c_port);
+    return 0;
 }
 
 void app_main(void)
@@ -160,9 +201,14 @@ err_nvs:
         }
         free(command_endpoint);
     }
+
+#if 0
     init_buttons();
     init_input_key_service();
+#endif
     init_audio();
+    do_i2cdetect_cmd();
+
     init_lvgl_touch();
     init_display_timer();
 
