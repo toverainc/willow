@@ -70,7 +70,7 @@ void cb_scr(lv_event_t *ev)
     }
 }
 
-esp_err_t init_lvgl_display(void)
+esp_err_t init_esp_lvgl_port(void)
 {
     esp_err_t ret = ESP_OK;
     lvgl_lock_timeout = config_get_int("lvgl_lock_timeout", DEFAULT_LOCK_TIMEOUT);
@@ -79,9 +79,13 @@ esp_err_t init_lvgl_display(void)
     ret = lvgl_port_init(&cfg_lp);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize LVGL port: %s", esp_err_to_name(ret));
-        return ret;
     }
+    return ret;
+}
 
+esp_err_t init_lvgl_display(void)
+{
+    esp_err_t ret = ESP_OK;
     // get peripheral handle for LCD
     esp_periph_handle_t hdl_plcd = esp_periph_set_get_by_id(hdl_pset, PERIPH_ID_LCD);
 

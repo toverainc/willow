@@ -79,6 +79,7 @@ void app_main(void)
     init_spiffs_user();
     config_parse();
     init_display();
+    init_esp_lvgl_port();
     init_lvgl_display();
     init_ui();
 

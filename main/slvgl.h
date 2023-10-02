@@ -4,5 +4,6 @@ extern int lvgl_lock_timeout;
 
 void cb_btn_cancel(lv_event_t *);
 void cb_scr(lv_event_t *ev);
+esp_err_t init_esp_lvgl_port(void);
 esp_err_t init_lvgl_display(void);
 esp_err_t init_lvgl_touch(void);
