@@ -80,6 +80,8 @@ void app_main(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
 
+    init_sntp();
+
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
         // NVS partition was truncated and needs to be erased
@@ -151,8 +153,6 @@ err_nvs:
         // wait "indefinitely"
         vTaskDelay(portMAX_DELAY);
     }
-
-    init_sntp();
 
     char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
     if (strcmp(command_endpoint, "Home Assistant") == 0) {
