@@ -14,7 +14,7 @@
 
 #define DEFAULT_NTP_CONFIG "Host"
 #define DEFAULT_NTP_HOST   "pool.ntp.org"
-#define DEFAULT_TIMEZONE   "America/Menominee"
+#define DEFAULT_TIMEZONE   "CST6CDT,M3.2.0,M11.1.0"
 
 #define HOSTNAME_SIZE 20
 #define MAC_ADDR_SIZE 6
