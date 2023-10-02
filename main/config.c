@@ -64,6 +64,7 @@ bool config_get_bool(char *key, const bool default_value)
     } else {
         ret = default_value;
     }
+    ESP_LOGD(TAG, "config_get_bool(%s): %s", key, ret ? "true" : "false");
     return ret;
 }
 
@@ -76,6 +77,7 @@ char *config_get_char(const char *key, const char *default_value)
     } else {
         ret = strndup(default_value, strlen(default_value));
     }
+    ESP_LOGD(TAG, "config_get_char(%s): %s", key, ret);
     return ret;
 }
 
@@ -88,6 +90,7 @@ int config_get_int(char *key, const int default_value)
     } else {
         ret = default_value;
     }
+    ESP_LOGD(TAG, "config_get_int(%s): %d", key, ret);
     return ret;
 }
 
