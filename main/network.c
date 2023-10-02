@@ -71,7 +71,6 @@ esp_err_t init_sntp(void)
         char *ntp_host = config_get_char("ntp_host", DEFAULT_NTP_HOST);
         ESP_LOGI(TAG, "Using configured SNTP server '%s'", ntp_host);
         sntp_setservername(0, ntp_host);
-        free(ntp_host);
     }
     free(ntp_config);
     sntp_set_time_sync_notification_cb(cb_sntp);
