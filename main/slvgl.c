@@ -1,6 +1,7 @@
 #include "board.h"
 #include "driver/ledc.h"
 #include "esp_err.h"
+#include "esp_lcd_ili9341.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_touch_tt21100.h"
 #include "esp_log.h"
@@ -126,6 +127,15 @@ esp_err_t init_lvgl_display(void)
     return ret;
 }
 
+static esp_err_t init_ili934(void)
+{
+    esp_err_t ret = ESP_OK;
+
+    ret = esp_lcd_new_panel_ili9341(lcdp->lcd_io_handle, &lcdp->lcd_dev_cfg, &hdl_lcd);
+
+    return ret;
+}
+
 static esp_err_t init_tt21100(void)
 {
     esp_err_t ret = ESP_OK;
@@ -185,6 +195,9 @@ esp_err_t init_lvgl_touch(void)
             __attribute__((fallthrough));
         case WILLOW_HW_ESP32_S3_BOX_3:
             init_tt21100();
+            break;
+        case WILLOW_HW_ESP32_S3_M5STACK_CORES3:
+            init_ili934();
             break;
         default:
             ESP_LOGI(TAG, "%s does not have a touch screen, skipping init", str_hw_type(hw_type));

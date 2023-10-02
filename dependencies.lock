@@ -5,6 +5,12 @@ dependencies:
       service_url: https://api.components.espressif.com/
       type: service
     version: 1.4.7
+  espressif/esp_lcd_ili9341:
+    component_hash: 53ec49a96629686cbe26ed79ee9322496ef12a0660d5aa4d6c75f6aeaaecd2f6
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 1.0.2
   espressif/esp_lcd_touch:
     component_hash: 6cc76832cda51d73353a7e8d7aa07073d6cdb75b1ad66e2d98badd768f6c830a
     source:
@@ -46,6 +52,6 @@ dependencies:
       service_url: https://api.components.espressif.com/
       type: service
     version: 8.3.9
-manifest_hash: 16e419349385001148c6e6d82b3ab837b2e2869753a81d6fe4ea5f77b9ec754e
+manifest_hash: ff337ddeacfa8f2b080770392381353fa2d415a2914704c54b934f8a9663f6a3
 target: esp32s3
 version: 1.0.0
