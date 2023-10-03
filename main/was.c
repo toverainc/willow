@@ -55,6 +55,31 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     }
                 }
 
+                cJSON *json_result = cJSON_GetObjectItemCaseSensitive(cjson, "result");
+                if (cJSON_IsObject(json_result)) {
+                    cJSON *ok = cJSON_GetObjectItemCaseSensitive(json_result, "ok");
+                    if (ok != NULL && cJSON_IsBool(ok)) {
+                        cJSON *speech = cJSON_GetObjectItemCaseSensitive(json_result, "speech");
+                        if (lvgl_port_lock(lvgl_lock_timeout)) {
+                            lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                            lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                            lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
+                            if (cJSON_IsString(speech) && speech->valuestring != NULL
+                                && strlen(speech->valuestring) > 0) {
+                                cJSON_IsTrue(ok) ? war.fn_ok(speech->valuestring) : war.fn_err(speech->valuestring);
+                                lv_label_set_text_static(lbl_ln4, "Response:");
+                                lv_label_set_text(lbl_ln5, speech->valuestring);
+                            } else {
+                                cJSON_IsTrue(ok) ? war.fn_ok("Success") : war.fn_err("Error");
+                                lv_label_set_text_static(lbl_ln4, "Command status:");
+                                lv_label_set_text(lbl_ln5, cJSON_IsTrue(ok) ? "Success!" : "Error");
+                            }
+                            lvgl_port_unlock();
+                        }
+                    }
+                    goto cleanup;
+                }
+
                 cJSON *json_config = cJSON_GetObjectItemCaseSensitive(cjson, "config");
                 if (cJSON_IsObject(json_config)) {
                     char *config = cJSON_Print(json_config);
