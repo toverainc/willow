@@ -475,6 +475,9 @@ void hass_deinit_task(void *data)
 
 void deinit_hass(void)
 {
+    if (hdl_wc == NULL) {
+        return;
+    }
     // needs to be done in a task to avoid this error:
     // WEBSOCKET_CLIENT: Client cannot be stopped from websocket task
     xTaskCreate(&hass_deinit_task, "hass_deinit_task", 4096, NULL, 5, NULL);
