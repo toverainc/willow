@@ -397,7 +397,7 @@ cleanup:
     cJSON_Delete(cjson);
 }
 
-void send_wake_start(float wake_volume)
+void IRAM_ATTR send_wake_start(float wake_volume)
 {
     char *json;
     esp_err_t ret;
