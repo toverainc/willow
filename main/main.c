@@ -135,9 +135,7 @@ void app_main(void)
     ret = init_was();
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize Willow Application Server connection");
-        if (ld == NULL) {
-            ui_pr_err("Fatal error!", "WAS initialization failed.");
-        }
+        ui_pr_err("Fatal error!", "WAS initialization failed.");
     }
 
     if (!config_valid) {
@@ -149,9 +147,7 @@ void app_main(void)
 // we jump over WAS initialization was without Wi-Fi this will never work
 err_nvs:
     if (state < STATE_NVS_OK) {
-        if (ld == NULL) {
-            ui_pr_err("Fatal error!", "Failed to read NVS partition.");
-        }
+        ui_pr_err("Fatal error!", "Failed to read NVS partition.");
         // wait "indefinitely"
         vTaskDelay(portMAX_DELAY);
     }
