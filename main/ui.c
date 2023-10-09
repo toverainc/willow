@@ -104,6 +104,17 @@ void init_ui(void)
 
 void ui_pr_err(char *ln3, char *ln4)
 {
+    if (ld == NULL) {
+        ESP_LOGE(TAG, "display not initialized, writing error on console");
+        if (ln3 != NULL) {
+            ESP_LOGE(TAG, "%s", ln3);
+        }
+        if (ln4 != NULL) {
+            ESP_LOGE(TAG, "%s", ln4);
+        }
+        return;
+    }
+
     if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
