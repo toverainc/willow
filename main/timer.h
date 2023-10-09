@@ -1,4 +1,4 @@
-#define DISPLAY_TIMEOUT_US 10 * 1000 * 1000
+#define DISPLAY_TIMEOUT 10
 
 extern esp_timer_handle_t hdl_display_timer, hdl_sess_timer;
 

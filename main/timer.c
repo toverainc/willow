@@ -56,5 +56,5 @@ esp_err_t reset_timer(esp_timer_handle_t hdl, int timeout, bool pause)
     if (pause) {
         return ESP_OK;
     }
-    return esp_timer_start_once(hdl, timeout);
+    return esp_timer_start_once(hdl, timeout * 1000 * 1000);
 }
