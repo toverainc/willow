@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -30,19 +31,23 @@ static char *config_read(void)
 {
     char *config = NULL;
 
-    ESP_LOGI(TAG, "opening %s", CONFIG_PATH);
+    struct stat fs;
+    if (stat(CONFIG_PATH, &fs)) {
+        if (errno == ENOENT) {
+            ESP_LOGI(TAG, "%s does not exist, will be requested from WAS", CONFIG_PATH);
+        } else {
+            ESP_LOGE(TAG, "failed to get file status for %s: %s", CONFIG_PATH, strerror(errno));
+        }
+        return NULL;
+    }
 
+    ESP_LOGI(TAG, "opening %s", CONFIG_PATH);
     FILE *f = fopen(CONFIG_PATH, "r");
     if (f == NULL) {
         ESP_LOGE(TAG, "failed to open %s", CONFIG_PATH);
         goto close;
     }
 
-    struct stat fs;
-    if (stat(CONFIG_PATH, &fs)) {
-        ESP_LOGE(TAG, "failed to get file status");
-        goto close;
-    }
     ESP_LOGI(TAG, "config file size: %ld", fs.st_size);
 
     config = calloc(sizeof(char), fs.st_size + 1);
