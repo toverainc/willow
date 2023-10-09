@@ -258,7 +258,7 @@ esp_err_t init_was(void)
 
     if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text_static(lbl_ln4, "Connecting to WAS ...");
+        lv_label_set_text_static(lbl_ln4, "Connecting to WAS...");
         lvgl_port_unlock();
     }
 
