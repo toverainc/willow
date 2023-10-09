@@ -151,7 +151,7 @@ close:
         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         lvgl_port_unlock();
     }
-    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, true);
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
     display_set_backlight(true);
     restart_delayed();
 }

@@ -57,11 +57,11 @@ void cb_scr(lv_event_t *ev)
     // printf("cb_scr\n");
     switch (lv_event_get_code(ev)) {
         case LV_EVENT_RELEASED:
-            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, false);
+            reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
             break;
 
         case LV_EVENT_PRESSED:
-            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, true);
+            reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
             display_set_backlight(true);
             break;
 

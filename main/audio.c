@@ -274,7 +274,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
                 lvgl_port_unlock();
             }
 
-            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, false);
+            reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
             break;
         case AUDIO_REC_WAKEUP_END:
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_END");
@@ -292,7 +292,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
             recorder_sr_wakeup_result_t *wake_data = are->event_data;
             ESP_LOGI(TAG, "wake volume: %f", wake_data->data_volume);
             send_wake_start(wake_data->data_volume);
-            reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, true);
+            reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
 
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
 
@@ -356,7 +356,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
                     lv_label_set_text(lbl_ln2, lookup_cmd_multinet(command_id));
                     lvgl_port_unlock();
                 }
-                reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, false);
+                reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
 #else
                 ESP_LOGE(TAG, "multinet not supported but enabled in config");
 #endif
@@ -785,7 +785,7 @@ static void at_read(void *data)
                         lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
                         lvgl_port_unlock();
                     }
-                    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, false);
+                    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
                     break;
                 default:
                     printf("at_read(): invalid msg '%d'\n", msg);
