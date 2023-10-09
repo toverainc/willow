@@ -36,6 +36,9 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
         case WEBSOCKET_EVENT_CONNECTED:
             ESP_LOGI(TAG, "WebSocket connected");
             send_hello_goodbye("hello");
+            if (!config_valid) {
+                request_config();
+            }
             break;
         case WEBSOCKET_EVENT_DATA:
             ESP_LOGV(TAG, "WebSocket data received");
