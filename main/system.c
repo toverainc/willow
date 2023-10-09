@@ -13,7 +13,7 @@
 
 static const char *TAG = "WILLOW/SYSTEM";
 static const char *willow_hw_t[WILLOW_HW_MAX] = {
-    [WILLOW_HW_UNSUPPORTED] = "Hardware not supported.",
+    [WILLOW_HW_UNSUPPORTED] = "HW-UNSUPPORTED",
     [WILLOW_HW_ESP32_S3_BOX] = "ESP32-S3-BOX",
     [WILLOW_HW_ESP32_S3_BOX_LITE] = "ESP32-S3-BOX-Lite",
     [WILLOW_HW_ESP32_S3_BOX_3] = "ESP32-S3-BOX-3",
