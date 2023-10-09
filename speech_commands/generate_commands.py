@@ -32,7 +32,12 @@ file.close()
 was_url = re.sub("^ws", "http", was_url)
 was_url = re.sub("/ws$", "/api/multinet", was_url)
 
-response = get(was_url)
+try:
+    response = get(was_url)
+except Exception as e:
+    print(f'Could not get Multinet commands from WAS: {e}')
+    sys.exit(0)
+
 commands_json = response.json()
 
 # Start index
