@@ -181,7 +181,7 @@ err:
 
 void ota_start(char *url)
 {
-    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, true);
+    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, true);
     if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);

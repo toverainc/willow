@@ -182,7 +182,7 @@ err_nvs:
     // we can also still crash in the while loop below - this should be improved
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_ota_mark_app_valid_cancel_rollback());
 
-    ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT_US, false));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, false));
 
 #ifdef CONFIG_WILLOW_DEBUG_RUNTIME_STATS
     xTaskCreate(&task_debug_runtime_stats, "dbg_runtime_stats", 4 * 1024, NULL, 0, NULL);
