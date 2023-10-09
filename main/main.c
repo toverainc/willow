@@ -139,7 +139,6 @@ void app_main(void)
     }
 
     if (!config_valid) {
-        request_config();
         // wait "indefinitely"
         vTaskDelay(portMAX_DELAY);
     }
