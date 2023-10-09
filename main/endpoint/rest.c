@@ -88,7 +88,7 @@ void rest_send(const char *data)
         lvgl_port_unlock();
     }
 
-    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, false);
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
 
     free(body);
 }

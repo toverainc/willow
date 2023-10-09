@@ -10,6 +10,7 @@
 #include "lvgl.h"
 
 #include "audio.h"
+#include "config.h"
 #include "display.h"
 #include "endpoint/hass.h"
 #include "http.h"
@@ -181,7 +182,7 @@ err:
 
 void ota_start(char *url)
 {
-    reset_timer(hdl_display_timer, DISPLAY_TIMEOUT, true);
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
     if (lvgl_port_lock(lvgl_lock_timeout)) {
         lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
