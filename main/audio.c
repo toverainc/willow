@@ -64,6 +64,7 @@
 #define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
 QueueHandle_t q_ea, q_rec;
+audio_board_handle_t hdl_audio_board = NULL;
 audio_rec_handle_t hdl_ar = NULL;
 esp_audio_handle_t hdl_ea = NULL;
 volatile bool multiwake_won = false;
@@ -819,6 +820,14 @@ static void at_read(void *data)
     vTaskDelete(NULL);
 }
 
+esp_err_t volume_set(int volume)
+{
+    if (volume < 0) {
+        volume = config_get_int("speaker_volume", DEFAULT_SPEAKER_VOLUME);
+    }
+    return audio_hal_set_volume(hdl_audio_board->audio_hal, volume);
+}
+
 void init_audio(void)
 {
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
@@ -835,7 +844,7 @@ void init_audio(void)
         }
     }
 
-    audio_board_handle_t hdl_audio_board = audio_board_init();
+    hdl_audio_board = audio_board_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
@@ -848,7 +857,7 @@ void init_audio(void)
     free(speech_rec_mode);
     init_esp_audio(hdl_audio_board);
     start_rec();
-    audio_hal_set_volume(hdl_audio_board->audio_hal, config_get_int("speaker_volume", DEFAULT_SPEAKER_VOLUME));
+    volume_set(-1);
     es7210_adc_set_gain(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");

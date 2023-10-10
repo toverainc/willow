@@ -21,3 +21,4 @@ extern struct willow_audio_response war;
 
 void deinit_audio(void);
 void init_audio(void);
+esp_err_t volume_set(int volume);
