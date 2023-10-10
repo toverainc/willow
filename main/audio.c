@@ -54,6 +54,7 @@
 #define DEFAULT_STREAM_TIMEOUT      5
 #define DEFAULT_VAD_MODE            3
 #define DEFAULT_VAD_TIMEOUT         300
+#define DEFAULT_WAKE_CONFIRMATION   true
 #define DEFAULT_WAKE_MODE           "2CH_90"
 #define DEFAULT_WAKE_WORD           "hiesp"
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
@@ -91,7 +92,7 @@ static void play_audio_err(void *data)
     esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, "spiffs://spiffs/user/audio/error.wav", 0);
 }
 
-static void play_audio_ok(void *data)
+void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
     esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, "spiffs://spiffs/user/audio/success.wav", 0);
@@ -287,6 +288,11 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
             ESP_LOGI(TAG, "AUDIO_REC_WAKEUP_START");
             if (recording) {
                 break;
+            }
+            if (!config_get_bool("multiwake", false)) {
+                if (config_get_bool("wake_confirmation", DEFAULT_WAKE_CONFIRMATION)) {
+                    play_audio_ok(NULL);
+                }
             }
             // win by default so in case WAS multiwake handling goes wrong we act normally
             multiwake_won = true;
