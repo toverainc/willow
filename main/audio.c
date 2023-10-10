@@ -321,7 +321,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
                 lvgl_port_unlock();
             }
             free(speech_rec_mode);
-            display_set_backlight(true);
+            display_set_backlight(true, false);
             break;
         default:
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
