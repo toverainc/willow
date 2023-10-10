@@ -170,7 +170,8 @@ err_nvs:
 #endif
 
     const esp_app_desc_t *app_desc = esp_app_get_description();
-    ESP_LOGI(TAG, "Startup complete! Version: %s. Waiting for wake word.", app_desc->version);
+    ESP_LOGI(TAG, "Startup complete! Hardware: %s. Version: %s. Waiting for wake word.", str_hw_type(hw_type),
+             app_desc->version);
 
     // if we reached this point, we can mark the current partition valid
     // we can still crash on wake or other events but we should be able to do another OTA
