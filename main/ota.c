@@ -29,8 +29,8 @@ void ota_task(void *data)
 {
     bool hdr_checked = false;
     char *url = (char *)data;
-    const esp_partition_t *pt_bad, *pt_boot, *pt_cur, *pt_new;
-    esp_app_desc_t app_desc_bad, app_desc_cur, app_desc_new;
+    const esp_partition_t *pt_boot, *pt_cur, *pt_new;
+    esp_app_desc_t app_desc_cur, app_desc_new;
     esp_err_t ret = ESP_OK;
     esp_http_client_handle_t hdl_hc = init_http_client();
     esp_ota_handle_t hdl_ota = 0;
@@ -75,12 +75,6 @@ void ota_task(void *data)
         ESP_LOGI(TAG, "current firmware version: %s", app_desc_cur.version);
     }
 
-    pt_bad = esp_ota_get_last_invalid_partition();
-    ret = esp_ota_get_partition_description(pt_bad, &app_desc_bad);
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "last bad firmware version: %s", app_desc_cur.version);
-    }
-
     while (true) {
         read = esp_http_client_read(hdl_hc, ota_data, BUFSIZE);
 
@@ -106,13 +100,6 @@ void ota_task(void *data)
                     memcpy(&app_desc_new, &ota_data[sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t)],
                            sizeof(esp_app_desc_t));
                     ESP_LOGI(TAG, "new firmware version: %s", app_desc_new.version);
-
-                    if (pt_bad != NULL) {
-                        if (memcmp(app_desc_bad.version, app_desc_new.version, sizeof(app_desc_new.version)) == 0) {
-                            ESP_LOGW(TAG, "OTA version (%s) previously failed, aborting update", app_desc_new.version);
-                            goto err;
-                        }
-                    }
 
                     hdr_checked = true;
 
