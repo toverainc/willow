@@ -157,6 +157,6 @@ close:
         lvgl_port_unlock();
     }
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
-    display_set_backlight(true);
+    display_set_backlight(true, false);
     restart_delayed();
 }

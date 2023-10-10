@@ -10,6 +10,7 @@
 #define DEFAULT_LCD_BRIGHTNESS 700
 
 static const char *TAG = "WILLOW/DISPLAY";
+static int bl_duty_max;
 static int bl_duty_off;
 static int bl_duty_on;
 enum willow_hw_t hw_type;
@@ -20,6 +21,7 @@ esp_err_t init_display(void)
 
     switch (hw_type) {
         case WILLOW_HW_ESP32_S3_BOX_LITE:
+            bl_duty_max = 0;
             bl_duty_off = 1023;
             bl_duty_on = bl_duty_off - config_get_int("lcd_brightness", DEFAULT_LCD_BRIGHTNESS);
             break;
@@ -31,6 +33,7 @@ esp_err_t init_display(void)
         case WILLOW_HW_ESP32_S3_BOX:
             __attribute__((fallthrough));
         case WILLOW_HW_ESP32_S3_BOX_3:
+            bl_duty_max = 1023;
             bl_duty_off = 0;
             bl_duty_on = config_get_int("lcd_brightness", DEFAULT_LCD_BRIGHTNESS);
             break;
@@ -86,11 +89,14 @@ esp_err_t init_display(void)
     return ret;
 }
 
-void display_set_backlight(const bool on)
+void display_set_backlight(const bool on, const bool max)
 {
+    int duty;
+
     if (on) {
-        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, bl_duty_on, 0);
+        duty = max ? bl_duty_max : bl_duty_on;
     } else {
-        ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, bl_duty_off, 0);
+        duty = bl_duty_off;
     }
+    ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, duty, 0);
 }

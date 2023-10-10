@@ -62,7 +62,7 @@ void cb_scr(lv_event_t *ev)
 
         case LV_EVENT_PRESSED:
             reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
-            display_set_backlight(true);
+            display_set_backlight(true, false);
             break;
 
         default:

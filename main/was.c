@@ -163,7 +163,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                         lvgl_port_unlock();
                     }
                     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
-                    display_set_backlight(true);
+                    display_set_backlight(true, false);
                     deinit_was();
                     restart_delayed();
                 }
@@ -196,7 +196,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                             lvgl_port_unlock();
                         }
                         deinit_was();
-                        display_set_backlight(true);
+                        display_set_backlight(true, false);
                         deinit_was();
                         restart_delayed();
                     }
