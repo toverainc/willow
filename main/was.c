@@ -1,3 +1,4 @@
+#include "board.h"
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
@@ -25,6 +26,7 @@ static esp_websocket_client_handle_t hdl_wc = NULL;
 
 esp_netif_t *hdl_netif;
 
+static void identify_task(void *data);
 static void send_hello_goodbye(const char *type);
 
 static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev,
@@ -171,6 +173,11 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                 cJSON *json_cmd = cJSON_GetObjectItemCaseSensitive(cjson, "cmd");
                 if (cJSON_IsString(json_cmd) && json_cmd->valuestring != NULL) {
                     ESP_LOGI(TAG, "found command in WebSocket message: %s", json_cmd->valuestring);
+                    if (strcmp(json_cmd->valuestring, "identify") == 0) {
+                        ESP_LOGI(TAG, "received identify command");
+                        xTaskCreate(&identify_task, "identify_task", 4096, NULL, 4, NULL);
+                    }
+
                     if (strcmp(json_cmd->valuestring, "ota_start") == 0) {
                         cJSON *json_ota_url = cJSON_GetObjectItemCaseSensitive(cjson, "ota_url");
                         if (cJSON_IsString(json_ota_url) && json_ota_url->valuestring != NULL) {
@@ -475,4 +482,25 @@ void send_wake_end(void)
 
 cleanup:
     cJSON_Delete(cjson);
+}
+
+static void identify_task(void *data)
+{
+    int i;
+
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
+    display_set_backlight(true, true);
+    volume_set(90);
+    gpio_set_level(get_pa_enable_gpio(), 1);
+
+    for (i = 0; i < 5; i++) {
+        esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.wav", 0);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+
+    gpio_set_level(get_pa_enable_gpio(), 0);
+    volume_set(-1);
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
+
+    vTaskDelete(NULL);
 }
