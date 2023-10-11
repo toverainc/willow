@@ -54,7 +54,7 @@
 #define DEFAULT_STREAM_TIMEOUT      5
 #define DEFAULT_VAD_MODE            3
 #define DEFAULT_VAD_TIMEOUT         300
-#define DEFAULT_WAKE_CONFIRMATION   true
+#define DEFAULT_WAKE_CONFIRMATION   false
 #define DEFAULT_WAKE_MODE           "2CH_90"
 #define DEFAULT_WAKE_WORD           "hiesp"
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
