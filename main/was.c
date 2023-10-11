@@ -59,7 +59,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                             multiwake_won = false;
                             audio_recorder_trigger_stop(hdl_ar);
                             goto cleanup;
-                        } else {
+                        } else if (config_get_bool("wake_confirmation", DEFAULT_WAKE_CONFIRMATION)) {
                             play_audio_ok(NULL);
                         }
                     }
