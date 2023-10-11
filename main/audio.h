@@ -1,6 +1,8 @@
 #include "audio_recorder.h"
 #include "esp_audio.h"
 
+#define DEFAULT_WAKE_CONFIRMATION false
+
 struct willow_audio_response {
     void (*fn_err)(void *data);
     void (*fn_ok)(void *data);
