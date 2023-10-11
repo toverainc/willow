@@ -30,7 +30,8 @@ file.close()
 
 # sdkconfig has WebSocket URL
 was_url = re.sub("^ws", "http", was_url)
-was_url = re.sub("/ws$", "/api/multinet", was_url)
+was_url = re.sub("/ws$", "/api/config", was_url)
+was_url = f"{was_url}?type=multinet"
 
 try:
     response = get(was_url)
