@@ -233,8 +233,15 @@ cleanup:
 void was_deinit_task(void *data)
 {
     ESP_LOGI(TAG, "stopping WebSocket client");
-    esp_err_t ret = esp_websocket_client_close(hdl_wc, portMAX_DELAY);
-    ret = esp_websocket_client_destroy(hdl_wc);
+    esp_err_t ret = esp_websocket_client_destroy_on_exit(hdl_wc);
+    if (ret != ESP_OK) {
+        ESP_LOGW(TAG, "failed to enable destroy on exit");
+    }
+
+    ret = esp_websocket_client_close(hdl_wc, portMAX_DELAY);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to cleanly close WebSocket client");
+    }
 
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to stop WebSocket client: %s", esp_err_to_name(ret));
