@@ -828,6 +828,10 @@ static void at_read(void *data)
 
 esp_err_t volume_set(int volume)
 {
+    if (hw_type == WILLOW_HW_ESP32_S3_M5STACK_CORES3) {
+        return ESP_OK;
+    }
+
     if (volume < 0) {
         volume = config_get_int("speaker_volume", DEFAULT_SPEAKER_VOLUME);
     }
