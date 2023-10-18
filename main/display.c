@@ -104,6 +104,10 @@ void display_set_backlight(const bool on, const bool max)
 {
     int duty;
 
+    if (hw_type == WILLOW_HW_ESP32_S3_M5STACK_CORES3) {
+        return;
+    }
+
     if (on) {
         duty = max ? bl_duty_max : bl_duty_on;
     } else {
