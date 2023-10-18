@@ -132,6 +132,10 @@ static void init_audio_response(void)
         war.fn_err = noop;
         war.fn_ok = noop;
     }
+    if (hw_type == WILLOW_HW_ESP32_S3_M5STACK_CORES3) {
+        war.fn_err = noop;
+        war.fn_ok = noop;
+    }
     free(audio_response_type);
 }
 
