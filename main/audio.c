@@ -64,7 +64,7 @@
 #define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
 QueueHandle_t q_ea, q_rec;
-audio_board_handle_t hdl_audio_board = NULL;
+audio_hal_handle_t hdl_aha = NULL, hdl_ahc = NULL;
 audio_rec_handle_t hdl_ar = NULL;
 esp_audio_handle_t hdl_ea = NULL;
 volatile bool multiwake_won = false;
@@ -134,7 +134,7 @@ static void init_audio_response(void)
     free(audio_response_type);
 }
 
-static void init_esp_audio(audio_board_handle_t hdl)
+static void init_esp_audio(void)
 {
     audio_err_t ret = ESP_OK;
     q_ea = xQueueCreate(3, sizeof(esp_audio_state_t));
@@ -150,7 +150,7 @@ static void init_esp_audio(audio_board_handle_t hdl)
         .task_prio = 6,
         .task_stack = 4 * 1024,
         .vol_get = (audio_volume_get)audio_hal_get_volume,
-        .vol_handle = hdl->audio_hal,
+        .vol_handle = hdl_ahc,
         .vol_set = (audio_volume_set)audio_hal_set_volume,
     };
 
@@ -830,7 +830,7 @@ esp_err_t volume_set(int volume)
     if (volume < 0) {
         volume = config_get_int("speaker_volume", DEFAULT_SPEAKER_VOLUME);
     }
-    return audio_hal_set_volume(hdl_audio_board->audio_hal, volume);
+    return audio_hal_set_volume(hdl_ahc, volume);
 }
 
 void init_audio(void)
@@ -849,9 +849,10 @@ void init_audio(void)
         }
     }
 
-    hdl_audio_board = audio_board_init();
+    hdl_ahc = audio_board_codec_init();
+    hdl_aha = audio_board_adc_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
-    ret = audio_hal_ctrl_codec(hdl_audio_board->audio_hal, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
+    ret = audio_hal_ctrl_codec(hdl_ahc, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
     init_audio_response();
@@ -860,7 +861,7 @@ void init_audio(void)
         init_ap_to_api();
     }
     free(speech_rec_mode);
-    init_esp_audio(hdl_audio_board);
+    init_esp_audio();
     start_rec();
     volume_set(-1);
     es7210_adc_set_gain(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
