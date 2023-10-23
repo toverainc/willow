@@ -840,6 +840,13 @@ void init_audio(void)
     esp_err_t ret;
     int gpio_level;
 
+    hdl_ahc = audio_board_codec_init();
+    gpio_set_level(get_pa_enable_gpio(), 0);
+    ret = audio_hal_ctrl_codec(hdl_ahc, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
+    ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
+    init_esp_audio();
+    volume_set(-1);
+
     gpio_level = gpio_get_level(GPIO_NUM_1);
     if (gpio_level == 0) {
         ESP_LOGW(TAG, "mute is activated, please unmute to continue startup");
@@ -849,11 +856,7 @@ void init_audio(void)
         }
     }
 
-    hdl_ahc = audio_board_codec_init();
     hdl_aha = audio_board_adc_init();
-    gpio_set_level(get_pa_enable_gpio(), 0);
-    ret = audio_hal_ctrl_codec(hdl_ahc, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
-    ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
 
     init_audio_response();
     init_session_timer();
@@ -861,9 +864,7 @@ void init_audio(void)
         init_ap_to_api();
     }
     free(speech_rec_mode);
-    init_esp_audio();
     start_rec();
-    volume_set(-1);
     es7210_adc_set_gain(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
