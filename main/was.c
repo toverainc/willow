@@ -33,7 +33,6 @@ struct notify_data {
     int repeat;
 };
 
-static void identify_task(void *data);
 static void notify_task(void *data);
 static void send_hello_goodbye(const char *type);
 
@@ -222,7 +221,13 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
 
                     if (strcmp(json_cmd->valuestring, "identify") == 0) {
                         ESP_LOGI(TAG, "received identify command");
-                        xTaskCreate(&identify_task, "identify_task", 4096, NULL, 4, NULL);
+                        struct notify_data *nd = (struct notify_data *)calloc(1, sizeof(struct notify_data));
+                        const char *audio_url = "spiffs://spiffs/user/audio/success.wav";
+                        const char *text = "WAS Locate Active!";
+                        nd->audio_url = strndup(audio_url, strlen(audio_url));
+                        nd->repeat = 5;
+                        nd->text = strndup(text, strlen(text));
+                        xTaskCreate(&notify_task, "notify_task", 4096, nd, 4, NULL);
                         goto cleanup;
                     }
 
@@ -536,27 +541,6 @@ void send_wake_end(void)
 
 cleanup:
     cJSON_Delete(cjson);
-}
-
-static void identify_task(void *data)
-{
-    int i;
-
-    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
-    display_set_backlight(true, true);
-    volume_set(90);
-    gpio_set_level(get_pa_enable_gpio(), 1);
-
-    for (i = 0; i < 5; i++) {
-        esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.wav", 0);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-
-    gpio_set_level(get_pa_enable_gpio(), 0);
-    volume_set(-1);
-    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
-
-    vTaskDelete(NULL);
 }
 
 void cb_btn_cancel_notify(lv_event_t *ev)
