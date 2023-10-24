@@ -180,6 +180,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                     if (strcmp(json_cmd->valuestring, "identify") == 0) {
                         ESP_LOGI(TAG, "received identify command");
                         xTaskCreate(&identify_task, "identify_task", 4096, NULL, 4, NULL);
+                        goto cleanup;
                     }
 
                     if (strcmp(json_cmd->valuestring, "ota_start") == 0) {
