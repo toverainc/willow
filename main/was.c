@@ -23,10 +23,18 @@
 
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
+static volatile bool notify_active;
 
 esp_netif_t *hdl_netif;
 
+struct notify_data {
+    char *audio_url;
+    char *text;
+    int repeat;
+};
+
 static void identify_task(void *data);
+static void notify_task(void *data);
 static void send_hello_goodbye(const char *type);
 
 static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, const int32_t id_ev,
@@ -177,6 +185,41 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                 cJSON *json_cmd = cJSON_GetObjectItemCaseSensitive(cjson, "cmd");
                 if (cJSON_IsString(json_cmd) && json_cmd->valuestring != NULL) {
                     ESP_LOGI(TAG, "found command in WebSocket message: %s", json_cmd->valuestring);
+                    if (strcmp(json_cmd->valuestring, "notify") == 0) {
+                        ESP_LOGI(TAG, "received notify command");
+                        cJSON *data = cJSON_GetObjectItemCaseSensitive(cjson, "data");
+                        if (cJSON_IsObject(data)) {
+                            struct notify_data *nd = (struct notify_data *)calloc(1, sizeof(struct notify_data));
+
+                            cJSON *audio_url = cJSON_GetObjectItemCaseSensitive(data, "audio_url");
+                            if (cJSON_IsString(audio_url) && audio_url->valuestring != NULL) {
+                                ESP_LOGI(TAG, "audio URL in notify command: %s", audio_url->valuestring);
+                                nd->audio_url = strndup(audio_url->valuestring, strlen(audio_url->valuestring));
+                            } else {
+                                nd->audio_url = NULL;
+                            }
+
+                            cJSON *text = cJSON_GetObjectItemCaseSensitive(data, "text");
+                            if (cJSON_IsString(text) && text->valuestring != NULL) {
+                                ESP_LOGI(TAG, "text in notify command: %s", text->valuestring);
+                                nd->text = strndup(text->valuestring, strlen(text->valuestring));
+                            } else {
+                                nd->text = NULL;
+                            }
+
+                            cJSON *repeat = cJSON_GetObjectItemCaseSensitive(data, "repeat");
+                            if (cJSON_IsNumber(repeat)) {
+                                nd->repeat = repeat->valueint;
+                            } else {
+                                nd->repeat = 1;
+                            }
+
+                            xTaskCreate(&notify_task, "notify_task", 4096, nd, 4, NULL);
+                        }
+
+                        goto cleanup;
+                    }
+
                     if (strcmp(json_cmd->valuestring, "identify") == 0) {
                         ESP_LOGI(TAG, "received identify command");
                         xTaskCreate(&identify_task, "identify_task", 4096, NULL, 4, NULL);
@@ -513,5 +556,75 @@ static void identify_task(void *data)
     volume_set(-1);
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
 
+    vTaskDelete(NULL);
+}
+
+void cb_btn_cancel_notify(lv_event_t *ev)
+{
+    ESP_LOGD(TAG, "btn_cancel pressed");
+    notify_active = false;
+}
+
+static void notify_task(void *data)
+{
+    int i;
+    struct notify_data *nd = (struct notify_data *)data;
+
+    notify_active = true;
+
+    if (!nd) {
+        ESP_LOGW(TAG, "notify_task called with empty data");
+        goto out;
+    }
+
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
+        if (nd->text == NULL) {
+            lv_label_set_text_static(lbl_ln3, "Notification Active");
+        } else {
+            lv_label_set_text(lbl_ln3, nd->text);
+            free(nd->text);
+        }
+        lv_obj_remove_event_cb(btn_cancel, cb_btn_cancel);
+        lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_event_cb(btn_cancel, cb_btn_cancel_notify, LV_EVENT_PRESSED, NULL);
+        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
+        lvgl_port_unlock();
+    }
+
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
+    display_set_backlight(true, true);
+
+    if (nd->audio_url != NULL) {
+        volume_set(90);
+        gpio_set_level(get_pa_enable_gpio(), 1);
+
+        for (i = 0; i < nd->repeat; i++) {
+            if (!notify_active) {
+                break;
+            }
+            esp_audio_sync_play(hdl_ea, nd->audio_url, 0);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+
+        free(nd->audio_url);
+
+        gpio_set_level(get_pa_enable_gpio(), 0);
+        volume_set(-1);
+    }
+
+    if (lvgl_port_lock(lvgl_lock_timeout)) {
+        lv_obj_add_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_remove_event_cb(btn_cancel, cb_btn_cancel_notify);
+        lvgl_port_unlock();
+    }
+
+    reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
+
+out:
+    notify_active = false;
     vTaskDelete(NULL);
 }
