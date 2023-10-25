@@ -29,8 +29,11 @@ esp_netif_t *hdl_netif;
 
 struct notify_data {
     char *audio_url;
+    bool backlight;
+    bool backlight_max;
     char *text;
     int repeat;
+    int volume;
 };
 
 static void notify_task(void *data);
@@ -211,6 +214,23 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                                 nd->repeat = repeat->valueint;
                             } else {
                                 nd->repeat = 1;
+                            }
+
+                            cJSON *backlight = cJSON_GetObjectItemCaseSensitive(data, "backlight");
+                            if (cJSON_IsBool(backlight)) {
+                                nd->backlight = cJSON_IsTrue(backlight) ? true : false;
+                            }
+
+                            cJSON *backlight_max = cJSON_GetObjectItemCaseSensitive(data, "backlight_max");
+                            if (cJSON_IsBool(backlight_max)) {
+                                nd->backlight_max = cJSON_IsTrue(backlight_max) ? true : false;
+                            }
+
+                            cJSON *volume = cJSON_GetObjectItemCaseSensitive(data, "volume");
+                            if (cJSON_IsNumber(volume)) {
+                                nd->volume = volume->valueint;
+                            } else {
+                                nd->volume = 90;
                             }
 
                             xTaskCreate(&notify_task, "notify_task", 4096, nd, 4, NULL);
@@ -576,14 +596,16 @@ static void notify_task(void *data)
         lv_obj_add_event_cb(btn_cancel, cb_btn_cancel_notify, LV_EVENT_PRESSED, NULL);
         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_set_width(lbl_ln3, 320);
+        lv_label_set_long_mode(lbl_ln3, LV_LABEL_LONG_SCROLL);
         lvgl_port_unlock();
     }
 
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
-    display_set_backlight(true, true);
+    display_set_backlight(nd->backlight, nd->backlight_max);
 
     if (nd->audio_url != NULL) {
-        volume_set(90);
+        volume_set(nd->volume);
         gpio_set_level(get_pa_enable_gpio(), 1);
 
         for (i = 0; i < nd->repeat; i++) {
