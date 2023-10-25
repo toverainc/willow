@@ -219,11 +219,15 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                             cJSON *backlight = cJSON_GetObjectItemCaseSensitive(data, "backlight");
                             if (cJSON_IsBool(backlight)) {
                                 nd->backlight = cJSON_IsTrue(backlight) ? true : false;
+                            } else {
+                                nd->backlight = true;
                             }
 
                             cJSON *backlight_max = cJSON_GetObjectItemCaseSensitive(data, "backlight_max");
                             if (cJSON_IsBool(backlight_max)) {
                                 nd->backlight_max = cJSON_IsTrue(backlight_max) ? true : false;
+                            } else {
+                                nd->backlight_max = true;
                             }
 
                             cJSON *volume = cJSON_GetObjectItemCaseSensitive(data, "volume");
