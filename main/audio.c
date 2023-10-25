@@ -178,7 +178,7 @@ static void init_esp_audio(void)
 
     esp_decoder_cfg_t cfg_dec = {
         .out_rb_size = ESP_DECODER_RINGBUFFER_SIZE,
-        .plus_enable = false,
+        .plus_enable = true,
         .stack_in_ext = true,
         .task_core = 0,
         .task_prio = ESP_DECODER_TASK_PRIO,
