@@ -171,10 +171,22 @@ static void init_esp_audio(void)
         ESP_LOGE(TAG, "failed to add input stream to ESP Audio");
     }
 
+    // disable clang-format to allow each member on a new line
+    // clang-format off
     audio_decoder_t ad[] = {
+        DEFAULT_ESP_AAC_DECODER_CONFIG(),
+        DEFAULT_ESP_AMRNB_DECODER_CONFIG(),
+        DEFAULT_ESP_AMRWB_DECODER_CONFIG(),
         DEFAULT_ESP_FLAC_DECODER_CONFIG(),
+        DEFAULT_ESP_M4A_DECODER_CONFIG(),
+        DEFAULT_ESP_MP3_DECODER_CONFIG(),
+        DEFAULT_ESP_OGG_DECODER_CONFIG(),
+        DEFAULT_ESP_OPUS_DECODER_CONFIG(),
+        DEFAULT_ESP_PCM_DECODER_CONFIG(),
+        DEFAULT_ESP_TS_DECODER_CONFIG(),
         DEFAULT_ESP_WAV_DECODER_CONFIG(),
     };
+    // clang-format on
 
     esp_decoder_cfg_t cfg_dec = {
         .out_rb_size = ESP_DECODER_RINGBUFFER_SIZE,
