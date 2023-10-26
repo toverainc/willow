@@ -8,6 +8,7 @@
 #include "system.h"
 
 #define DEFAULT_LCD_BRIGHTNESS 700
+#define MIN_STROBE_PERIOD      20
 
 static const char *TAG = "WILLOW/DISPLAY";
 static int bl_duty_max;
@@ -99,4 +100,27 @@ void display_set_backlight(const bool on, const bool max)
         duty = bl_duty_off;
     }
     ledc_set_duty_and_update(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_1, duty, 0);
+}
+
+void display_backlight_strobe_task(void *data)
+{
+    int period_ms = MIN_STROBE_PERIOD;
+    willow_strobe_parms_t *wsp = (willow_strobe_parms_t *)data;
+
+    if (wsp->period_ms >= MIN_STROBE_PERIOD) {
+        period_ms = wsp->period_ms;
+    }
+    // this has the potential to leak if the task is deleted before we reach here
+    free(wsp);
+
+    ESP_LOGI(TAG, "starting display backlight strobe effect with period '%d'", period_ms);
+
+    while (true) {
+        display_set_backlight(true, true);
+        vTaskDelay(period_ms / portTICK_PERIOD_MS);
+        display_set_backlight(false, false);
+        vTaskDelay(period_ms / portTICK_PERIOD_MS);
+    }
+
+    vTaskDelete(NULL);
 }
