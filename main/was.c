@@ -33,6 +33,7 @@ struct notify_data {
     bool backlight_max;
     char *text;
     int repeat;
+    int strobe_period_ms;
     int volume;
 };
 
@@ -228,6 +229,13 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                                 nd->backlight_max = cJSON_IsTrue(backlight_max) ? true : false;
                             } else {
                                 nd->backlight_max = true;
+                            }
+
+                            cJSON *strobe_period_ms = cJSON_GetObjectItemCaseSensitive(data, "strobe_period_ms");
+                            if (cJSON_IsNumber(strobe_period_ms)) {
+                                nd->strobe_period_ms = strobe_period_ms->valueint;
+                            } else {
+                                nd->strobe_period_ms = 0;
                             }
 
                             cJSON *volume = cJSON_GetObjectItemCaseSensitive(data, "volume");
@@ -575,6 +583,7 @@ void cb_btn_cancel_notify(lv_event_t *ev)
 
 static void notify_task(void *data)
 {
+    TaskHandle_t hdl_task_strobe = NULL;
     int i;
     struct notify_data *nd = (struct notify_data *)data;
 
@@ -608,6 +617,12 @@ static void notify_task(void *data)
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), true);
     display_set_backlight(nd->backlight, nd->backlight_max);
 
+    if (nd->strobe_period_ms > 0) {
+        willow_strobe_parms_t *wsp = (willow_strobe_parms_t *)calloc(1, sizeof(willow_strobe_parms_t));
+        wsp->period_ms = nd->strobe_period_ms;
+        xTaskCreatePinnedToCore(display_backlight_strobe_task, "strobe_task", 2048, wsp, 5, &hdl_task_strobe, 0);
+    }
+
     if (nd->audio_url != NULL) {
         volume_set(nd->volume);
         gpio_set_level(get_pa_enable_gpio(), 1);
@@ -635,6 +650,10 @@ static void notify_task(void *data)
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
 
 out:
+    if (hdl_task_strobe != NULL) {
+        vTaskDelete(hdl_task_strobe);
+        display_set_backlight(true, false);
+    }
     notify_active = false;
     vTaskDelete(NULL);
 }
