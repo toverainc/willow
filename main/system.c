@@ -1,3 +1,4 @@
+#include "board.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
@@ -19,6 +20,7 @@ static const char *willow_hw_t[WILLOW_HW_MAX] = {
     [WILLOW_HW_ESP32_S3_BOX_3] = "ESP32-S3-BOX-3",
 };
 
+i2c_bus_handle_t hdl_i2c_bus;
 volatile bool restarting = false;
 
 const char *str_hw_type(int id)
@@ -52,9 +54,26 @@ static esp_err_t init_ev_loop()
     return ret;
 }
 
+static void init_i2c(void)
+{
+    int ret = ESP_OK;
+    i2c_config_t i2c_cfg = {
+        .mode = I2C_MODE_MASTER,
+        .sda_pullup_en = GPIO_PULLUP_ENABLE,
+        .scl_pullup_en = GPIO_PULLUP_ENABLE,
+        .master.clk_speed = 100000,
+    };
+    ret = get_i2c_pins(I2C_NUM_0, &i2c_cfg);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "failed to get I2C pins");
+    }
+    hdl_i2c_bus = i2c_bus_create(I2C_NUM_0, &i2c_cfg);
+}
+
 void init_system(void)
 {
     set_hw_type();
+    init_i2c();
     ESP_ERROR_CHECK(init_ev_loop());
 }
 
