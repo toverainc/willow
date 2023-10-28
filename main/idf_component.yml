@@ -1,5 +1,6 @@
 ## IDF Component Manager Manifest File
 dependencies:
+  espressif/esp_lcd_touch_gt911: "1.1.0"
   lvgl/lvgl: "8.3.9"
   espressif/esp_websocket_client: "1.1.0"
   espressif/nghttp: "1.52.0"

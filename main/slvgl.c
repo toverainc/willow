@@ -2,10 +2,12 @@
 #include "driver/ledc.h"
 #include "esp_err.h"
 #include "esp_lcd_panel_ops.h"
+#include "esp_lcd_touch_gt911.h"
 #include "esp_lcd_touch_tt21100.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_timer.h"
+#include "i2c_bus.h"
 #include "lvgl.h"
 #include "periph_lcd.h"
 
@@ -38,6 +40,10 @@ typedef struct periph_lcd {
     bool lcd_color_invert;
 } periph_lcd_t;
 
+enum esp32_s3_box_touch_t {
+    TOUCH_GT911,
+    TOUCH_TT21100,
+};
 esp_lcd_panel_handle_t hdl_lcd = NULL;
 int lvgl_lock_timeout;
 lv_disp_t *ld;
@@ -122,8 +128,24 @@ esp_err_t init_lvgl_display(void)
     return ret;
 }
 
+static esp_lcd_panel_io_i2c_config_t cfg_lpiic_gt911(int addr)
+{
+    esp_lcd_panel_io_i2c_config_t cfg_io_lt = ESP_LCD_TOUCH_IO_I2C_GT911_CONFIG();
+    cfg_io_lt.dev_addr = addr;
+
+    return cfg_io_lt;
+}
+
+static esp_lcd_panel_io_i2c_config_t cfg_lpiic_tt21100(void)
+{
+    esp_lcd_panel_io_i2c_config_t cfg_io_lt = ESP_LCD_TOUCH_IO_I2C_TT21100_CONFIG();
+
+    return cfg_io_lt;
+}
+
 esp_err_t init_lvgl_touch(void)
 {
+    enum esp32_s3_box_touch_t touch_type;
     esp_err_t ret = ESP_OK;
 
     switch (hw_type) {
@@ -138,7 +160,7 @@ esp_err_t init_lvgl_touch(void)
 
     esp_lcd_touch_config_t cfg_lt = {
         .flags = {
-            .mirror_x = true,
+            .mirror_x = false,
             .mirror_y = false,
             .swap_xy = LCD_SWAP_XY,
         },
@@ -152,7 +174,23 @@ esp_err_t init_lvgl_touch(void)
         .y_max = LCD_V_RES,
     };
 
-    esp_lcd_panel_io_i2c_config_t cfg_io_lt = ESP_LCD_TOUCH_IO_I2C_TT21100_CONFIG();
+    esp_lcd_panel_io_i2c_config_t cfg_io_lt;
+
+    if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS << 1) == ESP_OK) {
+        cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS);
+        touch_type = TOUCH_GT911;
+    } else if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP << 1) == ESP_OK) {
+        cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP);
+        touch_type = TOUCH_GT911;
+    } else if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS << 1) == ESP_OK) {
+        cfg_io_lt = cfg_lpiic_tt21100();
+        cfg_lt.flags.mirror_x = true;
+        touch_type = TOUCH_TT21100;
+    } else {
+        ESP_LOGE(TAG, "touch screen not detected");
+        return ESP_ERR_NOT_FOUND;
+    }
+
     ret = esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)0, &cfg_io_lt, &lcdp->lcd_io_handle);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize display panel IO: %s", esp_err_to_name(ret));
@@ -160,12 +198,20 @@ esp_err_t init_lvgl_touch(void)
     }
 
     esp_lcd_touch_handle_t hdl_lt = NULL;
-    ret = esp_lcd_touch_new_i2c_tt21100(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to initialize touch screen: %s", esp_err_to_name(ret));
-        return ret;
-    }
 
+    if (touch_type == TOUCH_GT911) {
+        ret = esp_lcd_touch_new_i2c_gt911(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "failed to initialize GT911 touch screen: %s", esp_err_to_name(ret));
+            return ret;
+        }
+    } else if (touch_type == TOUCH_TT21100) {
+        ret = esp_lcd_touch_new_i2c_tt21100(lcdp->lcd_io_handle, &cfg_lt, &hdl_lt);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "failed to initialize TT21100 touch screen: %s", esp_err_to_name(ret));
+            return ret;
+        }
+    }
     const lvgl_port_touch_cfg_t cfg_pt = {
         .disp = ld,
         .handle = hdl_lt,
