@@ -245,7 +245,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                                 nd->volume = 90;
                             }
 
-                            xTaskCreate(&notify_task, "notify_task", 4096, nd, 4, NULL);
+                            xTaskCreatePinnedToCore(&notify_task, "notify_task", 4096, nd, 4, NULL, 0);
                         }
 
                         goto cleanup;
@@ -259,7 +259,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                         nd->audio_url = strndup(audio_url, strlen(audio_url));
                         nd->repeat = 5;
                         nd->text = strndup(text, strlen(text));
-                        xTaskCreate(&notify_task, "notify_task", 4096, nd, 4, NULL);
+                        xTaskCreatePinnedToCore(&notify_task, "notify_task", 4096, nd, 4, NULL, 0);
                         goto cleanup;
                     }
 
