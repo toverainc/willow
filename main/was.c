@@ -28,6 +28,7 @@ static volatile bool notify_active;
 esp_netif_t *hdl_netif;
 
 struct notify_data {
+    uint64_t id;
     char *audio_url;
     bool backlight;
     bool backlight_max;
@@ -193,6 +194,14 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                         cJSON *data = cJSON_GetObjectItemCaseSensitive(cjson, "data");
                         if (cJSON_IsObject(data)) {
                             struct notify_data *nd = (struct notify_data *)calloc(1, sizeof(struct notify_data));
+
+                            cJSON *id = cJSON_GetObjectItemCaseSensitive(data, "id");
+                            if (cJSON_IsNumber(id)) {
+                                nd->id = id->valuedouble;
+                            } else {
+                                ESP_LOGW(TAG, "ignoring notification without ID");
+                                goto cleanup;
+                            }
 
                             cJSON *audio_url = cJSON_GetObjectItemCaseSensitive(data, "audio_url");
                             if (cJSON_IsString(audio_url) && audio_url->valuestring != NULL) {
@@ -594,6 +603,8 @@ static void notify_task(void *data)
         ESP_LOGW(TAG, "notify_task called with empty data");
         goto out;
     }
+
+    ESP_LOGI(TAG, "started notify task for notification with ID='%" PRIu64 "'", nd->id);
 
     if (lvgl_port_lock(lvgl_lock_timeout)) {
         if (nd->text == NULL) {
