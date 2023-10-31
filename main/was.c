@@ -23,7 +23,7 @@
 
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
-static volatile bool notify_active;
+static volatile uint64_t notify_active;
 
 esp_netif_t *hdl_netif;
 
@@ -266,6 +266,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                         const char *audio_url = "spiffs://spiffs/user/audio/success.wav";
                         const char *text = "WAS Locate Active!";
                         nd->audio_url = strndup(audio_url, strlen(audio_url));
+                        nd->id = 1;
                         nd->repeat = 5;
                         nd->text = strndup(text, strlen(text));
                         xTaskCreatePinnedToCore(&notify_task, "notify_task", 4096, nd, 4, NULL, 0);
@@ -588,7 +589,7 @@ void cb_btn_cancel_notify(lv_event_t *ev)
 {
     ESP_LOGD(TAG, "btn_cancel pressed");
     esp_audio_stop(hdl_ea, TERMINATION_TYPE_NOW);
-    notify_active = false;
+    notify_active = 0;
 }
 
 static void notify_task(void *data)
@@ -597,12 +598,12 @@ static void notify_task(void *data)
     int i;
     struct notify_data *nd = (struct notify_data *)data;
 
-    notify_active = true;
-
     if (!nd) {
         ESP_LOGW(TAG, "notify_task called with empty data");
         goto out;
     }
+
+    notify_active = nd->id;
 
     ESP_LOGI(TAG, "started notify task for notification with ID='%" PRIu64 "'", nd->id);
 
@@ -666,6 +667,6 @@ out:
         vTaskDelete(hdl_task_strobe);
         display_set_backlight(true, false);
     }
-    notify_active = false;
+    notify_active = 0;
     vTaskDelete(NULL);
 }
