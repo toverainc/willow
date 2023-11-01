@@ -595,6 +595,9 @@ void cb_btn_cancel_notify(lv_event_t *ev)
 static void notify_task(void *data)
 {
     TaskHandle_t hdl_task_strobe = NULL;
+    cJSON *cjson = NULL;
+    char *json = NULL;
+    esp_err_t ret;
     int i;
     struct notify_data *nd = (struct notify_data *)data;
 
@@ -667,6 +670,33 @@ out:
         vTaskDelete(hdl_task_strobe);
         display_set_backlight(true, false);
     }
+
+    if (nd->id == 1) {
+        goto skip_notify_done;
+    }
+
+    if (!esp_websocket_client_is_connected(hdl_wc)) {
+        esp_websocket_client_destroy(hdl_wc);
+        init_was();
+    }
+
+    cjson = cJSON_CreateObject();
+    if (!cJSON_AddNumberToObject(cjson, "notify_done", nd->id)) {
+        goto cleanup;
+    }
+
+    json = cJSON_Print(cjson);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send WAS notify_done message");
+    }
+
+cleanup:
+    cJSON_Delete(cjson);
+
+skip_notify_done:
     notify_active = 0;
     vTaskDelete(NULL);
 }
