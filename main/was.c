@@ -266,9 +266,12 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                         const char *audio_url = "spiffs://spiffs/user/audio/success.wav";
                         const char *text = "WAS Locate Active!";
                         nd->audio_url = strndup(audio_url, strlen(audio_url));
+                        nd->backlight = true;
+                        nd->backlight_max = true;
                         nd->id = 1;
                         nd->repeat = 5;
                         nd->text = strndup(text, strlen(text));
+                        nd->volume = 90;
                         xTaskCreatePinnedToCore(&notify_task, "notify_task", 4096, nd, 4, NULL, 0);
                         goto cleanup;
                     }
