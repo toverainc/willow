@@ -536,7 +536,7 @@ static esp_err_t init_ap_to_api(void)
     cfg_hs.event_handle = hdl_ev_hs;
     cfg_hs.task_stack = 8 * 1024; // default 6 * 1024
     cfg_hs.type = AUDIO_STREAM_WRITER;
-    cfg_hs.user_agent = WILLOW_USER_AGENT;
+    // cfg_hs.user_agent = WILLOW_USER_AGENT;
     hdl_ae_hs = http_stream_init(&cfg_hs);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();

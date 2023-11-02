@@ -79,7 +79,6 @@ void app_main(void)
     init_spiffs_user();
     config_parse();
     init_display();
-    init_lvgl_display();
     init_ui();
 
     ESP_ERROR_CHECK(esp_netif_init());
@@ -148,7 +147,7 @@ err_nvs:
     if (state < STATE_NVS_OK) {
         ui_pr_err("Fatal error!", "Failed to read NVS partition.");
         // wait "indefinitely"
-        vTaskDelay(portMAX_DELAY);
+        // vTaskDelay(portMAX_DELAY);
     }
 
     bool was_mode = config_get_bool("was_mode", DEFAULT_WAS_MODE);
@@ -162,7 +161,6 @@ err_nvs:
     init_buttons();
     init_input_key_service();
     init_audio();
-    init_lvgl_touch();
     init_display_timer();
 
 #ifndef CONFIG_WILLOW_ETHERNET

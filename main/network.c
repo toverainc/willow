@@ -105,7 +105,7 @@ static esp_err_t start_sntp(void)
     char *ntp_config = config_get_char("ntp_config", DEFAULT_NTP_CONFIG);
     if (strcmp(ntp_config, "DHCP") == 0) {
         ESP_LOGI(TAG, "Using DHCP SNTP server");
-        esp_sntp_servermode_dhcp(1);
+        sntp_servermode_dhcp(1);
     } else if (strcmp(ntp_config, "Host") == 0) {
         char *ntp_host = config_get_char("ntp_host", DEFAULT_NTP_HOST);
         ESP_LOGI(TAG, "Using configured SNTP server '%s'", ntp_host);
