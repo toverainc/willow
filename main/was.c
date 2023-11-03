@@ -23,7 +23,7 @@
 
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
-static volatile uint64_t notify_active;
+static volatile struct notify_data *notify_active;
 
 esp_netif_t *hdl_netif;
 
@@ -32,6 +32,7 @@ struct notify_data {
     char *audio_url;
     bool backlight;
     bool backlight_max;
+    bool cancel;
     char *text;
     int repeat;
     int strobe_period_ms;
@@ -201,6 +202,20 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                             } else {
                                 ESP_LOGW(TAG, "ignoring notification without ID");
                                 goto cleanup;
+                            }
+
+                            cJSON *cancel = cJSON_GetObjectItemCaseSensitive(data, "cancel");
+                            if (cJSON_IsBool(cancel) && cJSON_IsTrue(cancel)) {
+                                if (notify_active == NULL) {
+                                    ESP_LOGW(TAG, "trying to cancel notify_task but notify_active is NULL");
+                                    goto cleanup;
+                                }
+                                if (notify_active->id == nd->id) {
+                                    ESP_LOGI(TAG, "cancel active notify_task with ID='%" PRIu64 "'", nd->id);
+                                    notify_active->cancel = true;
+                                    esp_audio_stop(hdl_ea, TERMINATION_TYPE_NOW);
+                                    goto cleanup;
+                                }
                             }
 
                             cJSON *audio_url = cJSON_GetObjectItemCaseSensitive(data, "audio_url");
@@ -592,7 +607,7 @@ void cb_btn_cancel_notify(lv_event_t *ev)
 {
     ESP_LOGD(TAG, "btn_cancel pressed");
     esp_audio_stop(hdl_ea, TERMINATION_TYPE_NOW);
-    notify_active = 0;
+    notify_active->cancel = true;
 }
 
 static void notify_task(void *data)
@@ -609,7 +624,7 @@ static void notify_task(void *data)
         goto out;
     }
 
-    notify_active = nd->id;
+    notify_active = nd;
 
     ESP_LOGI(TAG, "started notify task for notification with ID='%" PRIu64 "'", nd->id);
 
@@ -647,7 +662,7 @@ static void notify_task(void *data)
         gpio_set_level(get_pa_enable_gpio(), 1);
 
         for (i = 0; i < nd->repeat; i++) {
-            if (!notify_active) {
+            if (nd->cancel) {
                 break;
             }
             esp_audio_sync_play(hdl_ea, nd->audio_url, 0);
@@ -700,6 +715,7 @@ cleanup:
     cJSON_Delete(cjson);
 
 skip_notify_done:
-    notify_active = 0;
+    free(nd);
+    notify_active = NULL;
     vTaskDelete(NULL);
 }
