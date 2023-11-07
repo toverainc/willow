@@ -19,6 +19,7 @@
 #include "slvgl.h"
 #include "system.h"
 #include "timer.h"
+#include "ui.h"
 #include "was.h"
 
 #define WAS_RECONNECT_TIMEOUT_MS 10 * 1000
@@ -412,18 +413,37 @@ esp_err_t init_was(void)
     return err;
 }
 
+static bool was_is_connected(const bool wait)
+{
+    if (esp_websocket_client_is_connected(hdl_wc)) {
+        return true;
+    }
+
+    if (wait) {
+        int max = WAS_RECONNECT_TIMEOUT_MS / 1000;
+        for (int i = 0; i < max; i++) {
+            if (esp_websocket_client_is_connected(hdl_wc)) {
+                return true;
+            }
+            i++;
+        }
+        ui_pr_err("WAS disconnected", NULL);
+        return false;
+    } else {
+        return false;
+    }
+}
+
 esp_err_t was_send_endpoint(const char *data, bool nc_skip)
 {
     cJSON *in = NULL, *out = NULL;
     char *json = NULL;
     esp_err_t ret = ESP_OK;
 
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
+    if (!was_is_connected(true)) {
         if (nc_skip) {
             return ENOTCONN;
         }
-        esp_websocket_client_destroy(hdl_wc);
-        init_was();
     }
 
     in = cJSON_Parse(data);
@@ -462,9 +482,9 @@ void request_config(void)
     char *json = NULL;
     esp_err_t ret;
 
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
-        esp_websocket_client_destroy(hdl_wc);
-        init_was();
+    // not sure if we should wait here as we call request_config on WEBSOCKET_EVENT_CONNECTED
+    if (!was_is_connected(true)) {
+        return;
     }
 
     cjson = cJSON_CreateObject();
@@ -493,9 +513,8 @@ static void send_hello_goodbye(const char *type)
 
     ESP_LOGI(TAG, "sending WAS %s", type);
 
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
-        esp_websocket_client_destroy(hdl_wc);
-        init_was();
+    if (!was_is_connected(true)) {
+        return;
     }
 
     ret = esp_netif_get_hostname(hdl_netif, &hostname);
@@ -553,7 +572,7 @@ void IRAM_ATTR send_wake_start(float wake_volume)
         return;
     }
 
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
+    if (!was_is_connected(false)) {
         ESP_LOGW(TAG, "Websocket not connected - skipping wake start");
         return;
     }
@@ -590,7 +609,7 @@ void send_wake_end(void)
         return;
     }
 
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
+    if (!was_is_connected(false)) {
         ESP_LOGW(TAG, "Websocket not connected - skipping wake end");
         return;
     }
@@ -703,9 +722,8 @@ out:
         goto skip_notify_done;
     }
 
-    if (!esp_websocket_client_is_connected(hdl_wc)) {
-        esp_websocket_client_destroy(hdl_wc);
-        init_was();
+    if (!was_is_connected(true)) {
+        goto skip_notify_done;
     }
 
     cjson = cJSON_CreateObject();
