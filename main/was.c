@@ -21,6 +21,8 @@
 #include "timer.h"
 #include "was.h"
 
+#define WAS_RECONNECT_TIMEOUT_MS 10 * 1000
+
 static const char *TAG = "WILLOW/WAS";
 static esp_websocket_client_handle_t hdl_wc = NULL;
 static volatile struct notify_data *notify_active;
@@ -384,6 +386,7 @@ esp_err_t init_was(void)
 
     const esp_websocket_client_config_t cfg_wc = {
         .buffer_size = 4096,
+        .reconnect_timeout_ms = WAS_RECONNECT_TIMEOUT_MS,
         .uri = was_url,
         .user_agent = WILLOW_USER_AGENT,
     };
