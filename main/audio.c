@@ -146,6 +146,24 @@ static void init_audio_response(void)
     free(audio_response_type);
 }
 
+static esp_err_t hdl_ev_hs_esp_audio(http_stream_event_msg_t *msg)
+{
+    if (msg == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    esp_http_client_handle_t http = (esp_http_client_handle_t)msg->http_client;
+
+    switch (msg->event_id) {
+        case HTTP_STREAM_PRE_REQUEST:
+            esp_http_client_set_authtype(http, HTTP_AUTH_TYPE_BASIC);
+            break;
+        default:
+            break;
+    }
+    return ESP_OK;
+}
+
 static void init_esp_audio(void)
 {
     audio_err_t ret = ESP_OK;
@@ -169,6 +187,7 @@ static void init_esp_audio(void)
     hdl_ea = esp_audio_create(&cfg_ea);
 
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
+    cfg_hs.event_handle = hdl_ev_hs_esp_audio;
 
     ret = esp_audio_input_stream_add(hdl_ea, http_stream_init(&cfg_hs));
     if (ret != ESP_OK) {
