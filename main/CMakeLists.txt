@@ -43,6 +43,8 @@ register_component()
 
 spiffs_create_partition_image(user ../spiffs/user FLASH_IN_PROJECT)
 
+string(APPEND CMAKE_C_FLAGS -Werror)
+
 # sdkconfig sanity checks
 if($ENV{WILLOW_SDKCONFIG_SANITY_CHECKS})
     if (NOT CONFIG_WILLOW_ETHERNET)
