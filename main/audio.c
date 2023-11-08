@@ -59,9 +59,10 @@
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
 #define DEFAULT_WIS_URL             "https://infer.tovera.io/api/willow"
 
-#define MULTINET_TWDT   30
-#define STR_WAKE_LEN    25
-#define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
+#define HTTP_STREAM_TIMEOUT_MS 2 * 1000
+#define MULTINET_TWDT          30
+#define STR_WAKE_LEN           25
+#define WIS_URL_TTS_ARG        "?format=WAV&speaker=CLB&text="
 
 QueueHandle_t q_ea, q_rec;
 audio_hal_handle_t hdl_aha = NULL, hdl_ahc = NULL;
@@ -157,6 +158,7 @@ static esp_err_t hdl_ev_hs_esp_audio(http_stream_event_msg_t *msg)
     switch (msg->event_id) {
         case HTTP_STREAM_PRE_REQUEST:
             esp_http_client_set_authtype(http, HTTP_AUTH_TYPE_BASIC);
+            esp_http_client_set_timeout_ms(http, HTTP_STREAM_TIMEOUT_MS);
             break;
         default:
             break;
@@ -442,6 +444,7 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
             ESP_LOGI(TAG, "WIS HTTP client starting stream, waiting for end of speech");
             esp_http_client_set_authtype(http, HTTP_AUTH_TYPE_BASIC);
             esp_http_client_set_method(http, HTTP_METHOD_POST);
+            esp_http_client_set_timeout_ms(http, HTTP_STREAM_TIMEOUT_MS);
             char *audio_codec = config_get_char("audio_codec", DEFAULT_AUDIO_CODEC);
             char dat[10] = {0};
             snprintf(dat, sizeof(dat), "%d", 16000);
