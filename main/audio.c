@@ -398,6 +398,7 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
     switch (msg->event_id) {
         case HTTP_STREAM_PRE_REQUEST:
             ESP_LOGI(TAG, "WIS HTTP client starting stream, waiting for end of speech");
+            esp_http_client_set_authtype(http, HTTP_AUTH_TYPE_BASIC);
             esp_http_client_set_method(http, HTTP_METHOD_POST);
             char *audio_codec = config_get_char("audio_codec", DEFAULT_AUDIO_CODEC);
             char dat[10] = {0};
