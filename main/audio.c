@@ -408,7 +408,7 @@ static int feed_afe(int16_t *buf, int len, void *ctx, TickType_t ticks)
     return raw_stream_read(hdl_ae_rs_from_i2s, (char *)buf, len);
 }
 
-static esp_err_t hdl_ev_hs(http_stream_event_msg_t *msg)
+static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
 {
     if (msg == NULL) {
         return ESP_ERR_INVALID_ARG;
@@ -556,7 +556,7 @@ static esp_err_t init_ap_to_api(void)
     hdl_ap_to_api = audio_pipeline_init(&cfg_ap);
 
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
-    cfg_hs.event_handle = hdl_ev_hs;
+    cfg_hs.event_handle = hdl_ev_hs_to_api;
     cfg_hs.task_stack = 8 * 1024; // default 6 * 1024
     cfg_hs.type = AUDIO_STREAM_WRITER;
     cfg_hs.user_agent = WILLOW_USER_AGENT;
