@@ -643,7 +643,6 @@ static void notify_task(void *data)
         lv_obj_add_event_cb(btn_cancel, cb_btn_cancel_notify, LV_EVENT_PRESSED, NULL);
         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         lv_obj_clear_flag(btn_cancel, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_set_width(lbl_ln3, 320);
         lv_label_set_long_mode(lbl_ln3, LV_LABEL_LONG_SCROLL);
         lvgl_port_unlock();
     }
