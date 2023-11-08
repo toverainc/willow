@@ -531,7 +531,10 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
             // Check status code
             int http_status = esp_http_client_get_status_code(http);
             if (http_status != 200) {
-                if (http_status == 406) {
+                if (http_status == 401) {
+                    ESP_LOGE(TAG, "WIS returned Unauthorized Access (HTTP 401)");
+                    ui_pr_err("WIS auth failed", "Check server & settings");
+                } else if (http_status == 406) {
                     ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
                     if (lvgl_port_lock(lvgl_lock_timeout)) {
                         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
