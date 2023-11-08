@@ -64,6 +64,11 @@
 #define STR_WAKE_LEN           25
 #define WIS_URL_TTS_ARG        "?format=WAV&speaker=CLB&text="
 
+typedef enum willow_http_stream {
+    WILLOW_HS_ESP_AUDIO,
+    WILLOW_HS_STT,
+} willow_http_stream_t;
+
 QueueHandle_t q_ea, q_rec;
 audio_hal_handle_t hdl_aha = NULL, hdl_ahc = NULL;
 audio_rec_handle_t hdl_ar = NULL;
@@ -147,6 +152,32 @@ static void init_audio_response(void)
     free(audio_response_type);
 }
 
+static esp_err_t cb_ae_hs(audio_element_handle_t el, audio_event_iface_msg_t *ev, void *data)
+{
+    if (ev->cmd == AEL_MSG_CMD_REPORT_STATUS) {
+        // if we get a AEL_MSG_CMD_REPORT_STATUS command we can check for errors in audio_element_status_t
+        // 1-7 is error
+        int ae_status = (int)ev->data;
+        ESP_LOGI(TAG, "event_cb_func(): AEL_MSG_CMD_REPORT_STATUS: %d", ae_status);
+
+        if (ae_status == 0 || ae_status > 7) {
+            return ESP_OK;
+        }
+
+        willow_http_stream_t type_hs = (willow_http_stream_t)data;
+        if (type_hs == WILLOW_HS_STT) {
+            war.fn_err("STT error");
+            ESP_LOGE(TAG, "error opening STT endpoint (%d)", ae_status);
+            ui_pr_err("STT error", "Check server & settings");
+        } else if (type_hs == WILLOW_HS_ESP_AUDIO) {
+            play_audio_err(NULL);
+            ESP_LOGE(TAG, "error opening ESP Audio endpoint (%d)", ae_status);
+            ui_pr_err("STT error", "Check server & settings");
+        }
+    }
+    return ESP_OK;
+}
+
 static esp_err_t hdl_ev_hs_esp_audio(http_stream_event_msg_t *msg)
 {
     if (msg == NULL) {
@@ -191,7 +222,10 @@ static void init_esp_audio(void)
     http_stream_cfg_t cfg_hs = HTTP_STREAM_CFG_DEFAULT();
     cfg_hs.event_handle = hdl_ev_hs_esp_audio;
 
-    ret = esp_audio_input_stream_add(hdl_ea, http_stream_init(&cfg_hs));
+    audio_element_handle_t hdl_ae_hs = http_stream_init(&cfg_hs);
+    audio_element_set_event_callback(hdl_ea, cb_ae_hs, (void *)WILLOW_HS_ESP_AUDIO);
+
+    ret = esp_audio_input_stream_add(hdl_ea, hdl_ae_hs);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to add HTTP input stream to ESP Audio");
     }
@@ -584,6 +618,8 @@ static esp_err_t init_ap_to_api(void)
     cfg_hs.type = AUDIO_STREAM_WRITER;
     cfg_hs.user_agent = WILLOW_USER_AGENT;
     hdl_ae_hs = http_stream_init(&cfg_hs);
+
+    audio_element_set_event_callback(hdl_ae_hs, cb_ae_hs, (void *)WILLOW_HS_STT);
 
     raw_stream_cfg_t cfg_rs = RAW_STREAM_CFG_DEFAULT();
     cfg_rs.out_rb_size = 64 * 1024; // default is 8 * 1024
