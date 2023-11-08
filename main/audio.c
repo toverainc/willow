@@ -536,11 +536,7 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
                     ui_pr_err("WIS auth failed", "Check server & settings");
                 } else if (http_status == 406) {
                     ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
-                    if (lvgl_port_lock(lvgl_lock_timeout)) {
-                        lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
-                        lv_label_set_text_static(lbl_ln3, "Unauthorized Speaker");
-                        lvgl_port_unlock();
-                    }
+                    ui_pr_err("Unauthorized Speaker", NULL);
                     war.fn_err("Unauthorized Speaker");
                 }
                 ESP_LOGE(TAG, "WIS returned HTTP error: %d", http_status);
