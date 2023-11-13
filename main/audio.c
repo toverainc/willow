@@ -538,8 +538,13 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
                     ESP_LOGE(TAG, "WIS returned Unauthorized Speaker");
                     ui_pr_err("Unauthorized Speaker", NULL);
                     war.fn_err("Unauthorized Speaker");
+                } else {
+                    ESP_LOGE(TAG, "WIS returned HTTP error: %d", http_status);
+                    char str_http_err[14];
+                    snprintf(str_http_err, 14, "WIS HTTP %d", http_status);
+                    ui_pr_err(str_http_err, NULL);
+                    war.fn_err(str_http_err);
                 }
-                ESP_LOGE(TAG, "WIS returned HTTP error: %d", http_status);
                 return ESP_FAIL;
             }
             // Allocate memory for response. Should be enough?
