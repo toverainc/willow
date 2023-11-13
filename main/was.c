@@ -177,7 +177,6 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                         lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                         lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                         lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-                        lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
                         lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                         lvgl_port_unlock();
                     }
@@ -311,7 +310,6 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                             lv_obj_add_flag(lbl_ln2, LV_OBJ_FLAG_HIDDEN);
                             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                             lv_obj_add_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
-                            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_MID, 0, 90);
                             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
                             lvgl_port_unlock();
                         }
