@@ -81,7 +81,7 @@ char *config_get_char(const char *key, const char *default_value)
     if (val != NULL && cJSON_IsString(val) && val->valuestring != NULL) {
         ret = strndup(val->valuestring, strlen(val->valuestring));
     } else {
-        ret = strndup(default_value, strlen(default_value));
+        ret = default_value == NULL ? NULL : strndup(default_value, strlen(default_value));
     }
     ESP_LOGD(TAG, "config_get_char(%s): %s", key, ret);
     return ret;
