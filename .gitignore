@@ -2,6 +2,7 @@
 .env
 .vscode
 build
+dependencies.lock
 deps
 flags
 generated_*.h
