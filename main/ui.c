@@ -77,17 +77,17 @@ void init_ui(void)
             lv_obj_align(btn_cancel, LV_ALIGN_BOTTOM_MID, 0, -10);
             lv_obj_align(lbl_btn_cancel, LV_ALIGN_CENTER, 0, 0);
             lv_obj_align(lbl_hdr, LV_ALIGN_TOP_MID, 0, 0);
-            lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 0, 40);
-            lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 0, 70);
-            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 0, 100);
-            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 0, 130);
-            lv_obj_align(lbl_ln5, LV_ALIGN_TOP_LEFT, 0, 160);
+            lv_obj_align(lbl_ln1, LV_ALIGN_TOP_LEFT, 10, 40);
+            lv_obj_align(lbl_ln2, LV_ALIGN_TOP_LEFT, 10, 70);
+            lv_obj_align(lbl_ln3, LV_ALIGN_TOP_LEFT, 10, 100);
+            lv_obj_align(lbl_ln4, LV_ALIGN_TOP_LEFT, 10, 130);
+            lv_obj_align(lbl_ln5, LV_ALIGN_TOP_LEFT, 10, 160);
             lv_label_set_long_mode(lbl_ln2, LV_LABEL_LONG_SCROLL);
-            lv_obj_set_width(lbl_ln1, 320);
-            lv_obj_set_width(lbl_ln2, 320);
-            lv_obj_set_width(lbl_ln3, 320);
-            lv_obj_set_width(lbl_ln4, 320);
-            lv_obj_set_width(lbl_ln5, 320);
+            lv_obj_set_width(lbl_ln1, 300);
+            lv_obj_set_width(lbl_ln2, 300);
+            lv_obj_set_width(lbl_ln3, 300);
+            lv_obj_set_width(lbl_ln4, 300);
+            lv_obj_set_width(lbl_ln5, 300);
 
             if (strcmp(speech_rec_mode, "Multinet") == 0) {
 #if defined(WILLOW_SUPPORT_MULTINET)
