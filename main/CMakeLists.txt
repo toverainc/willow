@@ -1,45 +1,29 @@
-set(COMPONENT_SRCS
-    "audio.c"
-    "config.c"
-    "display.c"
-    "endpoint/hass.c"
-    "endpoint/openhab.c"
-    "endpoint/rest.c"
-    "http.c"
-    "input.c"
-    "log.c"
-    "lv_img_hand_left.c"
-    "network.c"
-    "ota.c"
-    "slvgl.c"
-    "system.c"
-    "tasks.c"
-    "timer.c"
-    "ui.c"
-    "was.c"
-    "main.c"
-)
-set(COMPONENT_ADD_INCLUDEDIRS .)
-set(COMPONENT_PRIV_REQUIRES
-    app_update
-    audio_board
-    audio_hal
-    audio_pipeline
-    audio_recorder
-    audio_sal
-    audio_stream
-    esp_http_client
-    esp_peripherals
-    esp_websocket_client
-    input_key_service
-    spiffs
-)
-
 if(CONFIG_WILLOW_ETHERNET)
-    set(COMPONENT_SRCS ${COMPONENT_SRCS} "net/ethernet.c")
+    set(WILLOW_ETHERNET_SRC_DIRS "net")
 endif()
 
-register_component()
+idf_component_register(
+    SRC_DIRS
+        "."
+        "endpoint"
+        "${WILLOW_ETHERNET_SRC_DIRS}"
+    INCLUDE_DIRS
+        "."
+        "${WILLOW_ETHERNET_SRC_DIRS}"
+    PRIV_REQUIRES
+        app_update
+        audio_board
+        audio_hal
+        audio_pipeline
+        audio_recorder
+        audio_sal
+        audio_stream
+        esp_http_client
+        esp_peripherals
+        esp_websocket_client
+        input_key_service
+        spiffs
+)
 
 spiffs_create_partition_image(user ../spiffs/user FLASH_IN_PROJECT)
 
