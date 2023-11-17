@@ -166,6 +166,7 @@ static esp_err_t cb_ae_hs(audio_element_handle_t el, audio_event_iface_msg_t *ev
 
         willow_http_stream_t type_hs = (willow_http_stream_t)data;
         if (type_hs == WILLOW_HS_STT) {
+            audio_recorder_trigger_stop(hdl_ar);
             war.fn_err("STT error");
             ESP_LOGE(TAG, "error opening STT endpoint (%d)", ae_status);
             ui_pr_err("STT error", "Check server & settings");
