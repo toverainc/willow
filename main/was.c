@@ -54,6 +54,11 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
             if (!config_valid) {
                 request_config();
             }
+            if (lvgl_port_lock(lvgl_lock_timeout)) {
+                lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_set_style_text_align(lbl_ln4, LV_TEXT_ALIGN_LEFT, 0);
+                lvgl_port_unlock();
+            }
             break;
         case WEBSOCKET_EVENT_DATA:
             ESP_LOGV(TAG, "WebSocket data received");
