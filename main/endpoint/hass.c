@@ -151,6 +151,8 @@ end:
                 if (lvgl_port_lock(lvgl_lock_timeout)) {
                     lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
                     lv_obj_clear_flag(lbl_ln5, LV_OBJ_FLAG_HIDDEN);
+                    lv_obj_set_style_text_align(lbl_ln4, LV_TEXT_ALIGN_LEFT, 0);
+                    lv_obj_set_style_text_align(lbl_ln5, LV_TEXT_ALIGN_LEFT, 0);
                     lv_obj_remove_event_cb(lbl_ln4, cb_btn_cancel);
                     if (hir.has_speech) {
                         lv_label_set_text_static(lbl_ln4, "Response:");
