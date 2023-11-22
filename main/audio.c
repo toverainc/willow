@@ -294,7 +294,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
             war.fn_err("unrecognized command");
             if (lvgl_port_lock(lvgl_lock_timeout)) {
                 lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
-
+                lv_obj_set_style_text_align(lbl_ln4, LV_TEXT_ALIGN_LEFT, 0);
                 lv_label_set_text(lbl_ln4, "#ff0000 Unrecognized Command");
                 lvgl_port_unlock();
             }
