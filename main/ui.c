@@ -128,12 +128,14 @@ void ui_pr_err(char *ln3, char *ln4)
             lv_obj_add_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         } else {
             lv_label_set_text(lbl_ln3, ln3);
+            lv_obj_set_style_text_align(lbl_ln3, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_clear_flag(lbl_ln3, LV_OBJ_FLAG_HIDDEN);
         }
         if (ln4 == NULL) {
             lv_obj_add_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         } else {
             lv_label_set_text(lbl_ln4, ln4);
+            lv_obj_set_style_text_align(lbl_ln4, LV_TEXT_ALIGN_CENTER, 0);
             lv_obj_clear_flag(lbl_ln4, LV_OBJ_FLAG_HIDDEN);
         }
 
