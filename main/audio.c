@@ -303,8 +303,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
             speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
 
             if (strcmp(speech_rec_mode, "WIS") == 0) {
-                reset_timer(hdl_sess_timer, config_get_int("stream_timeout", DEFAULT_STREAM_TIMEOUT) * 1000 * 1000,
-                            false);
+                reset_timer(hdl_sess_timer, config_get_int("stream_timeout", DEFAULT_STREAM_TIMEOUT), false);
             }
             if (lvgl_port_lock(lvgl_lock_timeout)) {
                 lv_obj_add_flag(lbl_ln1, LV_OBJ_FLAG_HIDDEN);
