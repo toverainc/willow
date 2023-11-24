@@ -167,13 +167,13 @@ static esp_err_t cb_ae_hs(audio_element_handle_t el, audio_event_iface_msg_t *ev
         willow_http_stream_t type_hs = (willow_http_stream_t)data;
         if (type_hs == WILLOW_HS_STT) {
             audio_recorder_trigger_stop(hdl_ar);
-            war.fn_err("STT error");
-            ESP_LOGE(TAG, "error opening STT endpoint (%d)", ae_status);
-            ui_pr_err("STT error", "Check server & settings");
+            war.fn_err("Cannot Reach WIS");
+            ESP_LOGE(TAG, "Error opening STT endpoint (%d)", ae_status);
+            ui_pr_err("Cannot Reach WIS", "Check Server & Settings");
         } else if (type_hs == WILLOW_HS_ESP_AUDIO) {
             play_audio_err(NULL);
-            ESP_LOGE(TAG, "error opening ESP Audio endpoint (%d)", ae_status);
-            ui_pr_err("STT error", "Check server & settings");
+            ESP_LOGE(TAG, "Error opening ESP Audio endpoint (%d)", ae_status);
+            ui_pr_err("Cannot Reach WIS", "Check Server & Settings");
         }
     }
     return ESP_OK;
