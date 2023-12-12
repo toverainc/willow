@@ -532,7 +532,11 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
             // Check status code
             int http_status = esp_http_client_get_status_code(http);
             if (http_status != 200) {
-                if (http_status == 401) {
+                // when ESP HTTP Client terminates connection due to timeout we get -1
+                if (http_status == -1) {
+                    ESP_LOGE(TAG, "WIS response took longer than %dms, connection aborted", HTTP_STREAM_TIMEOUT_MS);
+                    ui_pr_err("WIS timeout", "Check server performance");
+                } else if (http_status == 401) {
                     ESP_LOGE(TAG, "WIS returned Unauthorized Access (HTTP 401)");
                     ui_pr_err("WIS auth failed", "Check server & settings");
                 } else if (http_status == 406) {
