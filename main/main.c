@@ -67,7 +67,7 @@ static esp_err_t init_spiffs_user(void)
 void app_main(void)
 {
     state = STATE_INIT;
-    esp_err_t ret;
+    esp_err_t err;
 
     init_logging();
     ESP_LOGI(TAG, "Starting up! Please wait...");
@@ -84,7 +84,7 @@ void app_main(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
 
-    esp_err_t err = nvs_flash_init();
+    err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
         // NVS partition was truncated and needs to be erased
         // Retry nvs_flash_init
@@ -96,44 +96,44 @@ void app_main(void)
     init_ethernet();
 #else
     nvs_handle_t hdl_nvs;
-    ret = nvs_open("WIFI", NVS_READONLY, &hdl_nvs);
-    if (ret != ESP_OK) {
+    err = nvs_open("WIFI", NVS_READONLY, &hdl_nvs);
+    if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to open NVS namespace WIFI: %s", esp_err_to_name(err));
         goto err_nvs;
     }
 
     char psk[64];
     size_t sz = sizeof(psk);
-    ret = nvs_get_str(hdl_nvs, "PSK", psk, &sz);
-    if (ret != ESP_OK) {
+    err = nvs_get_str(hdl_nvs, "PSK", psk, &sz);
+    if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to get PSK from NVS namespace WIFI: %s", esp_err_to_name(err));
         goto err_nvs;
     }
 
     char ssid[33];
     sz = sizeof(ssid);
-    ret = nvs_get_str(hdl_nvs, "SSID", ssid, &sz);
-    if (ret != ESP_OK) {
+    err = nvs_get_str(hdl_nvs, "SSID", ssid, &sz);
+    if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to get PSK from NVS namespace WIFI: %s", esp_err_to_name(err));
         goto err_nvs;
     }
     init_wifi(psk, ssid);
 #endif
 
-    ret = nvs_open("WAS", NVS_READONLY, &hdl_nvs);
-    if (ret != ESP_OK) {
+    err = nvs_open("WAS", NVS_READONLY, &hdl_nvs);
+    if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to open NVS namespace WAS: %s", esp_err_to_name(err));
         goto err_nvs;
     }
     sz = sizeof(was_url);
-    ret = nvs_get_str(hdl_nvs, "URL", was_url, &sz);
-    if (ret != ESP_OK) {
+    err = nvs_get_str(hdl_nvs, "URL", was_url, &sz);
+    if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to get WASL URL from NVS namespace WAS: %s", esp_err_to_name(err));
         goto err_nvs;
     }
     state = STATE_NVS_OK;
-    ret = init_was();
-    if (ret != ESP_OK) {
+    err = init_was();
+    if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize Willow Application Server connection");
         ui_pr_err("Fatal error!", "WAS initialization failed.");
     }
