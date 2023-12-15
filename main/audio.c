@@ -97,7 +97,7 @@ static void play_audio_err(void *data)
     esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, "spiffs://spiffs/user/audio/error.wav", 0);
 }
 
-void play_audio_ok(void *data)
+static void play_audio_ok(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
     esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, "spiffs://spiffs/user/audio/success.wav", 0);
@@ -130,6 +130,15 @@ static void play_audio_wis_tts(void *data)
     ESP_LOGI(TAG, "Using WIS TTS URL '%s'", url);
     esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, url, 0);
     free(url);
+}
+
+void play_wake_confirmation(void *data)
+{
+    es7210_set_mute(true);
+    gpio_set_level(get_pa_enable_gpio(), 1);
+    esp_audio_sync_play(hdl_ea, "spiffs://spiffs/user/audio/success.wav", 0);
+    es7210_set_mute(false);
+    gpio_set_level(get_pa_enable_gpio(), 0);
 }
 
 static void noop(void *data)
@@ -370,7 +379,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
             }
             if (!config_get_bool("multiwake", false)) {
                 if (config_get_bool("wake_confirmation", DEFAULT_WAKE_CONFIRMATION)) {
-                    play_audio_ok(NULL);
+                    play_wake_confirmation(NULL);
                 }
             }
             // win by default so in case WAS multiwake handling goes wrong we act normally
