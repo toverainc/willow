@@ -59,7 +59,8 @@
 #define DEFAULT_WIS_TTS_URL         "https://infer.tovera.io/api/tts"
 #define DEFAULT_WIS_URL             "https://infer.tovera.io/api/willow"
 
-#define HTTP_STREAM_TIMEOUT_MS 2 * 1000
+#define HTTP_STREAM_TIMEOUT_MS              2 * 1000
+#define HTTP_STREAM_TIMEOUT_MS_POST_REQUEST 10 * 1000
 
 #define MULTINET_TWDT   30
 #define STR_WAKE_LEN    25
@@ -519,6 +520,7 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
 
         case HTTP_STREAM_POST_REQUEST:
             ESP_LOGI(TAG, "WIS HTTP client HTTP_STREAM_POST_REQUEST, write end chunked marker");
+            esp_http_client_set_timeout_ms(http, HTTP_STREAM_TIMEOUT_MS_POST_REQUEST);
             if (esp_http_client_write(http, "0\r\n\r\n", 5) <= 0) {
                 return ESP_FAIL;
             }
