@@ -63,6 +63,7 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                             play_audio_ok(NULL);
                         }
                     }
+                    goto cleanup;
                 }
 
                 cJSON *json_result = cJSON_GetObjectItemCaseSensitive(cjson, "result");
