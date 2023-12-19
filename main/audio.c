@@ -60,9 +60,10 @@
 #define DEFAULT_WIS_URL             "https://infer.tovera.io/api/willow"
 
 #define HTTP_STREAM_TIMEOUT_MS 2 * 1000
-#define MULTINET_TWDT          30
-#define STR_WAKE_LEN           25
-#define WIS_URL_TTS_ARG        "?format=WAV&speaker=CLB&text="
+
+#define MULTINET_TWDT   30
+#define STR_WAKE_LEN    25
+#define WIS_URL_TTS_ARG "?format=WAV&speaker=CLB&text="
 
 typedef enum willow_http_stream {
     WILLOW_HS_ESP_AUDIO,
