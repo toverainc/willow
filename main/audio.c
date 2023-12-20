@@ -66,7 +66,7 @@
 
 #define PARTLABEL_SRMODELS "model"
 #define MULTINET_TWDT      30
-#define STR_WAKE_LEN       25
+#define STR_WAKE_LEN       64
 #define WIS_URL_TTS_ARG    "?format=WAV&speaker=CLB&text="
 
 typedef enum willow_http_stream {
@@ -1018,7 +1018,11 @@ esp_err_t init_audio(void)
     audio_thread_create(&hdl_at, "at_read", at_read, NULL, 4 * 1024, 5, true, 0);
 
     char wake_help[STR_WAKE_LEN] = "";
-    if (strcmp(wake_word, "hiesp") == 0) {
+    char *wake_word_friendly = config_get_char("wake_word_friendly", NULL);
+    if (wake_word_friendly != NULL) {
+        snprintf(wake_help, STR_WAKE_LEN, "Say '%s' to start!", wake_word_friendly);
+        free(wake_word_friendly);
+    } else if (strcmp(wake_word, "hiesp") == 0) {
         strncpy(wake_help, "Say 'Hi ESP' to start!", STR_WAKE_LEN);
     } else if (strcmp(wake_word, "alexa") == 0) {
         strncpy(wake_help, "Say 'Alexa' to start!", STR_WAKE_LEN);
