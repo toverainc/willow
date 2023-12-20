@@ -109,6 +109,8 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                                 lv_label_set_text(lbl_ln5, cJSON_IsTrue(ok) ? "Success!" : "Error");
                             }
                             lvgl_port_unlock();
+                            reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT),
+                                        false);
                         }
                     }
                     goto cleanup;
