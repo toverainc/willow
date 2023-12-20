@@ -21,7 +21,6 @@ static const char *willow_hw_t[WILLOW_HW_MAX] = {
 };
 
 i2c_bus_handle_t hdl_i2c_bus;
-volatile bool restarting = false;
 
 const char *str_hw_type(int id)
 {
@@ -79,6 +78,7 @@ void init_system(void)
 
 void restart_delayed(void)
 {
+    state = STATE_RESTARTING;
     uint32_t delay = esp_random() % 9;
     if (delay < 3) {
         delay = 3;

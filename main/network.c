@@ -128,7 +128,7 @@ static void hdlr_ev(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *da
     }
 
     if (ev_base == WIFI_EVENT && ev_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (!restarting) {
+        if (state < STATE_RESTARTING) {
             ESP_LOGI(TAG, "disconnected from AP, retrying");
             esp_wifi_connect();
         }
