@@ -290,6 +290,7 @@ static void init_esp_audio(void)
             .use_apll = false, // not supported on ESP32-S3-BOX
         },
         .i2s_port = CODEC_ADC_I2S_PORT,
+        .install_drv = true,
         .multi_out_num = 0,
         .need_expand = true,
         .out_rb_size = 8 * 1024, // default is 8 * 1024
@@ -682,6 +683,7 @@ static void start_rec(void)
             .use_apll = false,	// not supported on ESP32-S3-BOX
         },
         .i2s_port = CODEC_ADC_I2S_PORT,
+        .install_drv = false,
         .multi_out_num = 0,
         .need_expand = false,
         .out_rb_size = 8 * 1024, // default is 8 * 1024
