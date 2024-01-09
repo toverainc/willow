@@ -851,6 +851,13 @@ static esp_err_t start_rec(void)
     }
     free(audio_codec);
     free(wake_word);
+
+    if (cfg_ar.sr_handle == NULL) {
+        ESP_LOGE(TAG, "failed to init SR recorder");
+        ui_pr_err("Recorder init failed", "Check logs");
+        return ESP_FAIL;
+    }
+
     hdl_ar = audio_recorder_create(&cfg_ar);
 
     return ret;
