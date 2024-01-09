@@ -5,6 +5,7 @@
 #include "audio_thread.h"
 #include "board.h"
 #include "es7210.h"
+#include "esp_check.h"
 #include "esp_decoder.h"
 #include "esp_http_client.h"
 #include "esp_log.h"
@@ -963,7 +964,7 @@ esp_err_t init_audio(void)
         init_ap_to_api();
     }
     free(speech_rec_mode);
-    start_rec();
+    ESP_RETURN_ON_ERROR(start_rec(), TAG, "start_rec failed");
     es7210_adc_set_gain(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
