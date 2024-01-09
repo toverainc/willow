@@ -656,14 +656,15 @@ static esp_err_t init_ap_to_api(void)
     return ESP_OK;
 }
 
-static void start_rec(void)
+static esp_err_t start_rec(void)
 {
     audio_element_handle_t hdl_ae_is;
     audio_pipeline_cfg_t cfg_ap = DEFAULT_AUDIO_PIPELINE_CONFIG();
+    esp_err_t ret = ESP_OK;
 
     hdl_ap = audio_pipeline_init(&cfg_ap);
     if (hdl_ap == NULL) {
-        return;
+        return ESP_FAIL;
     }
 
     i2s_stream_cfg_t cfg_is = {
@@ -850,6 +851,8 @@ static void start_rec(void)
     free(audio_codec);
     free(wake_word);
     hdl_ar = audio_recorder_create(&cfg_ar);
+
+    return ret;
 }
 
 static void at_read(void *data)
