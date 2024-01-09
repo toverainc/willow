@@ -932,11 +932,11 @@ esp_err_t volume_set(int volume)
     return audio_hal_set_volume(hdl_ahc, volume);
 }
 
-void init_audio(void)
+esp_err_t init_audio(void)
 {
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     char *wake_word = config_get_char("wake_word", DEFAULT_WAKE_WORD);
-    esp_err_t ret;
+    esp_err_t ret = ESP_OK;
     int gpio_level;
 
     hdl_ahc = audio_board_codec_init();
@@ -1004,6 +1004,8 @@ void init_audio(void)
             lvgl_port_unlock();
         }
     }
+
+    return ret;
 }
 
 void deinit_audio(void)
