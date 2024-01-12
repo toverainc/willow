@@ -352,11 +352,8 @@ cleanup:
 
 void was_deinit_task(void *data)
 {
+    esp_err_t ret = ESP_OK;
     ESP_LOGI(TAG, "stopping WebSocket client");
-    esp_err_t ret = esp_websocket_client_destroy_on_exit(hdl_wc);
-    if (ret != ESP_OK) {
-        ESP_LOGW(TAG, "failed to enable destroy on exit");
-    }
 
     ret = esp_websocket_client_close(hdl_wc, 5000 / portTICK_PERIOD_MS);
     if (ret != ESP_OK) {
@@ -407,6 +404,12 @@ esp_err_t init_was(void)
     ESP_LOGI(TAG, "initializing WebSocket client (%s)", was_url);
 
     hdl_wc = esp_websocket_client_init(&cfg_wc);
+
+    err = esp_websocket_client_destroy_on_exit(hdl_wc);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "failed to enable destroy on exit: %s", esp_err_to_name(err));
+    }
+
     esp_websocket_register_events(hdl_wc, WEBSOCKET_EVENT_ANY, (esp_event_handler_t)cb_ws_event, NULL);
     err = esp_websocket_client_start(hdl_wc);
 
