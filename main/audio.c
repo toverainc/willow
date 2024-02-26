@@ -195,6 +195,9 @@ static esp_err_t hdl_ev_hs_esp_audio(http_stream_event_msg_t *msg)
             esp_http_client_set_authtype(http, HTTP_AUTH_TYPE_BASIC);
             esp_http_client_set_timeout_ms(http, HTTP_STREAM_TIMEOUT_MS);
             break;
+        case HTTP_STREAM_POST_REQUEST:
+            esp_http_client_set_timeout_ms(http, HTTP_STREAM_TIMEOUT_MS_POST_REQUEST);
+            break;
         default:
             break;
     }
