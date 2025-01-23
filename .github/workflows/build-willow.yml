@@ -80,17 +80,17 @@ jobs:
         run: cd /willow/build && sha256sum "${{ env.dist_filename }}" > "${{ env.dist_filename }}.sha256sum.txt"
 
       - name: upload willow-dist.bin artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.dist_filename }}"
           path: "/willow/build/${{ env.dist_filename }}*"
       - name: upload willow-ota.bin artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.ota_filename }}"
           path: "/willow/build/${{ env.ota_filename }}*"
       - name: upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ env.partitions_filename }}"
           path: |
@@ -106,7 +106,7 @@ jobs:
     needs: build-willow-dist
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: pwd
         run: pwd
