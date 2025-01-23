@@ -279,26 +279,43 @@ static void init_esp_audio(void)
 
     i2s_stream_cfg_t cfg_is = {
         .buffer_len = I2S_STREAM_BUF_SIZE,
-        .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
-        .i2s_config = {
-            .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
-            .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-            .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-            .dma_buf_count = 3,
-            .dma_buf_len = 300,
-            .fixed_mclk = 0,
-            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM,
-            .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX),
-            .sample_rate = 16000,
-            .tx_desc_auto_clear = true,
-            .use_apll = false, // not supported on ESP32-S3-BOX
+        .chan_cfg = {
+            .auto_clear = true,
+            .dma_desc_num = 3,
+            .dma_frame_num = 312,
+            .id = CODEC_ADC_I2S_PORT,
+            .role = I2S_ROLE_MASTER,
         },
-        .i2s_port = CODEC_ADC_I2S_PORT,
-        .install_drv = true,
+        .expand_src_bits = I2S_DATA_BIT_WIDTH_16BIT,
         .multi_out_num = 0,
         .need_expand = true,
         .out_rb_size = 8 * 1024, // default is 8 * 1024
         .stack_in_ext = false,
+        .std_cfg = {
+            .clk_cfg  = {
+                .clk_src = I2S_CLK_SRC_DEFAULT,
+                .mclk_multiple = I2S_MCLK_MULTIPLE_256,
+                .sample_rate_hz = 16000,
+            },
+            .gpio_cfg = {
+                .invert_flags = {
+                    .bclk_inv = false,
+                    .mclk_inv = false,
+                },
+            },
+            .slot_cfg = {
+                .big_endian = false,
+                .bit_order_lsb = false,
+                .bit_shift = true,
+                .data_bit_width = I2S_DATA_BIT_WIDTH_32BIT,
+                .left_align = true,
+                .slot_bit_width = I2S_SLOT_BIT_WIDTH_AUTO,
+                .slot_mask = I2S_STD_SLOT_BOTH,
+                .slot_mode = I2S_SLOT_MODE_STEREO,
+                .ws_pol = false,
+                .ws_width = I2S_DATA_BIT_WIDTH_32BIT,
+            }
+        },
         .task_core = I2S_STREAM_TASK_CORE,
         .task_prio = I2S_STREAM_TASK_PRIO,
         .task_stack = I2S_STREAM_TASK_STACK,
@@ -673,26 +690,43 @@ static esp_err_t start_rec(void)
 
     i2s_stream_cfg_t cfg_is = {
         .buffer_len = I2S_STREAM_BUF_SIZE,
-        .expand_src_bits = I2S_BITS_PER_SAMPLE_16BIT,
-        .i2s_config = {
-            .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
-            .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
-            .communication_format = I2S_COMM_FORMAT_STAND_I2S,
-            .dma_buf_count = 3,
-            .dma_buf_len = 300,
-            .fixed_mclk = 0,
-            .intr_alloc_flags = ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM,
-            .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX),
-            .sample_rate = 44100,
-            .tx_desc_auto_clear = true,
-            .use_apll = false,	// not supported on ESP32-S3-BOX
+        .chan_cfg = {
+            .auto_clear = true,
+            .dma_desc_num = 3,
+            .dma_frame_num = 312,
+            .id = CODEC_ADC_I2S_PORT,
+            .role = I2S_ROLE_MASTER,
         },
-        .i2s_port = CODEC_ADC_I2S_PORT,
-        .install_drv = false,
+        .expand_src_bits = I2S_DATA_BIT_WIDTH_16BIT,
         .multi_out_num = 0,
         .need_expand = false,
         .out_rb_size = 8 * 1024, // default is 8 * 1024
         .stack_in_ext = false,
+        .std_cfg = {
+            .clk_cfg  = {
+                .clk_src = I2S_CLK_SRC_DEFAULT,
+                .mclk_multiple = I2S_MCLK_MULTIPLE_256,
+                .sample_rate_hz = 44100,
+            },
+            .gpio_cfg = {
+                .invert_flags = {
+                    .bclk_inv = false,
+                    .mclk_inv = false,
+                },
+            },
+            .slot_cfg = {
+                .big_endian = false,
+                .bit_order_lsb = false,
+                .bit_shift = true,
+                .data_bit_width = I2S_DATA_BIT_WIDTH_16BIT,
+                .left_align = true,
+                .slot_bit_width = I2S_SLOT_BIT_WIDTH_AUTO,
+                .slot_mask = I2S_STD_SLOT_BOTH,
+                .slot_mode = I2S_SLOT_MODE_STEREO,
+                .ws_pol = false,
+                .ws_width = I2S_DATA_BIT_WIDTH_16BIT,
+            },
+        },
         .task_core = I2S_STREAM_TASK_CORE,
         .task_prio = I2S_STREAM_TASK_PRIO,
         .task_stack = I2S_STREAM_TASK_STACK,
@@ -975,7 +1009,7 @@ esp_err_t init_audio(void)
     }
     free(speech_rec_mode);
     ESP_RETURN_ON_ERROR(start_rec(), TAG, "start_rec failed");
-    es7210_adc_set_gain(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
+    es7210_adc_set_gain(ES7210_MIC_SELECT, config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 

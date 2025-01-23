@@ -2,3 +2,7 @@
 #define DEFAULT_MIC_GAIN         14
 #define DEFAULT_SPEECH_REC_MODE  "WIS"
 #define DEFAULT_WAS_MODE         false
+
+#ifndef ES7210_MIC_SELECT
+#define ES7210_MIC_SELECT (ES7210_INPUT_MIC1 | ES7210_INPUT_MIC2)
+#endif
