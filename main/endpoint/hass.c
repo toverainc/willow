@@ -75,21 +75,42 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                     goto cleanup;
                 }
 
+                cJSON *type = cJSON_GetObjectItemCaseSensitive(cjson, "type");
+                if (!cJSON_IsString(type) || type->valuestring == NULL) {
+                    goto cleanup;
+                }
+
+                if (strcmp(type->valuestring, "auth_required") == 0) {
+                    char *hass_token = config_get_char("hass_token", DEFAULT_TOKEN);
+                    int len_auth = strlen(hass_token) + 34;
+                    char *auth = calloc(sizeof(char), len_auth);
+                    snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", hass_token);
+                    free(hass_token);
+
+                    // we must not send the terminating null byte
+                    int ret = esp_websocket_client_send_text(hdl_wc, auth, len_auth - 1, 2000 / portTICK_PERIOD_MS);
+                    free(auth);
+                    if (ret < 0) {
+                        ESP_LOGE(TAG, "failed to authenticate WebSocket client");
+                    }
+                    goto cleanup;
+                }
+
                 cJSON *event = cJSON_GetObjectItemCaseSensitive(cjson, "event");
                 if (!cJSON_IsObject(event)) {
                     goto cleanup;
                 }
 
-                cJSON *type = cJSON_GetObjectItemCaseSensitive(event, "type");
-                if (!cJSON_IsString(type) || type->valuestring == NULL) {
+                cJSON *event_type = cJSON_GetObjectItemCaseSensitive(event, "type");
+                if (!cJSON_IsString(event_type) || event_type->valuestring == NULL) {
                     goto cleanup;
                 }
 
-                if (strcmp(type->valuestring, "run-end") == 0) {
+                if (strcmp(event_type->valuestring, "run-end") == 0) {
                     goto end;
                 }
 
-                if (strcmp(type->valuestring, "intent-end") != 0) {
+                if (strcmp(event_type->valuestring, "intent-end") != 0) {
                     goto cleanup;
                 }
 
@@ -215,12 +236,7 @@ static void hass_get_url(char **url, const char *path, const bool ws)
 
 static void init_hass_ws_client(void)
 {
-    char *auth = NULL;
-    char *hass_token = NULL;
     char *url = NULL;
-    esp_err_t err;
-    int len_auth, ret;
-
     hass_get_url(&url, HASS_URI_WEBSOCKET, true);
 
     const esp_websocket_client_config_t cfg_wc = {
@@ -236,23 +252,9 @@ static void init_hass_ws_client(void)
 
     esp_websocket_register_events(hdl_wc, WEBSOCKET_EVENT_ANY, (esp_event_handler_t)cb_ws_event, NULL);
 
-    err = esp_websocket_client_start(hdl_wc);
+    esp_err_t err = esp_websocket_client_start(hdl_wc);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "failed to start WebSocket client: %s", esp_err_to_name(err));
-        return;
-    }
-
-    hass_token = config_get_char("hass_token", DEFAULT_TOKEN);
-    len_auth = strlen(hass_token) + 34;
-    auth = calloc(sizeof(char), len_auth);
-    snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", hass_token);
-    free(hass_token);
-
-    // we must not send the terminating null byte
-    ret = esp_websocket_client_send_text(hdl_wc, auth, len_auth - 1, 2000 / portTICK_PERIOD_MS);
-    free(auth);
-    if (ret < 0) {
-        ESP_LOGE(TAG, "failed to authenticate WebSocket client");
     }
 }
 
