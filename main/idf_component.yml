@@ -9,7 +9,7 @@ dependencies:
   espressif/esp-dsp: "1.4.7"
   ## Required IDF version
   idf:
-    version: ">=5.1.0"
+    version: ">=5.2.0"
   # # Put list of dependencies here
   # # For components maintained by Espressif:
   # component: "~1.0.0"
