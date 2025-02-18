@@ -65,7 +65,7 @@ void set_hostname(esp_mac_type_t emt)
     }
 
     char hostname[HOSTNAME_SIZE];
-    hdl_netif = esp_netif_next(NULL);
+    hdl_netif = esp_netif_next_unsafe(NULL);
 
     snprintf(hostname, HOSTNAME_SIZE, "willow-%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4],
              mac[5]);
