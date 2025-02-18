@@ -4,9 +4,8 @@ cmake_minimum_required(VERSION 3.5)
 
 set(COMPONENTS main)
 
-if($ENV{CI})
-    message("CI detected, disabling MultiNet support")
-else()
+if($ENV{MULTINET})
+    message("Enabling MultiNet support. Please note we will not provide support. Issues related to MultiNet will be closed without resolution.")
     add_definitions(-DWILLOW_SUPPORT_MULTINET)
 endif()
 
