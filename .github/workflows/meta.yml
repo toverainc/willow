@@ -63,7 +63,7 @@ jobs:
           echo "${{ steps.metadata.outputs.json }}"
           echo "${{ steps.tag.outputs.tag }}"
 
-      - uses: cloudposse/github-action-docker-image-exists@0.1.2
+      - uses: cloudposse/github-action-docker-image-exists@0.2.0
         continue-on-error: true
         id: check_container_image
         if: ${{ steps.changed_files_yaml.outputs.container_any_changed == 'false' && steps.changed_files_yaml.outputs.image_any_changed == 'true' }}
