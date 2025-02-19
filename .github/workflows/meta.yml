@@ -41,6 +41,7 @@ jobs:
               - 'partitions_willow.csv'
               - 'sdkconfig.defaults'
               - 'spiffs/**'
+          since_last_remote_commit: true
 
       - name: extract metadata
         id: metadata
