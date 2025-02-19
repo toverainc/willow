@@ -20,7 +20,7 @@ jobs:
       metadata_labels: ${{ steps.metadata.outputs.labels }}
       metadata_tags: ${{ steps.metadata.outputs.tags }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # fetch full history to be able to gather changed files in all new commits
           fetch-depth: 0

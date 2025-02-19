@@ -38,7 +38,7 @@ jobs:
       partitions_filename: "willow-partitions-${{ matrix.device }}"
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: debug
         run: echo ${{ inputs.container-tag }}
       - name: ls -al
