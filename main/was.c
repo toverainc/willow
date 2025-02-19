@@ -358,11 +358,11 @@ void was_deinit_task(void *data)
     ret = esp_websocket_client_close(hdl_wc, 5000 / portTICK_PERIOD_MS);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to cleanly close WebSocket client");
-    }
 
-    ret = esp_websocket_client_stop(hdl_wc);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "failed to stop WebSocket client: %s", esp_err_to_name(ret));
+        ret = esp_websocket_client_stop(hdl_wc);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "failed to stop WebSocket client: %s", esp_err_to_name(ret));
+        }
     }
 
     vTaskDelete(NULL);
