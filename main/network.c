@@ -202,7 +202,12 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
         return ret;
     }
 
-    wifi_config_t cfg_wifi = {};
+    wifi_config_t cfg_wifi = {
+        .sta = {
+            .btm_enabled = 1,
+        },
+    };
+
     strlcpy((char *)cfg_wifi.sta.password, psk, sizeof(cfg_wifi.sta.password));
     strlcpy((char *)cfg_wifi.sta.ssid, ssid, sizeof(cfg_wifi.sta.ssid));
 
