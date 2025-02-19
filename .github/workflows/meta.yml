@@ -25,7 +25,7 @@ jobs:
           # fetch full history to be able to gather changed files in all new commits
           fetch-depth: 0
 
-      - uses: tj-actions/changed-files@v41
+      - uses: tj-actions/changed-files@v45
         if: ${{ github.ref_type != 'tag' }}
         id: changed_files_yaml
         with:
