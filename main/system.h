@@ -1,5 +1,4 @@
 #include "esp_peripherals.h"
-#include "i2c_bus.h"
 
 enum willow_hw_t {
     WILLOW_HW_UNSUPPORTED = 0,
@@ -19,7 +18,6 @@ enum willow_state {
 extern enum willow_hw_t hw_type;
 extern enum willow_state state;
 extern esp_periph_set_handle_t hdl_pset;
-extern i2c_bus_handle_t hdl_i2c_bus;
 
 extern volatile bool restarting;
 
