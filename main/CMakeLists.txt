@@ -6,6 +6,7 @@ set(COMPONENT_SRCS
     "endpoint/openhab.c"
     "endpoint/rest.c"
     "http.c"
+    "i2c.c"
     "input.c"
     "log.c"
     "lv_img_hand_left.c"

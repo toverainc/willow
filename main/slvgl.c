@@ -7,13 +7,13 @@
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
 #include "esp_timer.h"
-#include "i2c_bus.h"
 #include "lvgl.h"
 #include "periph_lcd.h"
 
 #include "audio.h"
 #include "config.h"
 #include "display.h"
+#include "i2c.h"
 #include "system.h"
 #include "timer.h"
 
@@ -176,13 +176,13 @@ esp_err_t init_lvgl_touch(void)
 
     esp_lcd_panel_io_i2c_config_t cfg_io_lt;
 
-    if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS << 1) == ESP_OK) {
+    if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS);
         touch_type = TOUCH_GT911;
-    } else if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP << 1) == ESP_OK) {
+    } else if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP);
         touch_type = TOUCH_GT911;
-    } else if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS << 1) == ESP_OK) {
+    } else if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_tt21100();
         cfg_lt.flags.mirror_x = true;
         touch_type = TOUCH_TT21100;
