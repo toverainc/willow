@@ -179,13 +179,16 @@ esp_err_t init_lvgl_touch(void)
     if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS);
         touch_type = TOUCH_GT911;
+        ESP_LOGI(TAG, "detected GT911 touch controller on address 0x%02x", ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS);
     } else if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP);
         touch_type = TOUCH_GT911;
+        ESP_LOGI(TAG, "detected GT911 touch controller on address 0x%02x", ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP);
     } else if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_tt21100();
         cfg_lt.flags.mirror_x = true;
         touch_type = TOUCH_TT21100;
+        ESP_LOGI(TAG, "detected TT21100 touch controller on address 0x%02x", ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS);
     } else {
         ESP_LOGE(TAG, "touch screen not detected");
         return ESP_ERR_NOT_FOUND;
