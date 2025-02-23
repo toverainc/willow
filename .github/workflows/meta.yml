@@ -6,7 +6,6 @@ env:
 
 on:
   pull_request:
-  push:
 
 jobs:
   trigger_workflow:
