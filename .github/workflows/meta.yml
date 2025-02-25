@@ -6,6 +6,12 @@ env:
 
 on:
   pull_request:
+  push:
+    branches:
+      - 'main'
+      - 'release/**'
+    tag:
+      - '*'
 
 jobs:
   trigger_workflow:

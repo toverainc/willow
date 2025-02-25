@@ -31,3 +31,4 @@ ENV ADF_VER="v2.7"
 RUN \
     cd /opt/esp/idf && \
     curl https://raw.githubusercontent.com/espressif/esp-adf/$ADF_VER/idf_patches/idf_v5.2_freertos.patch | patch -p1
+
