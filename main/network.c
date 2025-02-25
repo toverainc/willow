@@ -140,7 +140,7 @@ static void hdlr_ev(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *da
         return;
     }
 
-    ESP_LOGI(TAG, "unhandled network event ev_id='%" PRId32 "'", ev_id);
+    ESP_LOGI(TAG, "unhandled network event ev_base='%s' ev_id='%" PRId32 "'", ev_base, ev_id);
 }
 
 #ifndef CONFIG_WILLOW_ETHERNET
