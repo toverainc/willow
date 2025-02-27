@@ -132,20 +132,22 @@ static void hdlr_ev_ip(void *arg, esp_event_base_t ev_base, int32_t ev_id, void 
 
 static void hdlr_ev_wifi(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
 {
-    if (ev_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (!restarting) {
-            ESP_LOGI(TAG, "disconnected from AP, retrying");
-            esp_wifi_connect();
-        }
-        return;
-    }
+    switch (ev_id) {
+        case WIFI_EVENT_STA_DISCONNECTED:
+            if (!restarting) {
+                ESP_LOGI(TAG, "disconnected from AP, retrying");
+                esp_wifi_connect();
+            }
+            break;
 
-    if (ev_id == WIFI_EVENT_STA_START) {
-        ESP_LOGI(TAG, "WIFI_EVENT_STA_START");
-        return;
-    }
+        case WIFI_EVENT_STA_START:
+            ESP_LOGI(TAG, "WIFI_EVENT_STA_START");
+            break;
 
-    ESP_LOGI(TAG, "unhandled network event ev_base='%s' ev_id='%" PRId32 "'", ev_base, ev_id);
+        default:
+            ESP_LOGI(TAG, "unhandled network event ev_base='%s' ev_id='%" PRId32 "'", ev_base, ev_id);
+            break;
+    }
 }
 
 #ifndef CONFIG_WILLOW_ETHERNET
