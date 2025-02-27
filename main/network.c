@@ -116,18 +116,23 @@ static esp_err_t start_sntp(void)
     return esp_netif_sntp_start();
 }
 
-static void hdlr_ev(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
+static void hdlr_ev_ip(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
 {
     // esp_err_t ret = ESP_OK;
 
-    if (ev_base == IP_EVENT && ev_id == IP_EVENT_STA_GOT_IP) {
+    if (ev_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t *ev_ip = (ip_event_got_ip_t *)data;
         ESP_LOGI(TAG, "received IP: " IPSTR, IP2STR(&ev_ip->ip_info.ip));
         xEventGroupSetBits(hdl_evg, WIFI_BIT_CONNECTED);
         return;
     }
 
-    if (ev_base == WIFI_EVENT && ev_id == WIFI_EVENT_STA_DISCONNECTED) {
+    ESP_LOGI(TAG, "unhandled network event ev_base='%s' ev_id='%" PRId32 "'", ev_base, ev_id);
+}
+
+static void hdlr_ev_wifi(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
+{
+    if (ev_id == WIFI_EVENT_STA_DISCONNECTED) {
         if (!restarting) {
             ESP_LOGI(TAG, "disconnected from AP, retrying");
             esp_wifi_connect();
@@ -135,7 +140,7 @@ static void hdlr_ev(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *da
         return;
     }
 
-    if (ev_base == WIFI_EVENT && ev_id == WIFI_EVENT_STA_START) {
+    if (ev_id == WIFI_EVENT_STA_START) {
         ESP_LOGI(TAG, "WIFI_EVENT_STA_START");
         return;
     }
@@ -158,13 +163,13 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
         return ESP_FAIL;
     }
 
-    ret = esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &hdlr_ev, NULL);
+    ret = esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &hdlr_ev_ip, NULL);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to register IP event handler: %s", esp_err_to_name(ret));
         return ret;
     }
 
-    ret = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &hdlr_ev, NULL);
+    ret = esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &hdlr_ev_wifi, NULL);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to register Wi-Fi event handler: %s", esp_err_to_name(ret));
         return ret;
