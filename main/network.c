@@ -133,6 +133,12 @@ static void hdlr_ev_ip(void *arg, esp_event_base_t ev_base, int32_t ev_id, void 
 static void hdlr_ev_wifi(void *arg, esp_event_base_t ev_base, int32_t ev_id, void *data)
 {
     switch (ev_id) {
+        case WIFI_EVENT_STA_CONNECTED:
+            wifi_event_sta_connected_t *ev_data_connected = (wifi_event_sta_connected_t *)data;
+            ESP_LOGI(TAG, "connected to AP (BSSID='" MACSTR "' SSID='%s' channel='%" PRIu8 "')",
+                     MAC2STR(ev_data_connected->bssid), ev_data_connected->ssid, ev_data_connected->channel);
+            break;
+
         case WIFI_EVENT_STA_DISCONNECTED:
             if (!restarting) {
                 ESP_LOGI(TAG, "disconnected from AP, retrying");
