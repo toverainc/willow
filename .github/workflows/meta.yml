@@ -2,6 +2,7 @@
 name: meta
 
 env:
+  GHCR_URL: "ghcr.io/${{ github.repository }}"
   GH_TOKEN: ${{ github.token }}
 
 on:
@@ -20,6 +21,7 @@ jobs:
     outputs:
       check_container_image: ${{ steps.check_container_image.outputs.result }}
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
+      ghrc_url: ${{ env.GHCR_URL }}
       image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
       metadata_json: ${{ steps.metadata.outputs.json }}
       metadata_labels: ${{ steps.metadata.outputs.labels }}
@@ -52,7 +54,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: "ghcr.io/${{ github.repository }}"
+          images: ${{ env.GHCR_URL }}
           tags: |
             type=ref,event=tag
             type=ref,event=pr
@@ -96,4 +98,4 @@ jobs:
     uses: ./.github/workflows/build-willow.yml
     needs: trigger_workflow
     with:
-      container-image: ${{ needs.trigger_workflow.outputs.check_container_image && fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] || 'ghcr.io/toverainc/willow:main' }}
+      container-image: ${{ needs.trigger_workflow.outputs.check_container_image && fromJSON(needs.trigger_workflow.outputs.metadata_json).tags[0] || format('{0}:main', needs.trigger_workflow.outputs.ghcr_url) }}
