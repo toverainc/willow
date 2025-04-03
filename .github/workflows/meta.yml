@@ -21,12 +21,17 @@ jobs:
     outputs:
       check_container_image: ${{ steps.check_container_image.outputs.result }}
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
-      ghcr_url: "${GHCR_URL@L}"
+      ghcr_url: ${{ steps.lower.outputs.ghcr_url }}
       image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
       metadata_json: ${{ steps.metadata.outputs.json }}
       metadata_labels: ${{ steps.metadata.outputs.labels }}
       metadata_tags: ${{ steps.metadata.outputs.tags }}
     steps:
+      - name: lowercase GHCR_URL
+        id: lower
+        run: |
+          echo "ghcr_url=${GHCR_URL@L}" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v4
         with:
           # fetch full history to be able to gather changed files in all new commits
@@ -54,7 +59,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: "${GHCR_URL@L}"
+          images: ${{ steps.lower.outputs.ghcr_url }}
           tags: |
             type=ref,event=tag
             type=ref,event=pr
