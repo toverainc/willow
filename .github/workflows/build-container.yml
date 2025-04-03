@@ -20,6 +20,8 @@ on:
 jobs:
   build-container:
     runs-on: ubuntu-22.04
+    permissions:
+      packages: write
     steps:
       - name: checkout
         uses: actions/checkout@v4
