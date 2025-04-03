@@ -21,7 +21,7 @@ jobs:
     outputs:
       check_container_image: ${{ steps.check_container_image.outputs.result }}
       container_any_changed: ${{ steps.changed_files_yaml.outputs.container_any_changed }}
-      ghrc_url: ${{ env.GHCR_URL }}
+      ghcr_url: ${{ env.GHCR_URL }}
       image_any_changed: ${{ steps.changed_files_yaml.outputs.image_any_changed }}
       metadata_json: ${{ steps.metadata.outputs.json }}
       metadata_labels: ${{ steps.metadata.outputs.labels }}
