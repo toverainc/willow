@@ -107,6 +107,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: build-willow-dist
     permissions:
+      contents: write
       packages: read
     steps:
       - name: download artifacts
