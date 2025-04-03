@@ -36,6 +36,8 @@ jobs:
       dist_filename: "willow-dist-${{ matrix.device }}.bin"
       ota_filename: "willow-ota-${{ matrix.device }}.bin"
       partitions_filename: "willow-partitions-${{ matrix.device }}"
+    permissions:
+      packages: read
     steps:
       - name: checkout
         uses: actions/checkout@v4
