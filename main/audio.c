@@ -108,6 +108,18 @@ static void play_audio(const char *uri)
     }
 }
 
+static void check_mute(void)
+{
+    int gpio_level = gpio_get_level(GPIO_NUM_1);
+    if (gpio_level == 0) {
+        ESP_LOGW(TAG, "mute is activated, please unmute to continue startup");
+        ui_pr_err("Mute Activated", "Unmute to continue");
+        while (gpio_get_level(GPIO_NUM_1) == 0) {
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+        }
+    }
+}
+
 static void play_audio_err(void *data)
 {
     gpio_set_level(get_pa_enable_gpio(), 1);
@@ -996,7 +1008,6 @@ esp_err_t init_audio(void)
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
     char *wake_word = config_get_char("wake_word", DEFAULT_WAKE_WORD);
     esp_err_t ret = ESP_OK;
-    int gpio_level;
 
     hdl_ahc = audio_board_codec_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
@@ -1005,14 +1016,7 @@ esp_err_t init_audio(void)
     init_esp_audio();
     volume_set(-1);
 
-    gpio_level = gpio_get_level(GPIO_NUM_1);
-    if (gpio_level == 0) {
-        ESP_LOGW(TAG, "mute is activated, please unmute to continue startup");
-        ui_pr_err("Mute Activated", "Unmute to continue");
-        while (gpio_get_level(GPIO_NUM_1) == 0) {
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
-        }
-    }
+    check_mute();
 
     hdl_aha = audio_board_adc_init();
 
