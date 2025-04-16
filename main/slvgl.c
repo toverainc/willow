@@ -102,13 +102,13 @@ esp_err_t init_lvgl_display(void)
     ESP_LOGD(TAG, "init_lvgl: lcdp->lcd_io_handle: %p", lcdp->lcd_io_handle);
 
     const lvgl_port_display_cfg_t cfg_ld = {
-        .buffer_size = LCD_H_RES * LCD_V_RES / 5,
-        .double_buffer = false,
+        .buffer_size = LCD_H_RES * LCD_V_RES,
+        .double_buffer = true,
         // DMA and SPIRAM
         // E (16:37:21.267) LVGL: lvgl_port_add_disp(190): Alloc DMA capable buffer in SPIRAM is not supported!
         .flags = {
-            .buff_dma = true,
-            .buff_spiram = false,
+            .buff_dma = false,
+            .buff_spiram = true,
         },
         .hres = LCD_H_RES,
         // confirmed this is correct by printf %p periph_lcd->lcd_io_handle in esp_peripherals/periph_lcd.c
@@ -120,6 +120,7 @@ esp_err_t init_lvgl_display(void)
             .mirror_y = LCD_MIRROR_Y,
             .swap_xy = LCD_SWAP_XY,
         },
+        .trans_size = LCD_H_RES * LCD_V_RES / 10,
         .vres = LCD_V_RES,
     };
 
