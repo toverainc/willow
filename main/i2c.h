@@ -1,4 +1,5 @@
-#include "driver/i2c.h"
+#include "i2c_bus.h"
+
+extern i2c_bus_handle_t hdl_i2c_bus;
 
 void init_i2c(void);
-esp_err_t i2c_probe(i2c_port_t port, uint8_t addr);

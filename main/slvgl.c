@@ -177,15 +177,15 @@ esp_err_t init_lvgl_touch(void)
 
     esp_lcd_panel_io_i2c_config_t cfg_io_lt;
 
-    if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS) == ESP_OK) {
+    if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS);
         touch_type = TOUCH_GT911;
         ESP_LOGI(TAG, "detected GT911 touch controller on address 0x%02x", ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS);
-    } else if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP) == ESP_OK) {
+    } else if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_gt911(ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP);
         touch_type = TOUCH_GT911;
         ESP_LOGI(TAG, "detected GT911 touch controller on address 0x%02x", ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP);
-    } else if (i2c_probe(I2C_NUM_0, ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS) == ESP_OK) {
+    } else if (i2c_bus_probe_addr(hdl_i2c_bus, ESP_LCD_TOUCH_IO_I2C_TT21100_ADDRESS) == ESP_OK) {
         cfg_io_lt = cfg_lpiic_tt21100();
         cfg_lt.flags.mirror_x = true;
         touch_type = TOUCH_TT21100;
@@ -195,7 +195,9 @@ esp_err_t init_lvgl_touch(void)
         return ESP_ERR_NOT_FOUND;
     }
 
-    ret = esp_lcd_new_panel_io_i2c((esp_lcd_i2c_bus_handle_t)0, &cfg_io_lt, &lcdp->lcd_io_handle);
+    cfg_io_lt.scl_speed_hz = 400000;
+
+    ret = esp_lcd_new_panel_io_i2c_v2(i2c_bus_get_master_handle(I2C_NUM_0), &cfg_io_lt, &lcdp->lcd_io_handle);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "failed to initialize display panel IO: %s", esp_err_to_name(ret));
         return ret;
