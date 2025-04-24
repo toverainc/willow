@@ -96,7 +96,13 @@ static void cb_ea(esp_audio_state_t *state, void *data)
 
 static void play_audio(const char *uri)
 {
-    esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, uri, 0);
+    audio_err_t err = esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, uri, 0);
+
+    if (err == ESP_ERR_AUDIO_OPEN) {
+        ESP_LOGE(TAG, "ESP_ERR_AUDIO_OPEN from ESP Audio. Reinitialize audio.");
+        deinit_audio();
+        init_audio();
+    }
 }
 
 static void play_audio_err(void *data)
