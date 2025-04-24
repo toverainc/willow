@@ -1011,7 +1011,7 @@ esp_err_t init_audio(void)
 
     hdl_ahc = audio_board_codec_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
-    ret = audio_hal_ctrl_codec(hdl_ahc, AUDIO_HAL_CODEC_MODE_BOTH, AUDIO_HAL_CTRL_START);
+    ret = audio_hal_ctrl_codec(hdl_ahc, AUDIO_HAL_CODEC_MODE_DECODE, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
     init_esp_audio();
     volume_set(-1);
