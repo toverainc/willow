@@ -12,9 +12,6 @@ export DOCKER_IMAGE="willow:latest"
 export DOCKER_NAME="willow-build"
 export DIST_FILE="build/${dist_filename:-willow-dist.bin}"
 
-# ESP-SR Componenent ver hash
-ESP_SR_VER="v1.9.5"
-
 # esptool ver to install
 ESPTOOL_VER="4.5.1"
 
@@ -145,7 +142,7 @@ generate_speech_commands() {
     if [ -r "$WILLOW_PATH"/speech_commands/commands_en.txt ]; then
         echo "Linking custom speech commands"
         ln -sf "$WILLOW_PATH"/speech_commands/commands_en.txt \
-            "$WILLOW_PATH"/components/esp-sr/model/multinet_model/fst/commands_en.txt
+            "$WILLOW_PATH"/managed_components/esp-sr/model/multinet_model/fst/commands_en.txt
     fi
 }
 
@@ -176,18 +173,12 @@ install() {
     git checkout "$ADF_VER"
     git submodule update --init components/esp-adf-libs
 
-    # Setup esp-sr
-    cd $WILLOW_PATH/components
-    git clone https://github.com/espressif/esp-sr.git
-    cd esp-sr
-    git checkout "$ESP_SR_VER"
-
     cd $WILLOW_PATH
     idf.py set-target "$PLATFORM"
 }
 
 destroy() {
-    sudo rm -rf build serve deps target venv managed_components "$DIST_FILE" components/esp-sr flags/*
+    sudo rm -rf build serve deps target venv managed_components "$DIST_FILE" flags/*
 }
 
 # Just in case
