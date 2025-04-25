@@ -1009,14 +1009,14 @@ esp_err_t init_audio(void)
     char *wake_word = config_get_char("wake_word", DEFAULT_WAKE_WORD);
     esp_err_t ret = ESP_OK;
 
+    check_mute();
+
     hdl_ahc = audio_board_codec_init();
     gpio_set_level(get_pa_enable_gpio(), 0);
     ret = audio_hal_ctrl_codec(hdl_ahc, AUDIO_HAL_CODEC_MODE_DECODE, AUDIO_HAL_CTRL_START);
     ESP_LOGI(TAG, "audio_hal_ctrl_codec: %s", esp_err_to_name(ret));
     init_esp_audio();
     volume_set(-1);
-
-    check_mute();
 
     hdl_aha = audio_board_adc_init();
 
