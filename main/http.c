@@ -43,7 +43,7 @@ static esp_err_t http_do(const esp_http_client_handle_t hdl_hc, const esp_http_c
         ESP_LOGE(TAG, "failed to get HTTP headers");
         return ESP_FAIL;
     }
-    *body = calloc(sizeof(char), n + 1);
+    *body = calloc(n + 1, sizeof(char));
     n = esp_http_client_read_response(hdl_hc, *body, n);
     if (n >= 0) {
         *http_status = esp_http_client_get_status_code(hdl_hc);

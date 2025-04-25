@@ -121,7 +121,7 @@ static void cb_ws_event(const void *arg_evh, const esp_event_base_t *base_ev, co
                 cJSON *speech2 = cJSON_GetObjectItemCaseSensitive(plain, "speech");
                 if (cJSON_IsString(speech2) && speech2->valuestring != NULL && strlen(speech2->valuestring) > 0) {
                     hir.has_speech = true;
-                    hir.speech = calloc(sizeof(char), strlen(speech2->valuestring) + 1);
+                    hir.speech = calloc(strlen(speech2->valuestring) + 1, sizeof(char));
                     snprintf(hir.speech, strlen(speech2->valuestring) + 1, "%s", speech2->valuestring);
                 }
 
@@ -205,7 +205,7 @@ static void hass_get_url(char **url, const char *path, const bool ws)
     if (path != NULL) {
         len_url += strlen(path);
     }
-    *url = calloc(sizeof(char), len_url);
+    *url = calloc(len_url, sizeof(char));
     snprintf(*url, len_url, "%s://%s:%d%s", scheme, hass_host, config_get_int("hass_port", DEFAULT_PORT),
              path ? path : "");
     free(hass_host);
@@ -244,7 +244,7 @@ static void init_hass_ws_client(void)
 
     hass_token = config_get_char("hass_token", DEFAULT_TOKEN);
     len_auth = strlen(hass_token) + 34;
-    auth = calloc(sizeof(char), len_auth);
+    auth = calloc(len_auth, sizeof(char));
     snprintf(auth, len_auth, "{\"type\":\"auth\",\"access_token\":\"%s\"}", hass_token);
     free(hass_token);
 
@@ -259,7 +259,7 @@ static void init_hass_ws_client(void)
 static esp_err_t hass_set_http_auth(const esp_http_client_handle_t hdl_hc)
 {
     char *hass_token = config_get_char("hass_token", DEFAULT_TOKEN);
-    char *hdr_auth = calloc(sizeof(char), 8 + strlen(hass_token));
+    char *hdr_auth = calloc(8 + strlen(hass_token), sizeof(char));
     snprintf(hdr_auth, 8 + strlen(hass_token), "Bearer %s", hass_token);
     free(hass_token);
     esp_err_t ret = esp_http_client_set_header(hdl_hc, "Authorization", hdr_auth);
