@@ -50,7 +50,7 @@ static char *config_read(void)
 
     ESP_LOGI(TAG, "config file size: %ld", fs.st_size);
 
-    config = calloc(sizeof(char), fs.st_size + 1);
+    config = calloc(fs.st_size + 1, sizeof(char));
     size_t rlen = fread(config, 1, fs.st_size, f);
     ESP_LOGI(TAG, "fread: %d", rlen);
     config[fs.st_size] = '\0';

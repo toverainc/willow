@@ -133,12 +133,12 @@ static void play_audio_wis_tts(void *data)
     wis_tts_url = config_get_char("wis_tts_url_v2", NULL);
     if (wis_tts_url != NULL) {
         int len_url = strlen(wis_tts_url) + strlen((char *)data) + 1;
-        url = calloc(sizeof(char), len_url);
+        url = calloc(len_url, sizeof(char));
         snprintf(url, len_url, "%s%s", wis_tts_url, (char *)data);
     } else {
         wis_tts_url = config_get_char("wis_tts_url", DEFAULT_WIS_TTS_URL);
         int len_url = strlen(wis_tts_url) + strlen(WIS_URL_TTS_ARG) + strlen((char *)data) + 1;
-        url = calloc(sizeof(char), len_url);
+        url = calloc(len_url, sizeof(char));
         snprintf(url, len_url, "%s%s%s", wis_tts_url, WIS_URL_TTS_ARG, (char *)data);
     }
 
@@ -454,7 +454,7 @@ static esp_err_t cb_ar_event(audio_rec_evt_t *are, void *data)
                 bool was_mode = config_get_bool("was_mode", DEFAULT_WAS_MODE);
                 char *command_endpoint = config_get_char("command_endpoint", DEFAULT_COMMAND_ENDPOINT);
                 char *json;
-                json = calloc(sizeof(char), 29 + strlen(lookup_cmd_multinet(command_id)));
+                json = calloc(29 + strlen(lookup_cmd_multinet(command_id)), sizeof(char));
                 snprintf(json, 29 + strlen(lookup_cmd_multinet(command_id)), "{\"text\":\"%s\",\"language\":\"en\"}",
                          lookup_cmd_multinet(command_id));
                 if (was_mode) {
@@ -592,7 +592,7 @@ static esp_err_t hdl_ev_hs_to_api(http_stream_event_msg_t *msg)
                 return ESP_FAIL;
             }
             // Allocate memory for response. Should be enough?
-            char *buf = calloc(sizeof(char), 2048);
+            char *buf = calloc(2048, sizeof(char));
             assert(buf);
             int read_len = esp_http_client_read(http, buf, 2048);
             if (read_len <= 0) {
@@ -917,7 +917,7 @@ static esp_err_t start_rec(void)
 static void at_read(void *data)
 {
     const int len = 2 * 1024;
-    char *buf = audio_calloc(1, len);
+    char *buf = audio_calloc(len, 1);
     int msg = -1, ret = 0;
     TickType_t delay = portMAX_DELAY;
 
