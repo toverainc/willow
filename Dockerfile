@@ -4,6 +4,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 RUN apt-get -qq update && \
     apt-get -qq install \
+    clang-format-15 \
     git \
     libusb-1.0-0 \
     nano \
