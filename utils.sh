@@ -12,9 +12,6 @@ export DOCKER_IMAGE="willow:latest"
 export DOCKER_NAME="willow-build"
 export DIST_FILE="build/${dist_filename:-willow-dist.bin}"
 
-# esptool ver to install
-ESPTOOL_VER="4.5.1"
-
 export ADF_PATH="$WILLOW_PATH/deps/esp-adf"
 
 # Number of loops for torture test
@@ -59,21 +56,6 @@ check_port() {
         echo "You need to either run this command with sudo or add yourself to the dialout group"
         echo "Example: sudo -E ./utils.sh erase-flash or sudo -E ./utils.sh flash"
         exit 1
-    fi
-}
-
-check_esptool() {
-    if [ ! -x venv/bin/esptool.py ]; then
-        rm -rf venv
-        echo "Creating venv for esptool"
-        python3 -m venv venv
-        source venv/bin/activate
-        echo "Installing esptool..."
-        pip install -U wheel setuptools pip
-        pip install esptool=="$ESPTOOL_VER"
-    else
-        echo "Using venv for esptool"
-        source venv/bin/activate
     fi
 }
 
@@ -258,7 +240,6 @@ flash)
     check_host
     check_port
     check_tio
-    check_esptool
     check_flag "erase-flash"
     check_build_host
     cd "$WILLOW_PATH"/build
@@ -271,7 +252,6 @@ flash-app)
     check_host
     check_port
     check_tio
-    check_esptool
     check_flag "erase-flash"
     check_build_host
     cd "$WILLOW_PATH"/build
@@ -281,7 +261,6 @@ flash-app)
 ;;
 
 dist)
-    check_esptool
     check_build_host
     do_dist
     generate_nvs
@@ -294,7 +273,6 @@ flash-dist|dist-flash)
         exit 1
     fi
     check_port
-    check_esptool
     check_build_host
     check_flag "erase-flash"
     esptool.py --chip "$PLATFORM" -p "$PORT" -b "$FLASH_BAUD" --before=default_reset --after=hard_reset write_flash \
@@ -305,7 +283,6 @@ flash-dist|dist-flash)
 erase-flash)
     check_host
     check_port
-    check_esptool
     esptool.py --chip "$PLATFORM" -p "$PORT" erase_flash
     echo "Flash erased. You will need to reflash."
     add_flag "erase-flash"
@@ -378,7 +355,6 @@ log)
 ;;
 
 reset)
-    check_esptool
     if [ ! $2 ]; then
         echo "Need port"
         exit 1
