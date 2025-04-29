@@ -694,21 +694,29 @@ static void notify_task(void *data)
     }
 
     if (nd->audio_url != NULL) {
-        volume_set(nd->volume);
-        gpio_set_level(get_pa_enable_gpio(), 1);
+        if (hdl_ea == NULL) {
+            ESP_LOGW(TAG, "notify with hdl_ea=NULL, skip audio playback");
+        } else {
+            volume_set(nd->volume);
+            gpio_set_level(get_pa_enable_gpio(), 1);
+        }
 
         for (i = 0; i < nd->repeat; i++) {
             if (nd->cancel) {
                 break;
             }
-            esp_audio_sync_play(hdl_ea, nd->audio_url, 0);
+            if (hdl_ea != NULL) {
+                esp_audio_sync_play(hdl_ea, nd->audio_url, 0);
+            }
             vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
 
         free(nd->audio_url);
 
-        gpio_set_level(get_pa_enable_gpio(), 0);
-        volume_set(-1);
+        if (hdl_ea != NULL) {
+            gpio_set_level(get_pa_enable_gpio(), 0);
+            volume_set(-1);
+        }
     }
 
     if (lvgl_port_lock(lvgl_lock_timeout)) {
