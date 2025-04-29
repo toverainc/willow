@@ -99,6 +99,11 @@ static void play_audio(const char *uri)
     reset_timer(hdl_display_timer, config_get_int("display_timeout", DEFAULT_DISPLAY_TIMEOUT), false);
     display_set_backlight(true, false);
 
+    if (hdl_ea == NULL) {
+        ESP_LOGE(TAG, "audio_play called with hdl_ea=NULL, skip audio playback");
+        return;
+    }
+
     audio_err_t err = esp_audio_play(hdl_ea, AUDIO_CODEC_TYPE_DECODER, uri, 0);
 
     if (err == ESP_ERR_AUDIO_OPEN) {
