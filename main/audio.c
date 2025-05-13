@@ -1008,7 +1008,7 @@ esp_err_t volume_set(int volume)
     return audio_hal_set_volume(hdl_ahc, volume);
 }
 
-static void init_adc(void)
+void init_adc(void)
 {
     if (hdl_aha != NULL) {
         hdl_aha->audio_codec_deinitialize();
@@ -1023,6 +1023,7 @@ static void init_adc(void)
     };
 
     hdl_aha->audio_codec_config_iface(AUDIO_HAL_CODEC_MODE_ENCODE, &cfg_i2s);
+    es7210_adc_set_gain(ES7210_MIC_SELECT, config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 }
 
 esp_err_t init_audio(void)
@@ -1043,7 +1044,6 @@ esp_err_t init_audio(void)
     if (hdl_aha == NULL) {
         init_adc();
     }
-
 
     init_audio_response();
     init_session_timer();
