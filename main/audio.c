@@ -4,7 +4,6 @@
 #include "audio_pipeline.h"
 #include "audio_thread.h"
 #include "board.h"
-#include "es7210.h"
 #include "esp_check.h"
 #include "esp_decoder.h"
 #include "esp_http_client.h"
@@ -1023,7 +1022,7 @@ void init_adc(void)
     };
 
     hdl_aha->audio_codec_config_iface(AUDIO_HAL_CODEC_MODE_ENCODE, &cfg_i2s);
-    es7210_adc_set_gain(ES7210_MIC_SELECT, config_get_int("mic_gain", DEFAULT_MIC_GAIN));
+    hdl_aha->audio_codec_set_volume(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 }
 
 esp_err_t init_audio(void)
@@ -1052,7 +1051,7 @@ esp_err_t init_audio(void)
     }
     free(speech_rec_mode);
     ESP_RETURN_ON_ERROR(start_rec(), TAG, "start_rec failed");
-    es7210_adc_set_gain(ES7210_MIC_SELECT, config_get_int("mic_gain", DEFAULT_MIC_GAIN));
+    hdl_aha->audio_codec_set_volume(config_get_int("mic_gain", DEFAULT_MIC_GAIN));
 
     ESP_LOGI(TAG, "app_main() - start_rec() finished");
 
