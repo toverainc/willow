@@ -1,10 +1,10 @@
-#include "es7210.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_peripherals.h"
 #include "input_key_service.h"
 #include "periph_button.h"
 
+#include "audio.h"
 #include "config.h"
 #include "shared.h"
 #include "system.h"
@@ -20,20 +20,7 @@ static esp_err_t cb_iks(periph_service_handle_t hdl, periph_service_event_t *ev,
     if (key == INPUT_KEY_USER_ID_MUTE) {
         if (ev->type == INPUT_KEY_SERVICE_ACTION_PRESS_RELEASE) {
             ESP_LOGI(TAG, "unmute");
-            audio_hal_codec_config_t cfg_ahc = {
-                .adc_input  = AUDIO_HAL_ADC_INPUT_LINE1,
-                .dac_output = AUDIO_HAL_DAC_OUTPUT_ALL,
-                .codec_mode = AUDIO_HAL_CODEC_MODE_BOTH,
-                .i2s_iface = {
-                    .mode = AUDIO_HAL_MODE_SLAVE,
-                    .fmt = AUDIO_HAL_I2S_NORMAL,
-                    .samples = AUDIO_HAL_16K_SAMPLES,
-                    .bits = AUDIO_HAL_BIT_LENGTH_32BITS,
-                },
-            };
-
-            es7210_adc_init(&cfg_ahc);
-            es7210_adc_set_gain(ES7210_MIC_SELECT, config_get_int("mic_gain", DEFAULT_MIC_GAIN));
+            init_adc();
         }
     }
 
