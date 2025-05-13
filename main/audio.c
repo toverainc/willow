@@ -1008,6 +1008,11 @@ esp_err_t volume_set(int volume)
     return audio_hal_set_volume(hdl_ahc, volume);
 }
 
+static void init_adc(void)
+{
+    hdl_aha = audio_board_adc_init();
+}
+
 esp_err_t init_audio(void)
 {
     char *speech_rec_mode = config_get_char("speech_rec_mode", DEFAULT_SPEECH_REC_MODE);
@@ -1023,7 +1028,7 @@ esp_err_t init_audio(void)
     init_esp_audio();
     volume_set(-1);
 
-    hdl_aha = audio_board_adc_init();
+    init_adc();
 
     init_audio_response();
     init_session_timer();
