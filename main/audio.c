@@ -1010,6 +1010,9 @@ esp_err_t volume_set(int volume)
 
 static void init_adc(void)
 {
+    if (hdl_aha != NULL) {
+        hdl_aha->audio_codec_deinitialize();
+    }
     hdl_aha = audio_board_adc_init();
 
     audio_hal_codec_i2s_iface_t cfg_i2s = {
@@ -1037,7 +1040,10 @@ esp_err_t init_audio(void)
     init_esp_audio();
     volume_set(-1);
 
-    init_adc();
+    if (hdl_aha == NULL) {
+        init_adc();
+    }
+
 
     init_audio_response();
     init_session_timer();
