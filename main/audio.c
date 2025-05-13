@@ -1011,6 +1011,15 @@ esp_err_t volume_set(int volume)
 static void init_adc(void)
 {
     hdl_aha = audio_board_adc_init();
+
+    audio_hal_codec_i2s_iface_t cfg_i2s = {
+        .mode = AUDIO_HAL_MODE_SLAVE,
+        .fmt = AUDIO_HAL_I2S_NORMAL,
+        .samples = AUDIO_HAL_16K_SAMPLES,
+        .bits = AUDIO_HAL_BIT_LENGTH_32BITS,
+    };
+
+    hdl_aha->audio_codec_config_iface(AUDIO_HAL_CODEC_MODE_ENCODE, &cfg_i2s);
 }
 
 esp_err_t init_audio(void)
