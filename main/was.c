@@ -71,20 +71,22 @@ static void IRAM_ATTR cb_ws_event(const void *arg_evh, const esp_event_base_t *b
                 cJSON *cjson = cJSON_Parse(resp);
 
                 // latency sensitive so handle this first
-                cJSON *json_wake_result = cJSON_GetObjectItemCaseSensitive(cjson, "wake_result");
-                if (cJSON_IsObject(json_wake_result)) {
-                    cJSON *won = cJSON_GetObjectItemCaseSensitive(json_wake_result, "won");
-                    if (won != NULL && cJSON_IsBool(won)) {
-                        if (cJSON_IsFalse(won)) {
-                            ESP_LOGI(TAG, "lost wake race, stopping pipelines");
-                            multiwake_won = false;
-                            audio_recorder_trigger_stop(hdl_ar);
-                            goto cleanup;
-                        } else if (config_get_bool("wake_confirmation", DEFAULT_WAKE_CONFIRMATION)) {
-                            play_audio_ok(NULL);
+                if (config_get_bool("multiwake", false)) {
+                    cJSON *json_wake_result = cJSON_GetObjectItemCaseSensitive(cjson, "wake_result");
+                    if (cJSON_IsObject(json_wake_result)) {
+                        cJSON *won = cJSON_GetObjectItemCaseSensitive(json_wake_result, "won");
+                        if (won != NULL && cJSON_IsBool(won)) {
+                            if (cJSON_IsFalse(won)) {
+                                ESP_LOGI(TAG, "lost wake race, stopping pipelines");
+                                multiwake_won = false;
+                                audio_recorder_trigger_stop(hdl_ar);
+                                goto cleanup;
+                            } else if (config_get_bool("wake_confirmation", DEFAULT_WAKE_CONFIRMATION)) {
+                                play_audio_ok(NULL);
+                            }
                         }
+                        goto cleanup;
                     }
-                    goto cleanup;
                 }
 
                 cJSON *json_result = cJSON_GetObjectItemCaseSensitive(cjson, "result");
@@ -574,11 +576,6 @@ void IRAM_ATTR send_wake_start(float wake_volume)
     char *json;
     esp_err_t ret;
 
-    // Silently return if multiwake is not enabled - defaults to not enabled
-    if (!config_get_bool("multiwake", false)) {
-        return;
-    }
-
     if (!was_is_connected(false)) {
         ESP_LOGW(TAG, "Websocket not connected - skipping wake start");
         return;
@@ -610,11 +607,6 @@ void send_wake_end(void)
 {
     char *json;
     esp_err_t ret;
-
-    // Silently return if multiwake is not enabled - defaults to not enabled
-    if (!config_get_bool("multiwake", false)) {
-        return;
-    }
 
     if (!was_is_connected(false)) {
         ESP_LOGW(TAG, "Websocket not connected - skipping wake end");
