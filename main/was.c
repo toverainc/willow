@@ -571,6 +571,35 @@ cleanup:
     cJSON_Delete(cjson);
 }
 
+void send_repsonse_end(void)
+{
+    char *json;
+    esp_err_t ret;
+
+    if (!was_is_connected(false)) {
+        ESP_LOGW(TAG, "Websocket not connected - skipping wake end");
+        return;
+    }
+
+    cJSON *cjson = cJSON_CreateObject();
+    cJSON *response_end = cJSON_CreateObject();
+
+    if (!cJSON_AddItemToObjectCS(cjson, "response_end", response_end)) {
+        goto cleanup;
+    }
+
+    json = cJSON_Print(cjson);
+
+    ret = esp_websocket_client_send_text(hdl_wc, json, strlen(json), 2000 / portTICK_PERIOD_MS);
+    cJSON_free(json);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "failed to send WAS response_end message");
+    }
+
+cleanup:
+    cJSON_Delete(cjson);
+}
+
 void IRAM_ATTR send_wake_start(float wake_volume)
 {
     char *json;

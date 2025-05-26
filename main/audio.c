@@ -89,6 +89,7 @@ static void cb_ea(esp_audio_state_t *state, void *data)
 {
     ESP_LOGD(TAG, "ESP Audio Event received: %d", state->status);
     if (state->status > AUDIO_STATUS_RUNNING) {
+        send_repsonse_end();
         gpio_set_level(get_pa_enable_gpio(), 0);
     }
 }
