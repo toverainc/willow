@@ -89,7 +89,7 @@ static void cb_ea(esp_audio_state_t *state, void *data)
 {
     ESP_LOGD(TAG, "ESP Audio Event received: %d", state->status);
     if (state->status > AUDIO_STATUS_RUNNING) {
-        send_repsonse_end();
+        send_repsonse_end(NULL);
         gpio_set_level(get_pa_enable_gpio(), 0);
     }
 }
@@ -166,10 +166,6 @@ static void play_audio_wis_tts(void *data)
     free(url);
 }
 
-static void noop(void *data)
-{
-}
-
 static void init_audio_response(void)
 {
     char *audio_response_type = config_get_char("audio_response_type", DEFAULT_AUDIO_RESPONSE_TYPE);
@@ -180,8 +176,8 @@ static void init_audio_response(void)
         war.fn_err = play_audio_wis_tts;
         war.fn_ok = play_audio_wis_tts;
     } else {
-        war.fn_err = noop;
-        war.fn_ok = noop;
+        war.fn_err = send_repsonse_end;
+        war.fn_ok = send_repsonse_end;
     }
     free(audio_response_type);
 }

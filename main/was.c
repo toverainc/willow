@@ -571,7 +571,7 @@ cleanup:
     cJSON_Delete(cjson);
 }
 
-void send_repsonse_end(void)
+void send_repsonse_end(void *data)
 {
     char *json;
     esp_err_t ret;

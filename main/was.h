@@ -4,6 +4,6 @@ void deinit_was(void);
 esp_err_t init_was(void);
 esp_err_t was_send_endpoint(const char *json, bool nc_skip);
 void request_config(void);
-void send_repsonse_end(void);
+void send_repsonse_end(void *data);
 void send_wake_start(float wake_volume);
 void send_wake_end(void);
