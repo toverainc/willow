@@ -207,6 +207,9 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
             .btm_enabled = 1,
             .mbo_enabled = 1,
             .rm_enabled = 1,
+            .threshold = {
+                .authmode = WIFI_AUTH_WPA2_PSK,
+            }
         },
     };
 
