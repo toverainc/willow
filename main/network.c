@@ -208,6 +208,7 @@ esp_err_t init_wifi(const char *psk, const char *ssid)
             .mbo_enabled = 1,
             .rm_enabled = 1,
             .scan_method = WIFI_ALL_CHANNEL_SCAN,
+            .sort_method = WIFI_CONNECT_AP_BY_SIGNAL,
             .threshold = {
                 .authmode = WIFI_AUTH_WPA2_PSK,
             }
